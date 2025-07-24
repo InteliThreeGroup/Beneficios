@@ -1,118 +1,92 @@
 // src/BENEFICIOS_frontend/src/App.jsx - VERSÃO ATUALIZADA
+import React from 'react';
+import { AuthProvider, useAuth } from './components/AuthClientContext';
+import HRDashboard from './components/HRDashboard';
+import WorkerDashboard from './components/WorkerDashboard';
+import EstablishmentDashboard from './components/EstablishmentDashboard';
+import CreateProfileForm from './components/CreateProfileForm';
 
-import React, { useState, useEffect } from 'react';
-import { AuthClient } from '@dfinity/auth-client';
-import { Actor, HttpAgent } from '@dfinity/agent';
+// Componente principal que usa o contexto de autenticação
+const AppContent = () => {
+  const { isAuthenticated, principal, profile, loading, login, logout } = useAuth();
 
-// Importa os atores de TODOS os seus canisters de backend
-import { canisterId as identityCanisterId, createActor as createIdentityActor } from '../../declarations/identity_auth';
-// Adicione aqui imports para outros atores se precisar usá-los diretamente no App.jsx
-// import { canisterId as benefitsManagerCanisterId, createActor as createBenefitsManagerActor } from '../../declarations/benefits_manager';
-
-const App = () => {
-  const [authClient, setAuthClient] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [principal, setPrincipal] = useState(null);
-  const [actors, setActors] = useState(null);
-  const [profile, setProfile] = useState(null);
-
-  // Inicializa o AuthClient quando o componente é montado
-  useEffect(() => {
-    AuthClient.create().then(async (client) => {
-      setAuthClient(client);
-      const authenticated = await client.isAuthenticated();
-      if (authenticated) {
-        handleAuthenticated(client);
-      }
-    });
-  }, []);
-
-  const handleLogin = async () => {
-    if (!authClient) return;
-    
-    // URL do provedor de identidade local, conforme a documentação
-    const identityProvider = `http://rdmx6-jaaaa-aaaaa-aaadq-cai.localhost:4943/`;
-
-    await authClient.login({
-      identityProvider,
-      onSuccess: () => {
-        handleAuthenticated(authClient);
-      },
-    });
-  };
-
-  const handleAuthenticated = (client) => {
-    const identity = client.getIdentity();
-    const userPrincipal = identity.getPrincipal();
-    setPrincipal(userPrincipal);
-    setIsAuthenticated(true);
-    
-    const agent = new HttpAgent({ identity });
-    agent.fetchRootKey(); // Necessário para ambiente local
-    
-    // Cria um ator apenas para o canister de identidade por enquanto
-    const identityActor = createIdentityActor(identityCanisterId, { agent });
-    setActors({ identity_auth: identityActor });
-
-    // Busca o perfil do usuário
-    identityActor.getProfile().then(profileResult => {
-      if (profileResult.ok) {
-        setProfile(profileResult.ok);
-      } else {
-        console.log("Perfil não encontrado, precisa criar um.");
-        // Futuramente, você pode mostrar um formulário para criar o perfil aqui
-      }
-    });
-  };
-  
-  const handleLogout = async () => {
-    if (!authClient) return;
-    await authClient.logout();
-    setIsAuthenticated(false);
-    setPrincipal(null);
-    setActors(null);
-    setProfile(null);
-  };
+  if (loading) {
+    return (
+      <main style={{ textAlign: 'center', paddingTop: '5rem' }}>
+        <h1>Carregando...</h1>
+        <p>Por favor, aguarde.</p>
+      </main>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
       <main style={{ textAlign: 'center', paddingTop: '5rem' }}>
         <h1>Bem-vindo(a) ao BeneChain</h1>
-        <button onClick={handleLogin} style={{ fontSize: '1.2rem', padding: '10px 20px' }}>
+        <p>Sua plataforma descentralizada de benefícios corporativos.</p>
+        <button onClick={login} style={{ fontSize: '1.2rem', padding: '10px 20px', backgroundColor: '#6200ea', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
           Login com Internet Identity
         </button>
+      </main>
+    );
+  }
+
+  // Se autenticado, mas sem perfil, mostra o formulário de criação de perfil
+  if (profile === null) {
+    return (
+      <main style={{ padding: '2rem' }}>
+        <header style={{ display: "flex", justifyContent: "space-between", alignItems: 'center', marginBottom: '2rem' }}>
+          <h1>BeneChain</h1>
+          <div>
+            <p style={{ fontSize: "0.8em", wordBreak: "break-all" }}>Logado como: {principal?.toString()}</p>
+            <button onClick={logout} style={{ padding: '8px 15px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>Logout</button>
+          </div>
+        </header>
+        <hr />
+        <CreateProfileForm />
       </main>
     );
   }
   
   // Determina qual painel mostrar com base no cargo do usuário
   let userView;
-  const role = profile ? Object.keys(profile.role)[0] : 'Unknown';
+  const role = Object.keys(profile.role)[0]; // Pega o nome da variante, ex: "HR"
 
-  if (role === 'HR') {
-    userView = <div><h2>Painel do RH</h2><p>Bem-vinda, Carla!</p></div>;
-  } else if (role === 'Worker') {
-    userView = <div><h2>Minha Carteira</h2><p>Bem-vindo, Pedro!</p></div>;
-  } else if (role === 'Establishment') {
-    userView = <div><h2>Painel do Estabelecimento</h2><p>Bem-vinda, Mariana!</p></div>;
-  } else {
-    // Se o perfil ainda não foi buscado ou não existe
-    userView = <div><h2>Carregando perfil...</h2><p>Se esta mensagem persistir, você pode precisar criar seu perfil.</p></div>;
+  switch (role) {
+    case 'HR':
+      userView = <HRDashboard />;
+      break;
+    case 'Worker':
+      userView = <WorkerDashboard />;
+      break;
+    case 'Establishment':
+      userView = <EstablishmentDashboard />;
+      break;
+    default:
+      userView = <div><h2>Erro: Cargo desconhecido.</h2><p>Por favor, entre em contato com o suporte.</p></div>;
+      break;
   }
 
   return (
     <main style={{ padding: '2rem' }}>
-      <header style={{ display: "flex", justifyContent: "space-between", alignItems: 'center' }}>
+      <header style={{ display: "flex", justifyContent: "space-between", alignItems: 'center', marginBottom: '2rem' }}>
         <h1>BeneChain</h1>
         <div>
           <p style={{ fontSize: "0.8em", wordBreak: "break-all" }}>Logado como: {principal?.toString()}</p>
-          <button onClick={handleLogout}>Logout</button>
+          <button onClick={logout} style={{ padding: '8px 15px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>Logout</button>
         </div>
       </header>
-      <hr />
+      <hr style={{ marginBottom: '2rem' }}/>
       {userView}
     </main>
   );
 };
+
+// O componente App que engloba tudo com o AuthProvider
+const App = () => (
+  <AuthProvider>
+    <AppContent />
+  </AuthProvider>
+);
 
 export default App;

@@ -1,7 +1,8 @@
+// src/frontend/vite.config.js
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import dfxJson from '../../dfx.json';
+import dfxJson from '../../dfx.json'; // dfx.json ainda está dois níveis acima da pasta frontend
 import fs from 'fs';
 
 const isDev = process.env["DFX_NETWORK"] !== "ic";
@@ -37,7 +38,8 @@ export default defineConfig({
       ...Object.fromEntries(
         Object.entries(dfxJson.canisters).filter(([, c]) => !c.type?.includes("assets")).map(([name]) => [
           `declarations/${name}`,
-          path.resolve(__dirname, `../declarations/${name}`),
+          // Caminho do vite.config.js (src/frontend/) até src/declarations/
+          path.resolve(__dirname, `../../declarations/${name}`), // <--- Caminho corrigido aqui
         ])
       ),
     },
@@ -49,7 +51,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:4943", // <-- Mudei de 8000 para 4943 aqui
+        target: "http://127.0.0.1:4943",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, "/api"),
       },
