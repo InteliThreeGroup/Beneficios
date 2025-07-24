@@ -2,14 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthClientContext';
 import { Principal } from '@dfinity/principal';
-// Importe os tipos necessários, mesmo que não esteja usando TSX, para referência
-// import {
-//   EstablishmentProfile,
-//   PaymentTransaction as EstPaymentTransaction,
-//   PaymentRequest as EstPaymentRequest,
-//   BenefitType as EstBenefitType,
-//   PaymentStatus
-// } from '../../../declarations/establishment/establishment.did';
 
 const EstablishmentDashboard = () => {
   const { actors, principal, profile } = useAuth();
@@ -22,15 +14,16 @@ const EstablishmentDashboard = () => {
   const [registerName, setRegisterName] = useState('');
   const [registerCountry, setRegisterCountry] = useState('');
   const [registerBusinessCode, setRegisterBusinessCode] = useState('');
-  const [registerWalletPrincipal, setRegisterWalletPrincipal] = useState(principal ? principal.toText() : ''); // Sugere o próprio principal logado
-  const [acceptedBenefitTypes, setAcceptedBenefitTypes] = useState(['Food']); // Array de strings para checkboxes
+  // Sugere o próprio principal logado como principal da carteira do estabelecimento
+  const [registerWalletPrincipal, setRegisterWalletPrincipal] = useState(principal ? principal.toText() : ''); 
+  const [acceptedBenefitTypes, setAcceptedBenefitTypes] = useState(['Food']); // Array de strings para checkboxes, "Food" como default
   const [registerLoading, setRegisterLoading] = useState(false);
   const [registerMessage, setRegisterMessage] = useState('');
 
   // Estados para o formulário de PAGAMENTO (existente)
   const [workerPrincipalInput, setWorkerPrincipalInput] = useState('');
   const [paymentAmount, setPaymentAmount] = useState('');
-  const [benefitType, setBenefitType] = useState('Food');
+  const [benefitType, setBenefitType] = useState('Food'); // "Food" como default
   const [description, setDescription] = useState('');
   const [paymentMessage, setPaymentMessage] = useState('');
   const [paymentLoading, setPaymentLoading] = useState(false);
@@ -48,7 +41,8 @@ const EstablishmentDashboard = () => {
       if (estProfileResult.ok) {
         setEstablishmentProfile(estProfileResult.ok);
         // Se o perfil for encontrado, buscar histórico de transações
-        const txHistoryResult = await actors.establishment.getTransactionHistory([BigInt(10)]);
+        // Passando BigInt(10) para o limite, pois 'Nat' no Motoko se traduz para 'BigInt' no JS.
+        const txHistoryResult = await actors.establishment.getTransactionHistory([BigInt(10)]); 
         setTransactionHistory(txHistoryResult);
       } else {
         // Perfil não encontrado, então setamos como null e limpamos o histórico
@@ -65,6 +59,10 @@ const EstablishmentDashboard = () => {
   };
 
   useEffect(() => {
+    // Atualiza o Principal sugerido para o campo de carteira quando o principal do AuthContext muda
+    if (principal && !registerWalletPrincipal) {
+      setRegisterWalletPrincipal(principal.toText());
+    }
     fetchEstablishmentData();
   }, [actors, principal]); // Dependências para re-executar quando atores ou principal mudarem
 
@@ -92,13 +90,14 @@ const EstablishmentDashboard = () => {
 
       // Converte as strings dos tipos de benefício para o formato de variante do Motoko
       const parsedAcceptedBenefitTypes = acceptedBenefitTypes.map(type => {
+        // Mapeia a string para o formato de variante Motoko (e.g., { Food: null })
         if (type === 'Food') return { Food: null };
         if (type === 'Culture') return { Culture: null };
         if (type === 'Health') return { Health: null };
         if (type === 'Transport') return { Transport: null };
         if (type === 'Education') return { Education: null };
         return null; // Caso um tipo inválido seja selecionado (deveria ser evitado pelo UI)
-      }).filter(Boolean); // Remove nulos
+      }).filter(Boolean); // Filtra quaisquer valores nulos resultantes de tipos inválidos
 
       const request = {
         name: registerName,
@@ -112,7 +111,7 @@ const EstablishmentDashboard = () => {
 
       if (result.ok) {
         setRegisterMessage("Estabelecimento registrado com sucesso!");
-        await fetchEstablishmentData(); // Recarrega os dados para exibir o dashboard
+        await fetchEstablishmentData(); // Recarrega os dados para exibir o dashboard completo
       } else {
         setRegisterMessage(`Falha ao registrar estabelecimento: ${result.err}`);
       }
@@ -125,7 +124,7 @@ const EstablishmentDashboard = () => {
   };
 
 
-  // Handler para o formulário de PAGAMENTO (mantido como estava)
+  // Handler para o formulário de PAGAMENTO
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
     setPaymentLoading(true);
@@ -147,6 +146,7 @@ const EstablishmentDashboard = () => {
         return;
       }
 
+      // Converte a string do select para o formato de variante do Motoko
       let selectedBenefitType;
       if (benefitType === 'Food') selectedBenefitType = { Food: null };
       else if (benefitType === 'Culture') selectedBenefitType = { Culture: null };
@@ -159,7 +159,8 @@ const EstablishmentDashboard = () => {
         return;
       }
 
-      const amountInNats = BigInt(Math.floor(parseFloat(paymentAmount) * 10000));
+      // Converte o valor decimal (string) para Nat (BigInt), multiplicando por 10000
+      const amountInNats = BigInt(Math.floor(parseFloat(paymentAmount) * 10000)); 
 
       const request = {
         workerId: workerId,
@@ -172,7 +173,8 @@ const EstablishmentDashboard = () => {
 
       if (result.ok) {
         setPaymentMessage(`Pagamento processado com sucesso! ID: ${result.ok}`);
-        await fetchEstablishmentData();
+        await fetchEstablishmentData(); // Recarrega os dados após o sucesso
+        // Limpa os campos do formulário
         setWorkerPrincipalInput('');
         setPaymentAmount('');
         setDescription('');
@@ -187,6 +189,7 @@ const EstablishmentDashboard = () => {
     }
   };
 
+  // Funções utilitárias para formatação
   const formatBenefitType = (type) => {
     if (typeof type === 'object' && type !== null) {
       return Object.keys(type)[0];
@@ -202,11 +205,13 @@ const EstablishmentDashboard = () => {
   };
 
   const formatAmount = (amount) => {
+    // Converte Nat (BigInt) para número e formata para 2 casas decimais
     return (Number(amount) / 10000).toFixed(2);
   };
 
   const formatTimestamp = (timestamp) => {
     if (timestamp === null) return 'N/A';
+    // Converte nanossegundos (Nat) para milissegundos para Date
     return new Date(Number(timestamp) / 1_000_000).toLocaleString();
   };
 
@@ -220,14 +225,16 @@ const EstablishmentDashboard = () => {
     }
   };
 
+  // Exibe "Carregando..." enquanto os dados estão sendo buscados
   if (loading) return <p>Carregando painel do estabelecimento...</p>;
-  if (error && !establishmentProfile) return <p style={{ color: 'red' }}>{error}</p>; // Mostra erro apenas se não há perfil
 
   return (
     <div>
       <h2>Painel do Estabelecimento - Bem-vindo(a), {profile?.name}!</h2>
-      {establishmentProfile ? (
-        // Se o perfil do estabelecimento EXISTE, mostra os detalhes e o formulário de pagamento
+      {error && !establishmentProfile && <p style={{ color: 'red' }}>{error}</p>} {/* Exibe o erro se não há perfil */}
+      
+      {establishmentProfile ? ( 
+        // Se o perfil do estabelecimento EXISTE no canister `establishment.mo`
         <div>
           <p>Nome do Estabelecimento: {establishmentProfile.name}</p>
           <p>País: {establishmentProfile.country}</p>
@@ -330,8 +337,8 @@ const EstablishmentDashboard = () => {
           )}
         </div>
       ) : (
-        // Se o perfil do estabelecimento NÃO EXISTE, mostra o formulário de registro
-        <div style={{ padding: '2rem', maxWidth: '500px', margin: 'auto', border: '1px solid #ccc', borderRadius: '8px' }}>
+        // Se o perfil do estabelecimento NÃO EXISTE no canister `establishment.mo`, mostra o formulário de registro
+         <div style={{ padding: '2rem', maxWidth: '500px', margin: 'auto', border: '1px solid #ccc', borderRadius: '8px' }}>
           <h3>Registrar Estabelecimento</h3>
           <p>Seu Principal: {principal?.toString()}</p>
           <form onSubmit={handleRegisterEstablishment}>
@@ -382,6 +389,7 @@ const EstablishmentDashboard = () => {
             </div>
             <div style={{ marginBottom: '1rem' }}>
               <label style={{ display: 'block', marginBottom: '0.5rem' }}>Tipos de Benefício Aceitos:</label>
+              {/* O `acceptedBenefitTypes` permite Food, Culture, Health, Transport, Education. */}
               {['Food', 'Culture', 'Health', 'Transport', 'Education'].map(type => (
                 <label key={type} style={{ marginRight: '1rem' }}>
                   <input

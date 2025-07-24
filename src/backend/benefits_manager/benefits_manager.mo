@@ -15,9 +15,8 @@ import Debug "mo:base/Debug";
 actor BenefitsManager {
     
     // --- Definições para Chamadas Cross-Canister ---
-    private let identityCanisterPrincipal : Principal = Principal.fromText("uzt4z-lp777-77774-qaabq-cai");
-    private let walletCanisterPrincipal : Principal = Principal.fromText("umunu-kh777-77774-qaaca-cai");
-
+    private let identityCanisterPrincipal : Principal = Principal.fromText("umunu-kh777-77774-qaaca-cai"); // <-- CORRIGIDO AQUI!
+    private let walletCanisterPrincipal : Principal = Principal.fromText("ulvla-h7777-77774-qaacq-cai"); // <-- VERIFIQUE ESTE TAMBÉM SE ESTÁ CERTO!
     private type IdentityAuth = actor {
         belongsToCompany : (user: Principal, companyId: Text) -> async Bool;
         hasRole: (user: Principal, role: UserRole) -> async Bool;
