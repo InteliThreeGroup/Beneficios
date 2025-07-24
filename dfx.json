@@ -1,22 +1,46 @@
 {
-  "version": 1,
   "canisters": {
-    "identity_auth": {
-      "type": "motoko",
-      "main": "src/identity_auth/identity_auth.mo"
-    },
-    "wallets": {
-      "type": "motoko",
-      "main": "src/wallets/wallets.mo"
+    "benefits_manager": {
+      "main": "src/backend/benefits_manager/benefits_manager.mo",
+      "type": "motoko"
     },
     "establishment": {
-      "type": "motoko",
-      "main": "src/establishment/establishment.mo"
+      "main": "src/backend/establishment/establishment.mo",
+      "type": "motoko"
     },
-    "benefits_manager": {
-      "type": "motoko",
-      "main": "src/benefits_manager/benefits_manager.mo"
+    "identity_auth": {
+      "main": "src/backend/identity_auth/identity_auth.mo",
+      "type": "motoko"
+    },
+    "wallets": {
+      "main": "src/backend/wallets/wallets.mo",
+      "type": "motoko"
+    },
+    "BENEFICIOS_frontend": {
+      "dependencies": [
+        "benefits_manager",
+        "establishment",
+        "identity_auth",
+        "wallets"
+      ],
+      "source": [
+        "src/frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "src/frontend"
+    },
+    "internet_identity": {
+      "type": "custom",
+      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
+      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz",
+      "specified_id": "rdmx6-jaaaa-aaaaa-aaadq-cai",
+      "remote": {
+        "id": {
+          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        }
+      },
+      "frontend": {}
     }
   },
-  "output_env_file": ".env"
+  "version": 1
 }
