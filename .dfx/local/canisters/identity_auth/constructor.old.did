@@ -13,16 +13,6 @@ type UserProfile =
    "principal": principal;
    role: UserRole;
  };
-type Result_2 = 
- variant {
-   err: text;
-   ok: text;
- };
-type Result_1 = 
- variant {
-   err: text;
-   ok: vec UserProfile;
- };
 type Result = 
  variant {
    err: text;
@@ -35,19 +25,8 @@ type CreateProfileRequest =
    role: UserRole;
  };
 service : {
-  belongsToCompany: (companyId: text) -> (bool) query;
+  belongsToCompany: (user: principal, companyId: text) -> (bool) query;
   createProfile: (request: CreateProfileRequest) -> (Result);
-  deactivateUser: (userPrincipal: principal) -> (Result_2);
   getProfile: () -> (Result) query;
-  getSystemStats: () ->
-   (record {
-      activeUsers: nat;
-      establishments: nat;
-      hrUsers: nat;
-      totalUsers: nat;
-      workers: nat;
-    }) query;
-  getUsersByCompany: (companyId: text) -> (Result_1);
-  hasRole: (role: UserRole) -> (bool) query;
-  updateProfile: (name: text, companyId: opt text) -> (Result);
+  hasRole: (user: principal, role: UserRole) -> (bool) query;
 }

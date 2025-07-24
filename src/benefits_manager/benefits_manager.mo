@@ -43,7 +43,6 @@ actor BenefitsManager {
     private stable var nextProgramId : Nat = 1;
     private var benefitPrograms = HashMap.HashMap<Text, BenefitProgram>(0, Text.equal, Text.hash);
     private var workerBenefits = HashMap.HashMap<Text, WorkerBenefit>(0, Text.equal, Text.hash);
-    // private var paymentTimers = HashMap.HashMap<Text, Timer.TimerId>(0, Text.equal, Text.hash); // Removido
 
     // --- Funções de Upgrade ---
     system func preupgrade() {
@@ -52,20 +51,24 @@ actor BenefitsManager {
     };
 
     system func postupgrade() {
-        // Reconstrução manual do HashMap para compatibilidade
         benefitPrograms := HashMap.HashMap<Text, BenefitProgram>(benefitProgramsEntries.size(), Text.equal, Text.hash);
-        for ((key, value) in benefitProgramsEntries.vals()) {
+        var i = 0;
+        while (i < benefitProgramsEntries.size()) {
+            let (key, value) = benefitProgramsEntries[i];
             benefitPrograms.put(key, value);
+            i += 1;
         };
 
         workerBenefits := HashMap.HashMap<Text, WorkerBenefit>(workerBenefitsEntries.size(), Text.equal, Text.hash);
-        for ((key, value) in workerBenefitsEntries.vals()) {
+        var j = 0;
+        while (j < workerBenefitsEntries.size()) {
+            let (key, value) = workerBenefitsEntries[j];
             workerBenefits.put(key, value);
+            j += 1;
         };
         
         benefitProgramsEntries := [];
         workerBenefitsEntries := [];
-        // recreatePaymentTimers(); // Removido
     };
     
     // --- Funções Privadas ---
@@ -82,10 +85,14 @@ actor BenefitsManager {
             case (?program) {
                 if (not program.isActive) { return; };
                 let eligibleWorkers = getEligibleWorkers(programId);
-                for (workerBenefit in eligibleWorkers.vals()) {
+                
+                var i = 0;
+                while (i < eligibleWorkers.size()) {
+                    let workerBenefit = eligibleWorkers[i];
                     let amountToCredit = Option.get(workerBenefit.customAmount, program.amountPerWorker);
                     let description = "Credito de beneficio: " # program.name;
                     let _ = await wallet.creditBalance(workerBenefit.workerId, program.benefitType, amountToCredit, program.id, description);
+                    i += 1;
                 };
             };
             case null {};
@@ -93,18 +100,18 @@ actor BenefitsManager {
     };
 
     private func getEligibleWorkers(programId: Text) : [WorkerBenefit] {
-        var workers : [WorkerBenefit] = [];
-        for ((_, workerBenefit) in workerBenefits.entries()) {
+        var result : [WorkerBenefit] = [];
+        let entries = Iter.toArray(workerBenefits.entries());
+        var i = 0;
+        while (i < entries.size()) {
+            let (_, workerBenefit) = entries[i];
             if (workerBenefit.programId == programId and workerBenefit.isActive) {
-                workers := Array.append(workers, [workerBenefit]);
+                result := Array.append(result, [workerBenefit]);
             };
+            i += 1;
         };
-        return workers;
+        return result;
     };
-    
-    // --- Funções de Timer Removidas ---
-    // A função schedulePayment foi removida
-    // A função recreatePaymentTimers foi removida
 
     // --- Funções Públicas ---
     public shared(msg) func createBenefitProgram(name: Text, benefitType: BenefitType, companyId: Text, amountPerWorker: Nat, frequency: PaymentFrequency, paymentDay: Nat) : async Result.Result<BenefitProgram, Text> {
@@ -119,7 +126,6 @@ actor BenefitsManager {
             createdAt = Time.now(); createdBy = msg.caller;
         };
         benefitPrograms.put(programId, program);
-        // let _ = schedulePayment(programId, program); // Removido
         return #ok(program);
     };
     
@@ -196,27 +202,35 @@ actor BenefitsManager {
     };
 
     public query func getCompanyBenefitPrograms(companyId: Text) : async [BenefitProgram] {
-        var programs : [BenefitProgram] = [];
-        for ((_, program) in benefitPrograms.entries()) {
+        var result : [BenefitProgram] = [];
+        let entries = Iter.toArray(benefitPrograms.entries());
+        var i = 0;
+        while (i < entries.size()) {
+            let (_, program) = entries[i];
             if (program.companyId == companyId) {
-                programs := Array.append(programs, [program]);
+                result := Array.append(result, [program]);
             };
+            i += 1;
         };
-        return programs;
+        return result;
     };
 
     public query func getWorkerBenefits(workerId: Principal) : async [BenefitProgram] {
-        var programs : [BenefitProgram] = [];
-        for ((_, workerBenefit) in workerBenefits.entries()) {
+        var result : [BenefitProgram] = [];
+        let entries = Iter.toArray(workerBenefits.entries());
+        var i = 0;
+        while (i < entries.size()) {
+            let (_, workerBenefit) = entries[i];
             if (workerBenefit.workerId == workerId and workerBenefit.isActive) {
                 switch(benefitPrograms.get(workerBenefit.programId)) {
                     case (?program) {
-                        programs := Array.append(programs, [program]);
+                        result := Array.append(result, [program]);
                     };
                     case null {};
                 };
             };
+            i += 1;
         };
-        return programs;
+        return result;
     };
 }

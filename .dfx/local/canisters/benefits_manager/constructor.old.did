@@ -45,6 +45,10 @@ type BenefitProgram =
    paymentDay: nat;
  };
 service : {
+  _debug_getWorkerAssignments: () -> (vec record {
+                                            text;
+                                            WorkerBenefit;
+                                          }) query;
   assignWorkerToBenefit: (workerId: principal, programId: text, customAmount:
    opt nat) -> (Result);
   createBenefitProgram: (name: text, benefitType: BenefitType, companyId:
@@ -53,7 +57,7 @@ service : {
   executeManualPayment: (programId: text) -> (Result);
   getBenefitProgram: (programId: text) -> (Result_1) query;
   getCompanyBenefitPrograms: (companyId: text) -> (vec BenefitProgram) query;
-  getWorkerBenefits: (workerId: principal) -> (vec WorkerBenefit) query;
+  getWorkerBenefits: (workerId: principal) -> (vec BenefitProgram) query;
   updateWorkerBenefitAmount: (workerId: principal, programId: text,
    newAmount: nat) -> (Result);
 }
