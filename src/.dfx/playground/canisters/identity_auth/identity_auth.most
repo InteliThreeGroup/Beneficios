@@ -1,0 +1,14 @@
+// Version: 1.0.0
+type UserProfile__267457090 =
+  {
+    companyId : ?Text;
+    createdAt : Int;
+    isActive : Bool;
+    name : Text;
+    principal : Principal;
+    role : UserRole__277180784
+  };
+type UserRole__277180784 = {#Establishment; #HR; #Worker};
+actor {
+  stable var userProfilesEntries : [(Principal, UserProfile__267457090)]
+};

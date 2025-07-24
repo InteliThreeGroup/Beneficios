@@ -1,0 +1,92 @@
+type WorkerWallet = 
+ record {
+   balances: vec BenefitBalance;
+   createdAt: int;
+   lastActivity: int;
+   totalBalance: nat;
+   workerId: principal;
+ };
+type TransactionType = 
+ variant {
+   Credit;
+   Debit;
+ };
+type Transaction = 
+ record {
+   amount: nat;
+   benefitType: BenefitType;
+   description: text;
+   establishmentId: opt principal;
+   establishmentName: opt text;
+   id: text;
+   programId: opt text;
+   timestamp: int;
+   transactionType: TransactionType;
+   workerId: principal;
+ };
+type Result_3 = 
+ variant {
+   err: text;
+   ok: text;
+ };
+type Result_2 = 
+ variant {
+   err: text;
+   ok: vec BenefitBalance;
+ };
+type Result_1 = 
+ variant {
+   err: text;
+   ok: WorkerWallet;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok:
+    record {
+      lastTransaction: opt int;
+      mostUsedBenefitType: opt BenefitType;
+      totalCredits: nat;
+      totalDebits: nat;
+      totalTransactions: nat;
+    };
+ };
+type PaymentRequest = 
+ record {
+   amount: nat;
+   benefitType: BenefitType;
+   description: text;
+   establishmentId: principal;
+   establishmentName: text;
+   workerId: principal;
+ };
+type BenefitType = 
+ variant {
+   Culture;
+   Education;
+   Food;
+   Health;
+   Transport;
+ };
+type BenefitBalance = 
+ record {
+   balance: nat;
+   benefitType: BenefitType;
+   lastUpdated: int;
+ };
+service : {
+  canMakePayment: (workerId: principal, benefitType: BenefitType, amount:
+   nat) -> (bool) query;
+  cleanupOldTransactions: (olderThanDays: nat) -> (nat);
+  createWallet: (workerId: principal) -> (Result_1);
+  creditBalance: (workerId: principal, benefitType: BenefitType, amount: 
+   nat, programId: text, description: text) -> (Result_3);
+  debitBalance: (paymentRequest: PaymentRequest) -> (Result_3);
+  getAllBalances: (workerId: principal) -> (Result_2) query;
+  getBenefitBalance: (workerId: principal, benefitType: BenefitType) ->
+   (nat) query;
+  getTransactionHistory: (workerId: principal, limit: opt nat) ->
+   (vec Transaction) query;
+  getWallet: (workerId: principal) -> (Result_1) query;
+  getWalletStats: (workerId: principal) -> (Result) query;
+}

@@ -1,0 +1,68 @@
+type WorkerWallet = 
+ record {
+   balances: vec BenefitBalance;
+   createdAt: int;
+   lastActivity: int;
+   totalBalance: nat;
+   workerId: principal;
+ };
+type TransactionType = 
+ variant {
+   Credit;
+   Debit;
+ };
+type Transaction = 
+ record {
+   amount: nat;
+   benefitType: BenefitType;
+   description: text;
+   establishmentId: opt principal;
+   establishmentName: opt text;
+   id: text;
+   programId: opt text;
+   timestamp: int;
+   transactionType: TransactionType;
+   workerId: principal;
+ };
+type Result_1 = 
+ variant {
+   err: text;
+   ok: text;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: WorkerWallet;
+ };
+type PaymentRequest = 
+ record {
+   amount: nat;
+   benefitType: BenefitType;
+   description: text;
+   establishmentId: principal;
+   establishmentName: text;
+   workerId: principal;
+ };
+type BenefitType = 
+ variant {
+   Culture;
+   Education;
+   Food;
+   Health;
+   Transport;
+ };
+type BenefitBalance = 
+ record {
+   balance: nat;
+   benefitType: BenefitType;
+   lastUpdated: int;
+ };
+service : {
+  createWallet: (workerId: principal) -> (Result);
+  creditBalance: (workerId: principal, benefitType: BenefitType, amount: 
+   nat, programId: text, description: text) -> (Result_1);
+  debitBalance: (paymentRequest: PaymentRequest) -> (Result_1);
+  getTransactionHistory: (workerId: principal, limit: opt nat) ->
+   (vec Transaction) query;
+  getWallet: (workerId: principal) -> (Result) query;
+}

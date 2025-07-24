@@ -1,0 +1,87 @@
+type Result_1 = 
+ variant {
+   err: text;
+   ok: text;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: EstablishmentProfile;
+ };
+type RegisterEstablishmentRequest = 
+ record {
+   acceptedBenefitTypes: vec BenefitType;
+   businessCode: text;
+   country: text;
+   name: text;
+   walletPrincipal: principal;
+ };
+type PaymentValidation = 
+ record {
+   amount: nat;
+   benefitType: BenefitType;
+   establishmentName: text;
+   isValid: bool;
+   reason: opt text;
+ };
+type PaymentTransaction = 
+ record {
+   amount: nat;
+   benefitType: BenefitType;
+   createdAt: int;
+   description: text;
+   establishmentId: principal;
+   id: text;
+   processedAt: opt int;
+   status: PaymentStatus;
+   workerId: principal;
+ };
+type PaymentStatus = 
+ variant {
+   Cancelled;
+   Completed;
+   Failed;
+   Pending;
+ };
+type PaymentRequest = 
+ record {
+   amount: nat;
+   benefitType: BenefitType;
+   description: text;
+   workerId: principal;
+ };
+type EstablishmentProfile = 
+ record {
+   acceptedBenefitTypes: vec BenefitType;
+   businessCode: text;
+   country: text;
+   createdAt: int;
+   id: principal;
+   isActive: bool;
+   lastActivity: int;
+   name: text;
+   totalReceived: nat;
+   totalTransactions: nat;
+   walletPrincipal: principal;
+ };
+type BenefitType = 
+ variant {
+   Culture;
+   Education;
+   Food;
+   Health;
+   Transport;
+ };
+service : {
+  cancelTransaction: (transactionId: text) -> (Result_1);
+  getAllActiveEstablishments: () -> (vec EstablishmentProfile) query;
+  getEstablishment: () -> (Result) query;
+  getTransactionHistory: (limit: opt nat) -> (vec PaymentTransaction) query;
+  processPayment: (request: PaymentRequest) -> (Result_1);
+  registerEstablishment: (request: RegisterEstablishmentRequest) -> (Result);
+  updateEstablishment: (name: opt text, acceptedBenefitTypes:
+   opt vec BenefitType, walletPrincipal: opt principal, isActive:
+   opt bool) -> (Result);
+  validatePayment: (establishmentId: principal, benefitType: BenefitType,
+   amount: nat) -> (PaymentValidation) query;
+}

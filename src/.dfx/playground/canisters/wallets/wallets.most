@@ -1,0 +1,32 @@
+// Version: 1.0.0
+type BenefitBalance__153394706 =
+  {balance : Nat; benefitType : BenefitType__542003699; lastUpdated : Int};
+type BenefitType__542003699 =
+  {#Culture; #Education; #Food; #Health; #Transport};
+type TransactionType__781670434 = {#Credit; #Debit};
+type Transaction__808456974 =
+  {
+    amount : Nat;
+    benefitType : BenefitType__542003699;
+    description : Text;
+    establishmentId : ?Principal;
+    establishmentName : ?Text;
+    id : Text;
+    programId : ?Text;
+    timestamp : Int;
+    transactionType : TransactionType__781670434;
+    workerId : Principal
+  };
+type WorkerWallet__192560743 =
+  {
+    balances : [BenefitBalance__153394706];
+    createdAt : Int;
+    lastActivity : Int;
+    totalBalance : Nat;
+    workerId : Principal
+  };
+actor {
+  stable var nextTransactionId : Nat;
+  stable var transactionsEntries : [(Text, Transaction__808456974)];
+  stable var walletsEntries : [(Principal, WorkerWallet__192560743)]
+};

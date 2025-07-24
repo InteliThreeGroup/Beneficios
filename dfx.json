@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "canisters": {
+    "identity_auth": {
+      "type": "motoko",
+      "main": "src/identity_auth/identity_auth.mo"
+    },
+    "wallets": {
+      "type": "motoko",
+      "main": "src/wallets/wallets.mo"
+    },
+    "establishment": {
+      "type": "motoko",
+      "main": "src/establishment/establishment.mo"
+    },
+    "benefits_manager": {
+      "type": "motoko",
+      "main": "src/benefits_manager/benefits_manager.mo"
+    }
+  },
+  "output_env_file": ".env"
+}
