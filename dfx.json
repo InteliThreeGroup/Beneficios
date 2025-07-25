@@ -16,6 +16,21 @@
       "main": "src/backend/wallets/wallets.mo",
       "type": "motoko"
     },
+    "reporting": {
+      "candid": "src/backend/reporting/reporting.did",
+      "type": "custom",
+      "wasm": "src/backend/reporting/target/wasm32-unknown-unknown/release/reporting.wasm",
+      "build": [
+    "cd src/backend/reporting && cargo build --target wasm32-unknown-unknown --release",
+    "cd src/backend/reporting && candid-extractor target/wasm32-unknown-unknown/release/reporting.wasm > reporting.did"
+  ],
+      "metadata": [
+        {
+          "name": "candid:service"
+        }
+      ],
+      "workspace": "src/backend/reporting"
+    },
     "BENEFICIOS_frontend": {
       "dependencies": [
         "benefits_manager",

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthClientContext';
 import { Principal } from '@dfinity/principal';
+import QRCode from "react-qr-code";
 
 const EstablishmentDashboard = () => {
   const { actors, principal, profile } = useAuth();
@@ -14,19 +15,31 @@ const EstablishmentDashboard = () => {
   const [registerName, setRegisterName] = useState('');
   const [registerCountry, setRegisterCountry] = useState('');
   const [registerBusinessCode, setRegisterBusinessCode] = useState('');
-  // Sugere o próprio principal logado como principal da carteira do estabelecimento
   const [registerWalletPrincipal, setRegisterWalletPrincipal] = useState(principal ? principal.toText() : ''); 
-  const [acceptedBenefitTypes, setAcceptedBenefitTypes] = useState(['Food']); // Array de strings para checkboxes, "Food" como default
+  const [acceptedBenefitTypes, setAcceptedBenefitTypes] = useState(['Food']); 
   const [registerLoading, setRegisterLoading] = useState(false);
   const [registerMessage, setRegisterMessage] = useState('');
 
-  // Estados para o formulário de PAGAMENTO (existente)
+  // Estados para o formulário de PAGAMENTO
   const [workerPrincipalInput, setWorkerPrincipalInput] = useState('');
   const [paymentAmount, setPaymentAmount] = useState('');
-  const [benefitType, setBenefitType] = useState('Food'); // "Food" como default
+  const [benefitType, setBenefitType] = useState('Food'); 
+  const [paymentCurrency, setPaymentCurrency] = useState('ICP'); // Moeda de Pagamento
   const [description, setDescription] = useState('');
   const [paymentMessage, setPaymentMessage] = useState('');
   const [paymentLoading, setPaymentLoading] = useState(false);
+
+  // Estados para Geração de QR Code
+  const [qrCodeData, setQrCodeData] = useState(''); // String que será codificada no QR Code
+  const [showQrCode, setShowQrCode] = useState(false); // Controla a exibição do QR Code
+
+  // Estados para Bitcoin (seção de demonstração)
+  const [btcAddressLoading, setBtcAddressLoading] = useState(false);
+  const [btcAddressMessage, setBtcAddressMessage] = useState('');
+  const [btcBalance, setBtcBalance] = useState('N/A');
+  const [btcBalanceLoading, setBtcBalanceLoading] = useState(false);
+  const [btcBalanceMessage, setBtcBalanceMessage] = useState('');
+
 
   // Função para buscar os dados do estabelecimento e histórico
   const fetchEstablishmentData = async () => {
@@ -40,12 +53,9 @@ const EstablishmentDashboard = () => {
       const estProfileResult = await actors.establishment.getEstablishment();
       if (estProfileResult.ok) {
         setEstablishmentProfile(estProfileResult.ok);
-        // Se o perfil for encontrado, buscar histórico de transações
-        // Passando BigInt(10) para o limite, pois 'Nat' no Motoko se traduz para 'BigInt' no JS.
         const txHistoryResult = await actors.establishment.getTransactionHistory([BigInt(10)]); 
         setTransactionHistory(txHistoryResult);
       } else {
-        // Perfil não encontrado, então setamos como null e limpamos o histórico
         setEstablishmentProfile(null);
         setTransactionHistory([]);
         setError(`Erro ao buscar perfil do estabelecimento: ${estProfileResult.err}`);
@@ -58,13 +68,42 @@ const EstablishmentDashboard = () => {
     }
   };
 
+  // Efeito para buscar dados e atualizar o principal da carteira no carregamento
   useEffect(() => {
-    // Atualiza o Principal sugerido para o campo de carteira quando o principal do AuthContext muda
     if (principal && !registerWalletPrincipal) {
       setRegisterWalletPrincipal(principal.toText());
     }
     fetchEstablishmentData();
-  }, [actors, principal]); // Dependências para re-executar quando atores ou principal mudarem
+  }, [actors, principal]);
+
+  // Efeito para buscar saldo BTC quando o perfil do estabelecimento é carregado/atualizado
+  useEffect(() => {
+    const fetchBtcData = async () => {
+      if (establishmentProfile && establishmentProfile.btcAddress && actors && actors.establishment) {
+        setBtcBalanceLoading(true);
+        setBtcBalanceMessage('');
+        try {
+          // Hardcoding 'regtest' para ambiente local
+          const btcBalanceResult = await actors.establishment.getBtcBalance({ regtest: null }, null); 
+          if (btcBalanceResult.ok) {
+            setBtcBalance(`${(Number(btcBalanceResult.ok) / 100_000_000).toFixed(8)} BTC`); // 1 BTC = 100,000,000 satoshis
+          } else {
+            setBtcBalanceMessage(`Falha ao buscar saldo BTC: ${btcBalanceResult.err}`);
+            setBtcBalance('0.00000000 BTC');
+          }
+        } catch (err) {
+          console.error("Erro ao buscar saldo BTC:", err);
+          setBtcBalanceMessage(`Erro inesperado ao buscar saldo BTC: ${err.message}`);
+          setBtcBalance('N/A');
+        } finally {
+          setBtcBalanceLoading(false);
+        }
+      } else {
+        setBtcBalance('N/A');
+      }
+    };
+    fetchBtcData();
+  }, [establishmentProfile, actors]); 
 
   // Handler para o formulário de REGISTRO do estabelecimento
   const handleRegisterEstablishment = async (e) => {
@@ -88,16 +127,14 @@ const EstablishmentDashboard = () => {
         return;
       }
 
-      // Converte as strings dos tipos de benefício para o formato de variante do Motoko
       const parsedAcceptedBenefitTypes = acceptedBenefitTypes.map(type => {
-        // Mapeia a string para o formato de variante Motoko (e.g., { Food: null })
         if (type === 'Food') return { Food: null };
         if (type === 'Culture') return { Culture: null };
         if (type === 'Health') return { Health: null };
         if (type === 'Transport') return { Transport: null };
         if (type === 'Education') return { Education: null };
-        return null; // Caso um tipo inválido seja selecionado (deveria ser evitado pelo UI)
-      }).filter(Boolean); // Filtra quaisquer valores nulos resultantes de tipos inválidos
+        return null; 
+      }).filter(Boolean);
 
       const request = {
         name: registerName,
@@ -111,7 +148,7 @@ const EstablishmentDashboard = () => {
 
       if (result.ok) {
         setRegisterMessage("Estabelecimento registrado com sucesso!");
-        await fetchEstablishmentData(); // Recarrega os dados para exibir o dashboard completo
+        await fetchEstablishmentData(); 
       } else {
         setRegisterMessage(`Falha ao registrar estabelecimento: ${result.err}`);
       }
@@ -124,11 +161,13 @@ const EstablishmentDashboard = () => {
   };
 
 
-  // Handler para o formulário de PAGAMENTO
+  // Handler para o formulário de PAGAMENTO (MODIFICADO PARA GERAR QR CODE)
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
     setPaymentLoading(true);
     setPaymentMessage('');
+    setQrCodeData(''); // Limpa QR code anterior
+    setShowQrCode(false); // Esconde QR code anterior
 
     if (!actors || !actors.establishment) {
       setPaymentMessage("Erro: Atores do canister não carregados.");
@@ -136,58 +175,72 @@ const EstablishmentDashboard = () => {
       return;
     }
 
-    try {
-      let workerId;
-      try {
-        workerId = Principal.fromText(workerPrincipalInput);
-      } catch (err) {
-        setPaymentMessage("Erro: Principal do trabalhador inválido.");
-        setPaymentLoading(false);
-        return;
-      }
-
-      // Converte a string do select para o formato de variante do Motoko
-      let selectedBenefitType;
-      if (benefitType === 'Food') selectedBenefitType = { Food: null };
-      else if (benefitType === 'Culture') selectedBenefitType = { Culture: null };
-      else if (benefitType === 'Health') selectedBenefitType = { Health: null };
-      else if (benefitType === 'Transport') selectedBenefitType = { Transport: null };
-      else if (benefitType === 'Education') selectedBenefitType = { Education: null };
-      else {
-        setPaymentMessage("Erro: Tipo de benefício inválido.");
-        setPaymentLoading(false);
-        return;
-      }
-
-      // Converte o valor decimal (string) para Nat (BigInt), multiplicando por 10000
-      const amountInNats = BigInt(Math.floor(parseFloat(paymentAmount) * 10000)); 
-
-      const request = {
-        workerId: workerId,
-        benefitType: selectedBenefitType,
-        amount: amountInNats,
-        description: description,
-      };
-
-      const result = await actors.establishment.processPayment(request);
-
-      if (result.ok) {
-        setPaymentMessage(`Pagamento processado com sucesso! ID: ${result.ok}`);
-        await fetchEstablishmentData(); // Recarrega os dados após o sucesso
-        // Limpa os campos do formulário
-        setWorkerPrincipalInput('');
-        setPaymentAmount('');
-        setDescription('');
-      } else {
-        setPaymentMessage(`Falha no pagamento: ${result.err}`);
-      }
-    } catch (err) {
-      console.error("Erro ao processar pagamento:", err);
-      setPaymentMessage(`Erro inesperado ao processar pagamento: ${err.message}`);
-    } finally {
+    // Lógica para Pagamento em BTC (apenas mensagem de placeholder para MVP)
+    if (paymentCurrency === 'BTC') {
+      setPaymentMessage("Pagamento em Bitcoin (BTC) selecionado. Esta funcionalidade de débito real ainda está em desenvolvimento!");
       setPaymentLoading(false);
+      return; 
+    }
+
+    // Lógica para Pagamento em ICP / Geração de QR Code
+    try {
+      if (!workerPrincipalInput || !paymentAmount || !benefitType || !description) {
+        setPaymentMessage("Por favor, preencha todos os campos do pagamento.");
+        setPaymentLoading(false);
+        return;
+      }
+
+      // Prepara dados para o QR Code (e para o processo real depois que o trabalhador escanear)
+      const qrData = {
+        establishmentId: principal.toText(), // Principal do estabelecimento
+        amount: parseFloat(paymentAmount), // Valor em ICP (decimal)
+        benefitType: benefitType,
+        description: description,
+        // Em um ambiente de produção, adicionaríamos um nonce ou transactionId para segurança
+      };
+      
+      const qrCodeString = JSON.stringify(qrData); // Codifica os dados como JSON
+      setQrCodeData(qrCodeString); // Atualiza o estado para o QR Code
+      setShowQrCode(true); // Mostra o QR Code
+
+      setPaymentMessage("QR Code gerado. Peça ao trabalhador para escanear e confirmar o pagamento.");
+      setPaymentLoading(false);
+      // A chamada ao canister establishment.processPayment não é feita aqui
+      // Ela será feita pelo WorkerDashboard, através do wallets.debitBalance
+      
+    } catch (err) {
+      console.error("Erro ao gerar QR Code de pagamento:", err);
+      setPaymentMessage(`Erro inesperado ao gerar QR Code: ${err.message}`);
+    } finally {
+      // paymentLoading já está false aqui
     }
   };
+
+  // Handler para Geração de Endereço BTC
+  const handleGenerateBtcAddress = async () => {
+    setBtcAddressLoading(true);
+    setBtcAddressMessage('');
+    if (!actors || !actors.establishment) {
+      setBtcAddressMessage("Erro: Atores do canister não carregados.");
+      setBtcAddressLoading(false);
+      return;
+    }
+    try {
+      const result = await actors.establishment.generateBtcAddress();
+      if (result.ok) {
+        setBtcAddressMessage(`Endereço BTC gerado: ${result.ok}`);
+        await fetchEstablishmentData(); // Atualiza o perfil para mostrar o endereço
+      } else {
+        setBtcAddressMessage(`Falha ao gerar endereço BTC: ${result.err}`);
+      }
+    } catch (err) {
+      console.error("Erro ao gerar endereço BTC:", err);
+      setBtcAddressMessage(`Erro inesperado: ${err.message}`);
+    } finally {
+      setBtcAddressLoading(false);
+    }
+  };
+
 
   // Funções utilitárias para formatação
   const formatBenefitType = (type) => {
@@ -205,17 +258,14 @@ const EstablishmentDashboard = () => {
   };
 
   const formatAmount = (amount) => {
-    // Converte Nat (BigInt) para número e formata para 2 casas decimais
     return (Number(amount) / 10000).toFixed(2);
   };
 
   const formatTimestamp = (timestamp) => {
     if (timestamp === null) return 'N/A';
-    // Converte nanossegundos (Nat) para milissegundos para Date
     return new Date(Number(timestamp) / 1_000_000).toLocaleString();
   };
 
-  // Handler para checkboxes de tipos de benefício aceitos
   const handleBenefitTypeChange = (e) => {
     const { value, checked } = e.target;
     if (checked) {
@@ -225,16 +275,14 @@ const EstablishmentDashboard = () => {
     }
   };
 
-  // Exibe "Carregando..." enquanto os dados estão sendo buscados
   if (loading) return <p>Carregando painel do estabelecimento...</p>;
 
   return (
     <div>
       <h2>Painel do Estabelecimento - Bem-vindo(a), {profile?.name}!</h2>
-      {error && !establishmentProfile && <p style={{ color: 'red' }}>{error}</p>} {/* Exibe o erro se não há perfil */}
+      {error && !establishmentProfile && <p className="message-error">{error}</p>}
       
       {establishmentProfile ? ( 
-        // Se o perfil do estabelecimento EXISTE no canister `establishment.mo`
         <div>
           <p>Nome do Estabelecimento: {establishmentProfile.name}</p>
           <p>País: {establishmentProfile.country}</p>
@@ -242,22 +290,49 @@ const EstablishmentDashboard = () => {
           <p>Tipos de Benefício Aceitos: {establishmentProfile.acceptedBenefitTypes.map(formatBenefitType).join(', ')}</p>
           <p>Total Recebido: {formatAmount(establishmentProfile.totalReceived)} ICP</p>
 
-          <h3>Processar Pagamento</h3>
+          {/* Bloco de Integração Bitcoin */}
+          <div className="btc-integration-block">
+            <h3>Integração Bitcoin (BTC)</h3>
+            {establishmentProfile.btcAddress ? (
+              <div>
+                <p><strong>Endereço Bitcoin:</strong> <span style={{ wordBreak: 'break-all' }}>{establishmentProfile.btcAddress}</span></p>
+                <p><strong>Saldo Bitcoin:</strong> {btcBalanceLoading ? 'Carregando...' : btcBalance}</p>
+                {btcBalanceMessage && <p className="message-error">{btcBalanceMessage}</p>}
+                <small style={{ color: '#666' }}>* Saldo BTC é lido da rede Bitcoin via ICP. Em Regtest, você precisa minerar blocos para receber BTC.</small>
+              </div>
+            ) : (
+              <div>
+                <p>Para aceitar pagamentos em Bitcoin, gere um endereço BTC para o seu estabelecimento.</p>
+                <button
+                  onClick={handleGenerateBtcAddress}
+                  disabled={btcAddressLoading}
+                  style={{ padding: '0.75rem 1.5rem', backgroundColor: '#ff9900', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                >
+                  {btcAddressLoading ? 'Gerando...' : 'Gerar Endereço Bitcoin'}
+                </button>
+                {btcAddressMessage && <p className={btcAddressMessage.startsWith('Falha') ? 'message-error' : 'message-success'}>{btcAddressMessage}</p>}
+                <small style={{ display: 'block', marginTop: '0.5rem', color: '#666' }}>* Isso criará um endereço Bitcoin para este estabelecimento no canister.</small>
+              </div>
+            )}
+          </div>
+
+
+          <h3>Gerar QR Code de Pagamento (ICP)</h3>
           <form onSubmit={handlePaymentSubmit} style={{ border: '1px solid #eee', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
+            <p>Preencha os detalhes do pagamento e clique em "Gerar QR Code" para o trabalhador escanear e confirmar.</p>
             <div style={{ marginBottom: '1rem' }}>
-              <label htmlFor="workerPrincipal" style={{ display: 'block', marginBottom: '0.5rem' }}>Principal do Trabalhador:</label>
+              <label htmlFor="workerPrincipal" style={{ display: 'block', marginBottom: '0.5rem' }}>Principal do Trabalhador (para referência no QR Code):</label>
               <input
                 type="text"
                 id="workerPrincipal"
                 value={workerPrincipalInput}
                 onChange={(e) => setWorkerPrincipalInput(e.target.value)}
-                required
-                placeholder="Ex: <principal-do-trabalhador>"
+                placeholder="Obrigatório para processar o pagamento"
                 style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ddd' }}
               />
             </div>
             <div style={{ marginBottom: '1rem' }}>
-              <label htmlFor="paymentAmount" style={{ display: 'block', marginBottom: '0.5rem' }}>Quantia (ICP):</label>
+              <label htmlFor="paymentAmount" style={{ display: 'block', marginBottom: '0.5rem' }}>Quantia:</label>
               <input
                 type="number"
                 id="paymentAmount"
@@ -269,12 +344,30 @@ const EstablishmentDashboard = () => {
               />
             </div>
             <div style={{ marginBottom: '1rem' }}>
-              <label htmlFor="benefitType" style={{ display: 'block', marginBottom: '0.5rem' }}>Tipo de Benefício:</label>
+              <label htmlFor="paymentCurrency" style={{ display: 'block', marginBottom: '0.5rem' }}>Moeda de Pagamento:</label>
+              <select
+                id="paymentCurrency"
+                value={paymentCurrency}
+                onChange={(e) => setPaymentCurrency(e.target.value)}
+                style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ddd' }}
+              >
+                <option value="ICP">ICP (Benefício)</option>
+                <option value="BTC">Bitcoin (BTC) - Futuro</option>
+              </select>
+            </div>
+            {paymentCurrency === 'BTC' && (
+                <p className="message-warning" style={{ fontSize: '0.9em', marginTop: '-0.5rem', marginBottom: '1rem' }}>
+                    A integração direta com Bitcoin (BTC) é possível através do ICP como funcionalidade futura para pagamentos! (O débito real não está implementado neste MVP)
+                </p>
+            )}
+            <div style={{ marginBottom: '1rem' }}>
+              <label htmlFor="benefitType" style={{ display: 'block', marginBottom: '0.5rem' }}>Tipo de Benefício (apenas para ICP):</label>
               <select
                 id="benefitType"
                 value={benefitType}
                 onChange={(e) => setBenefitType(e.target.value)}
-                style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ddd' }}
+                disabled={paymentCurrency === 'BTC'}
+                style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ddd', backgroundColor: paymentCurrency === 'BTC' ? '#f0f0f0' : 'white' }}
               >
                 <option value="Food">Alimentação</option>
                 <option value="Culture">Cultura</option>
@@ -291,17 +384,36 @@ const EstablishmentDashboard = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Ex: Compra no supermercado"
+                required
                 style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ddd' }}
               />
             </div>
             <button
               type="submit"
-              disabled={paymentLoading}
+              disabled={paymentLoading || showQrCode}
               style={{ padding: '0.75rem 1.5rem', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
             >
-              {paymentLoading ? 'Processando...' : 'Processar Pagamento'}
+              {paymentLoading ? 'Gerando QR Code...' : 'Gerar QR Code de Pagamento'}
             </button>
-            {paymentMessage && <p style={{ marginTop: '1rem', color: paymentMessage.startsWith('Falha') ? 'red' : 'green' }}>{paymentMessage}</p>}
+            {paymentMessage && <p className={paymentMessage.startsWith('Falha') ? 'message-error' : 'message-success'}>{paymentMessage}</p>}
+
+            {/* Exibição do QR Code */}
+            {showQrCode && qrCodeData && (
+              <div style={{ marginTop: '20px', textAlign: 'center', border: '1px solid #eee', padding: '15px', borderRadius: '8px', backgroundColor: '#fdfdfd' }}>
+                <h4>QR Code para Pagamento</h4>
+                <QRCode value={qrCodeData} size={256} />
+                <p style={{ wordBreak: 'break-all', fontSize: '0.8em', marginTop: '10px' }}>
+                  **Conteúdo do QR Code:** `{qrCodeData}`
+                  <button 
+                    onClick={() => navigator.clipboard.writeText(qrCodeData)}
+                    style={{ marginLeft: '10px', padding: '5px 10px', fontSize: '0.7em', backgroundColor: '#6c757d', color: 'white' }}
+                  >
+                    Copiar
+                  </button>
+                </p>
+                <p style={{ color: '#007bff' }}>Peça ao trabalhador para colar o conteúdo do QR Code em seu aplicativo para confirmar o pagamento.</p>
+              </div>
+            )}
           </form>
 
           <h3>Histórico de Transações Recebidas</h3>
@@ -337,7 +449,7 @@ const EstablishmentDashboard = () => {
           )}
         </div>
       ) : (
-        // Se o perfil do estabelecimento NÃO EXISTE no canister `establishment.mo`, mostra o formulário de registro
+        // Se o perfil do estabelecimento NÃO EXISTE (formulário de registro)
          <div style={{ padding: '2rem', maxWidth: '500px', margin: 'auto', border: '1px solid #ccc', borderRadius: '8px' }}>
           <h3>Registrar Estabelecimento</h3>
           <p>Seu Principal: {principal?.toString()}</p>
@@ -383,13 +495,12 @@ const EstablishmentDashboard = () => {
                 value={registerWalletPrincipal}
                 onChange={(e) => setRegisterWalletPrincipal(e.target.value)}
                 required
-                readOnly // Geralmente, é o mesmo principal do usuário logado
+                readOnly
                 style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ddd', backgroundColor: '#f0f0f0' }}
               />
             </div>
             <div style={{ marginBottom: '1rem' }}>
               <label style={{ display: 'block', marginBottom: '0.5rem' }}>Tipos de Benefício Aceitos:</label>
-              {/* O `acceptedBenefitTypes` permite Food, Culture, Health, Transport, Education. */}
               {['Food', 'Culture', 'Health', 'Transport', 'Education'].map(type => (
                 <label key={type} style={{ marginRight: '1rem' }}>
                   <input
@@ -409,7 +520,7 @@ const EstablishmentDashboard = () => {
             >
               {registerLoading ? 'Registrando...' : 'Registrar Estabelecimento'}
             </button>
-            {registerMessage && <p style={{ marginTop: '1rem', color: registerMessage.startsWith('Falha') ? 'red' : 'green' }}>{registerMessage}</p>}
+            {registerMessage && <p className={registerMessage.startsWith('Falha') ? 'message-error' : 'message-success'}>{registerMessage}</p>}
           </form>
         </div>
       )}

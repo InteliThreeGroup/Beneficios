@@ -1,0 +1,40 @@
+type BenefitType = variant { Culture; Food; Health; Transport; Education };
+type PaymentStatus = variant { Failed; Cancelled; Completed; Pending };
+type PaymentTransaction = record {
+  id : text;
+  status : PaymentStatus;
+  benefit_type : BenefitType;
+  establishment_id : principal;
+  description : text;
+  created_at : int64;
+  worker_id : principal;
+  processed_at : opt int64;
+  amount : nat;
+};
+type Result = variant { Ok : vec PaymentTransaction; Err : text };
+type Result_1 = variant { Ok : vec Transaction; Err : text };
+type Transaction = record {
+  id : text;
+  benefit_type : BenefitType;
+  transaction_type : TransactionType;
+  establishment_id : opt principal;
+  program_id : opt text;
+  establishment_name : opt text;
+  description : text;
+  worker_id : principal;
+  timestamp : int64;
+  amount : nat;
+};
+type TransactionType = variant { Debit; Credit };
+service : (principal, principal, principal) -> {
+  __candid_method_get_all_establishment_transactions : (principal, opt nat) -> (
+      Result,
+    ) query;
+  __candid_method_get_all_worker_transactions : (principal, opt nat) -> (
+      Result_1,
+    ) query;
+  __candid_method_set_authorized_caller : (principal) -> ();
+  get_all_establishment_transactions : (principal, opt nat) -> (Result) query;
+  get_all_worker_transactions : (principal, opt nat) -> (Result_1) query;
+  set_authorized_caller : (principal) -> ();
+}

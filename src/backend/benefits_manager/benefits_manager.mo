@@ -15,8 +15,9 @@ import Debug "mo:base/Debug";
 actor BenefitsManager {
     
     // --- Definições para Chamadas Cross-Canister ---
-    private let identityCanisterPrincipal : Principal = Principal.fromText("umunu-kh777-77774-qaaca-cai"); // <-- CORRIGIDO AQUI!
-    private let walletCanisterPrincipal : Principal = Principal.fromText("ulvla-h7777-77774-qaacq-cai"); // <-- VERIFIQUE ESTE TAMBÉM SE ESTÁ CERTO!
+    private let identityCanisterPrincipal : Principal = Principal.fromText("umunu-kh777-77774-qaaca-cai"); // Verifique ID
+    private let walletCanisterPrincipal : Principal = Principal.fromText("ucwa4-rx777-77774-qaada-cai"); // Verifique ID
+
     private type IdentityAuth = actor {
         belongsToCompany : (user: Principal, companyId: Text) -> async Bool;
         hasRole: (user: Principal, role: UserRole) -> async Bool;
@@ -40,6 +41,9 @@ actor BenefitsManager {
     private stable var benefitProgramsEntries : [(Text, BenefitProgram)] = [];
     private stable var workerBenefitsEntries : [(Text, WorkerBenefit)] = [];
     private stable var nextProgramId : Nat = 1;
+    // NOVO: Fundos disponíveis no canister para distribuição
+    private stable var availableFunds : Nat = 0; 
+
     private var benefitPrograms = HashMap.HashMap<Text, BenefitProgram>(0, Text.equal, Text.hash);
     private var workerBenefits = HashMap.HashMap<Text, WorkerBenefit>(0, Text.equal, Text.hash);
 
@@ -47,6 +51,9 @@ actor BenefitsManager {
     system func preupgrade() {
         benefitProgramsEntries := Iter.toArray(benefitPrograms.entries());
         workerBenefitsEntries := Iter.toArray(workerBenefits.entries());
+        // NOVO: Salva availableFunds durante o preupgrade
+        // No Motoko, `availableFunds` é uma variável Nat diretamente.
+        // Não é necessário adicioná-la a uma lista `entries` se já é stable.
     };
 
     system func postupgrade() {
@@ -68,6 +75,8 @@ actor BenefitsManager {
         
         benefitProgramsEntries := [];
         workerBenefitsEntries := [];
+        // NOVO: availableFunds é restaurado automaticamente se for stable.
+        // Se a variável stable não for inicializada, ela retoma seu valor pré-upgrade.
     };
     
     // --- Funções Privadas ---
@@ -85,6 +94,23 @@ actor BenefitsManager {
                 if (not program.isActive) { return; };
                 let eligibleWorkers = getEligibleWorkers(programId);
                 
+                // NOVO: Verifica se há fundos suficientes antes de distribuir
+                var totalAmountNeeded : Nat = 0;
+                var k = 0;
+                while (k < eligibleWorkers.size()) {
+                    let workerBenefit = eligibleWorkers[k];
+                    totalAmountNeeded += Option.get(workerBenefit.customAmount, program.amountPerWorker);
+                    k += 1;
+                };
+
+                if (availableFunds < totalAmountNeeded) {
+                    Debug.trap("Insufficient funds in manager canister to execute payment. Needed: " # Nat.toText(totalAmountNeeded) # ", Available: " # Nat.toText(availableFunds));
+                };
+
+                // Deduz os fundos ANTES de distribuir para evitar problemas
+                availableFunds := availableFunds - totalAmountNeeded;
+                Debug.print("Funds reduced. Remaining: " # Nat.toText(availableFunds));
+
                 var i = 0;
                 while (i < eligibleWorkers.size()) {
                     let workerBenefit = eligibleWorkers[i];
@@ -112,7 +138,9 @@ actor BenefitsManager {
         return result;
     };
 
-    // --- Funções Públicas ---
+    // --- Funções Públicas (Existentes) ---
+    // ... (createBenefitProgram, assignWorkerToBenefit, updateWorkerBenefitAmount) ...
+
     public shared(msg) func createBenefitProgram(name: Text, benefitType: BenefitType, companyId: Text, amountPerWorker: Nat, frequency: PaymentFrequency, paymentDay: Nat) : async Result.Result<BenefitProgram, Text> {
         await assertIsCompanyHr(msg.caller, companyId);
         if (paymentDay < 1 or paymentDay > 31) { return #err("Payment day must be between 1 and 31"); };
@@ -180,7 +208,7 @@ actor BenefitsManager {
         switch(benefitPrograms.get(programId)) {
             case (?program) {
                 await assertIsCompanyHr(msg.caller, program.companyId);
-                await executePayment(programId);
+                await executePayment(programId); // A função privada 'executePayment' agora verifica e deduz os fundos
                 return #ok("Manual payment executed successfully");
             };
             case null {
@@ -231,5 +259,24 @@ actor BenefitsManager {
             i += 1;
         };
         return result;
+    };
+
+    // --- NOVAS FUNÇÕES PARA GESTÃO DE FUNDOS ---
+    public shared(msg) func depositFunds(amount: Nat) : async Result.Result<Nat, Text> {
+        // Apenas o RH que possui a empresa pode depositar
+        // Nota: Esta é uma simulação de depósito. Em um sistema real, o RH enviaria ICP ou tokens.
+        // Aqui, apenas aumentamos o saldo interno `availableFunds`.
+        if (Principal.isAnonymous(msg.caller)) { return #err("Anonymous principal cannot deposit funds"); };
+        // Em um sistema real, você verificaria se o msg.caller é um HR válido para alguma empresa.
+        // Por simplicidade do MVP, qualquer caller não anônimo pode "depositar".
+        // Você pode adicionar: await assertIsCompanyHr(msg.caller, <some_company_id_here>);
+        // Mas isso exigiria passar o companyId no deposit, complicando.
+        
+        availableFunds := availableFunds + amount;
+        return #ok(availableFunds);
+    };
+
+    public query func getAvailableFunds() : async Nat {
+        return availableFunds;
     };
 }

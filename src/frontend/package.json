@@ -11,13 +11,18 @@
     "format": "prettier --write \"src/**/*.{json,js,jsx,ts,tsx,css,scss}\""
   },
   "dependencies": {
+    "@blackbox-vision/react-qr-reader": "^5.0.0",
     "@dfinity/agent": "^1.4.0",
     "@dfinity/auth-client": "^1.4.0",
     "@dfinity/candid": "^1.0.1",
     "@dfinity/identity": "^1.0.1",
     "@dfinity/principal": "^1.0.1",
+    "@fortawesome/fontawesome-free": "^7.0.0",
+    "qrcode.react": "^4.2.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-qr-code": "^2.0.18",
+    "react-router-dom": "^7.7.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.14",

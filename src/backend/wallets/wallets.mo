@@ -9,6 +9,7 @@ import Text "mo:base/Text";
 import Int "mo:base/Int";
 import Iter "mo:base/Iter";
 import Nat "mo:base/Nat";
+import Debug "mo:base/Debug";
 
 actor Wallet {
     
@@ -62,6 +63,16 @@ actor Wallet {
         description: Text;
     };
 
+    // NOVO TIPO: Dados que o Wallets enviará para o Establishment para registrar o pagamento
+    public type ReceivedPaymentRequest = {
+        transactionId: Text; // ID da transação no wallets (para rastreamento)
+        workerId: Principal;
+        establishmentId: Principal;
+        benefitType: BenefitType;
+        amount: Nat;
+        description: Text;
+    };
+
     // Estado do canister
     private stable var walletsEntries : [(Principal, WorkerWallet)] = [];
     private stable var transactionsEntries : [(Text, Transaction)] = [];
@@ -69,6 +80,17 @@ actor Wallet {
 
     private var wallets = HashMap.HashMap<Principal, WorkerWallet>(0, Principal.equal, Principal.hash);
     private var transactions = HashMap.HashMap<Text, Transaction>(0, Text.equal, Text.hash);
+
+    private let reportingCanisterPrincipal : Principal = Principal.fromText("ulvla-h7777-77774-qaacq-cai"); // <<< ATUALIZE DEPOIS QUE O REPORTING FOR DEPLOYED
+
+    // NOVO: Definição do Principal do Canister Establishment para chamada cross-canister
+    private let establishmentCanisterPrincipal : Principal = Principal.fromText("uzt4z-lp777-77774-qaabq-cai"); // <<< ATUALIZE ESTE ID!
+
+    // NOVO: Definição da interface do Canister Establishment para chamada
+    private type Establishment = actor {
+        // Nova função no Establishment para registrar o pagamento recebido
+        registerReceivedPayment: (paymentData: ReceivedPaymentRequest) -> async Result.Result<Text, Text>;
+    };
 
     // Funções de Upgrade
     system func preupgrade() {
@@ -169,18 +191,19 @@ actor Wallet {
         }
     };
 
+    
     public shared(msg) func debitBalance(paymentRequest: PaymentRequest) : async Result.Result<Text, Text> {
         switch (wallets.get(paymentRequest.workerId)) {
             case (?wallet) {
                 let currentBalance = getBenefitTypeBalance(wallet.balances, paymentRequest.benefitType);
-                
+
                 if (currentBalance < paymentRequest.amount) {
                     return #err("Insufficient balance for " # benefitTypeToText(paymentRequest.benefitType));
                 };
-                
+
                 let updatedBalances = updateBenefitBalance(wallet.balances, paymentRequest.benefitType, paymentRequest.amount, false);
                 let newTotalBalance = calculateTotalBalance(updatedBalances);
-                
+
                 let updatedWallet: WorkerWallet = {
                     workerId = wallet.workerId;
                     balances = updatedBalances;
@@ -188,12 +211,12 @@ actor Wallet {
                     createdAt = wallet.createdAt;
                     lastActivity = Time.now();
                 };
-                
+
                 wallets.put(paymentRequest.workerId, updatedWallet);
-                
+
                 let txIdText = "tx_" # Nat.toText(nextTransactionId);
                 nextTransactionId += 1;
-                
+
                 let newTransaction: Transaction = {
                     id = txIdText;
                     workerId = paymentRequest.workerId;
@@ -206,15 +229,45 @@ actor Wallet {
                     timestamp = Time.now();
                     description = paymentRequest.description;
                 };
-                
+
                 transactions.put(txIdText, newTransaction);
-                return #ok(txIdText);
+
+                // --- NOVA LÓGICA: Notificar o canister Establishment sobre o pagamento recebido ---
+                let receivedRequest : ReceivedPaymentRequest = {
+                    transactionId = txIdText;
+                    workerId = paymentRequest.workerId;
+                    establishmentId = paymentRequest.establishmentId;
+                    benefitType = paymentRequest.benefitType;
+                    amount = paymentRequest.amount;
+                    description = paymentRequest.description;
+                };
+
+                // Cria o ator para o canister establishment
+                let establishment = actor(Principal.toText(establishmentCanisterPrincipal)) : Establishment;
+                let notificationResult = await establishment.registerReceivedPayment(receivedRequest);
+
+                switch (notificationResult) {
+                    case (#ok(_)) {
+                        Debug.print("Payment registered successfully by establishment.");
+                        return #ok(txIdText); // Retorna o ID da transação do wallets
+                    };
+                    case (#err(errMsg)) {
+                        // Se a notificação falhar, o débito na carteira do worker já ocorreu.
+                        // Em um sistema robusto, isso exigiria compensação ou um mecanismo de retry.
+                        // Para o MVP, apenas registramos o erro e ainda retornamos sucesso para o débito da carteira.
+                        Debug.print("Failed to register payment with establishment: " # errMsg);
+                        return #err("Payment debited, but failed to register with establishment: " # errMsg);
+                    };
+                };
+                // --- FIM DA NOVA LÓGICA ---
+
             };
             case null {
                 return #err("Wallet not found");
             };
         }
     };
+
 
     public query func getTransactionHistory(workerId: Principal, limit: ?Nat) : async [Transaction] {
         let maxResults = Option.get(limit, 50);
@@ -234,6 +287,33 @@ actor Wallet {
             } else {
                 return #equal;
             };
+        });
+        
+        var finalResult : [Transaction] = [];
+        var i = 0;
+        while (i < asArray.size() and i < maxResults) {
+            finalResult := Array.append(finalResult, [asArray[i]]);
+            i += 1;
+        };
+
+        return finalResult;
+    };
+
+ public query func getTransactionsForReporting(workerId: Principal, limit: ?Nat) : async [Transaction] {
+        // Isso é um placeholder simples. Em um sistema real, você adicionaria uma verificação
+        // para garantir que msg.caller é o reportingCanisterPrincipal.
+        // if (msg.caller != reportingCanisterPrincipal) { Debug.trap("Unauthorized access"); };
+
+        let maxResults = Option.get(limit, 50);
+
+        let filtered = Iter.filter(transactions.vals(), func(tx : Transaction) : Bool {
+            return tx.workerId == workerId;
+        });
+
+        var asArray = Iter.toArray(filtered);
+
+        let _ = Array.sort<Transaction>(asArray, func(a, b) : {#less; #equal; #greater} {
+            if (a.timestamp > b.timestamp) { return #less; } else if (a.timestamp < b.timestamp) { return #greater; } else { return #equal; };
         });
         
         var finalResult : [Transaction] = [];

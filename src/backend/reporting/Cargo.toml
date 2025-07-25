@@ -1,0 +1,14 @@
+# src/backend/reporting/Cargo.toml
+[package]
+name = "reporting"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+candid = "0.10.14"         # Versão que você está usando
+ic-cdk = "0.18.5"          # Versão mais recente e geralmente compatível
+ic-cdk-macros = "0.18.5"   # Deve corresponder a ic-cdk
+serde = { version = "1.0", features = ["derive"] }
