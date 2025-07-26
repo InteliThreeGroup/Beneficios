@@ -11,13 +11,16 @@ Traditional corporate benefits systems are plagued by inefficiencies:
 
 BeneChain offers a paradigm shift. By leveraging the unique capabilities of ICP, we’ve created a decentralized platform that connects HR managers, employees, and merchants directly through on-chain logic — with zero reliance on Web2 infrastructure or third-party processors.
 
-![](https://github.com/InteliThreeGroup/Beneficios/blob/main/assets/Sol1.png)
+![image](./assets/Sol1.png)
 
 **Business Plan:** [Link](https://github.com/InteliThreeGroup/Beneficios/blob/main/BusinessPlan.md)
 
 **Technical Documentation:** [Link](https://github.com/InteliThreeGroup/Beneficios/blob/main/docs.md)
 
 **Pitch Deck:** [Link](https://github.com/InteliThreeGroup/Beneficios/blob/main/assets/Pitch%20Deck%20BeneChain.pdf)
+
+**Demo Video:** [Link](https://youtu.be/UYSJWSu4KBE)
+
 
 ### Core Value Proposition
 
@@ -1026,47 +1029,575 @@ dfx deploy
 * Use `dfx ping <canister-id>` to test endpoint responsiveness.
 * For HTTPS outcalls, enable `--enable-features=HttpOutcalls` in your `dfx.json`.
 
-##  Mainnet Canister IDs
+## Frontend Documentation
 
-| Module            | Canister ID      |
-| ----------------- | ---------------- |
-| identity\_auth    | `xxxx-yyyy-zzzz` |
-| benefits\_manager | `xxxx-yyyy-zzzz` |
-| wallets           | `xxxx-yyyy-zzzz` |
-| establishment     | `xxxx-yyyy-zzzz` |
-| frontend          | `xxxx-yyyy-zzzz` |
+### **Screen: Generate Payment (ICP)**
+
+**User Role:** Merchant
+
+**Purpose:** To allow a merchant to request a payment from a worker by generating a QR code that encodes the transaction details.
+
+
+![1](./assets/cel/1.jpeg)
+
+
+#### **Functional Overview**
+
+This screen enables merchants (e.g., restaurants, stores, service providers) to create a benefit-linked payment request. The transaction is initiated on-chain and is tightly bound to the specific worker and benefit type being used.
+
+
+
+#### **UI Elements and Fields**
+
+| Field                   | Description                                                                                                      |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Worker’s Principal**  | The unique `Principal` of the worker making the payment. This ensures identity linkage and secure authorization. |
+| **Amount (ICP)**        | The total amount to be charged, denominated in ICP tokens.                                                       |
+| **Benefit Type**        | Specifies which benefit category (e.g., Food, Transport) the payment should be deducted from.                    |
+| **Description**         | Optional note or label describing the purpose of the transaction (e.g., "Lunch purchase").                       |
+| **Generate Payment QR** | Triggers a backend call to encode the transaction details and display a scannable QR code.                       |
+
+
+#### **Technical Integration**
+
+* Upon submission, the data is sent to the `establishment.mo` canister where the transaction is registered and validated.
+* A secure QR code is generated representing the payment request, to be scanned by the worker's mobile device.
+* All logic, from QR creation to balance deduction, is executed **fully on-chain**, with no reliance on third-party infrastructure.
+
+
+#### **Strategic Role in the Platform**
+
+This feature is critical for enabling **direct worker-to-merchant payments**, a core use case of BeneChain. It allows merchants to operate in the benefit ecosystem without needing to manage wallets, private keys, or traditional payment terminals.
+
+The QR-based flow offers:
+
+* Frictionless UX for unbanked or digitally inexperienced users.
+* Strong compliance and traceability, as all transactions are tied to specific identities and benefit types.
+
 
 ---
 
-##  Demo Video
+### **Screen: Establishment Information**
 
-> Required! 5–10 min walkthrough of the application
+**User Role:** Merchant
 
-* [ ] Link to full demo: [https://youtu.be/](https://youtu.be/)...
-* [ ] Narration/subtitles included
-* [ ] Explains the app flow (HR → Worker → Establishment → Report)
-* [ ] Highlights code and ICP features used
+**Purpose:** To display the registration details and financial summary of the establishment.
+
+
+![2](./assets/cel/2.jpeg)
+
+#### **Functional Overview**
+
+This screen provides a merchant with a summary of their business information registered in the BeneChain system. It includes static details such as the business name and country, as well as dynamic financial indicators like the total amount of benefits received.
+
+
+#### **UI Elements and Fields**
+
+| Field              | Description                                                                                                                                                     |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Name**           | The name of the registered establishment. Pulled from `establishment.mo`.                                                                                       |
+| **Country**        | The country in which the merchant operates. Used for geolocation and potential regulatory filtering.                                                            |
+| **Code**           | A unique business code assigned to the establishment. It may represent a CNPJ, local registry ID, or internal platform code.                                    |
+| **Total Received** | The cumulative amount of ICP received from benefit payments, across all benefit types. Calculated on-chain via `getTransactionHistory()` in `establishment.mo`. |
+
+#### **Technical Integration**
+
+* All fields are sourced from the merchant’s profile stored in the `establishment.mo` canister.
+* The `Total Received` value is computed by aggregating successful `processPayment()` calls tied to the merchant’s Principal.
+* The information is protected by access control: only authenticated merchants can view their own data (enforced by `hasRole(principal, #Establishment)`).
+
+
+#### **Strategic Role in the Platform**
+
+This screen strengthens the **transparency and accountability** pillar of BeneChain by offering merchants a clear and verifiable summary of their participation.
+
+Key advantages:
+
+* Reinforces trust by making all financial data queryable and auditable.
+* Provides an intuitive overview of benefit utilization at the point of sale.
+* Lays the foundation for future analytics or integrations with ERP systems via the `reporting.rs` canister.
 
 ---
 
-## Screenshots
+### **Screen: HR Dashboard – Manager & Fund Overview**
 
-Add images to visualize key flows:
+**User Role:** HR Manager
 
-```markdown
-![HR Dashboard](./assets/screenshots/hr_dashboard.png)
-![Worker Wallet](./assets/screenshots/worker_wallet.png)
-![Store Payment](./assets/screenshots/establishment_payment.png)
+**Purpose:** To provide the HR manager with visibility over their identity, company linkage, and the available balance for distributing benefits to workers.
+
+![3](./assets/cel/3.jpeg)
+
+#### **Functional Overview**
+
+This screen serves as the landing page for HR managers after authentication. It presents key information about their profile and shows the real-time on-chain balance available for benefit distributions. The interface ensures transparency and control over company-linked operations.
+
+
+#### **UI Elements and Fields**
+
+| Section                       | Field                              | Description                                                                                                                                             |
+| ----------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Manager Information**       | Name                               | The name of the logged-in HR manager, fetched from `identity_auth.mo`.                                                                                  |
+|                               | Company                            | The company this HR manager belongs to. This value is cross-validated by `belongsToCompany()`.                                                          |
+|                               | Role                               | Fixed as “Human Resources” (authorization is required to access this view).                                                                             |
+| **Canister Funds Management** | Available Balance for Distribution | The current ICP balance available to the company for funding worker benefit programs. Sourced from `wallets.mo` and linked to the HR/company principal. |
+
+
+#### **Technical Integration**
+
+* The manager profile is loaded from the `identity_auth.mo` canister using `getProfile()` and rendered client-side after login.
+* The ICP balance is fetched from the `wallets.mo` canister using `getWallet()` or `getCompanyWallet()` (depending on implementation).
+* Access to this screen is protected by role-based validation (must be `#HR`) and company matching.
+
+#### **Strategic Role in the Platform**
+
+This dashboard supports the platform’s goal of **decentralized, auditable fund management**. Key highlights include:
+
+* HR can view exactly how much ICP is available to assign or schedule to workers.
+* All funds remain **100% on-chain**, and no off-platform banking or fiat accounts are involved.
+* The dashboard UI helps bridge the familiarity gap for corporate users who are new to Web3 environments, while still maintaining decentralization.
+
+---
+
+### **Screen: Transaction History – Merchant View**
+
+**User Role:** Merchant
+
+**Purpose:** To allow establishments to view all received payments from benefit transactions, categorized by origin, amount, type, and timestamp.
+
+![4](./assets/cel/4.jpeg)
+
+#### **Functional Overview**
+
+This screen gives the merchant real-time access to their incoming transaction history. Each entry represents a benefit-based purchase initiated by a worker using BeneChain. This log helps establishments track performance and audit activity without relying on off-chain tools.
+
+
+#### **UI Elements and Fields**
+
+| Section                 | Field        | Description                                                                                                                                              |
+| ----------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Total Received**      | Amount       | The sum of all benefits (in ICP) received by the merchant. Aggregated from on-chain calls to `creditBalance()` and exposed by `getTransactionHistory()`. |
+| **Transaction History** | Entry Type   | Indicates the nature of the transaction (e.g., “Compra” = Purchase).                                                                                     |
+|                         | From         | Displays a shortened principal ID of the worker who made the payment.                                                                                    |
+|                         | Benefit Type | Category used for benefit (e.g., Food, Health).                                                                                                          |
+|                         | Timestamp    | Precise date and time the transaction occurred.                                                                                                          |
+|                         | Amount       | Payment value received (positive ICP amount).                                                                                                            |
+
+#### **Technical Integration**
+
+* Data is fetched from `establishment.mo` using `getTransactionHistory()` filtered by the merchant’s Principal ID.
+* All transactions are stored as immutable structs within the canister, ensuring full traceability.
+* The display format includes data formatting and string shortening for better UX on mobile.
+
+#### **Strategic Role in the Platform**
+
+This screen supports **financial transparency and self-verification** for merchants:
+
+* Enables reconciliation with internal systems or point-of-sale data.
+* Promotes confidence in the platform by surfacing all on-chain payment activity in a clean UI.
+* Supports future features like exporting history, syncing with ERPs, or issuing digital receipts.
+
+---
+
+### **Screen: Program Management – HR Dashboard**
+
+**User Role:** Human Resources (HR Manager)
+
+**Purpose:** To enable HR teams to visualize, manage, and create benefit programs that will be distributed to their employees via the BeneChain platform.
+
+![5](./assets/cel/5.jpeg)
+
+#### **Functional Overview**
+
+This screen presents the HR user with a centralized interface for managing benefit allocations. It includes both a summary of existing benefit programs and a clear call-to-action to create new programs. All operations are fully on-chain, ensuring auditability and transparency.
+
+#### **UI Elements and Fields**
+
+| Section                        | Field                                       | Description                                                                                                                         |
+| ------------------------------ | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **Tabs**                       | Dashboard & Funds, Programs, Manage Workers | Navigation menu for switching between operational modules.                                                                          |
+| **Program Management**         | Title and Description                       | Introduces the functionality of the page to the HR user.                                                                            |
+| **Existing Benefit Programs**  | Program Name (e.g., Ifood)                  | The name of each existing benefit program configured by the company.                                                                |
+|                                | Benefit Type (e.g., Food)                   | Indicates the type/category of the benefit.                                                                                         |
+|                                | Amount Allocated                            | Shows total value allocated to the benefit in ICP.                                                                                  |
+| **Create New Benefit Program** | Button CTA                                  | Leads to the form to define new benefit programs, triggering an on-chain call to `createBenefitProgram()` in `benefits_manager.mo`. |
+
+
+#### **Technical Integration**
+
+* Programs are fetched from `benefits_manager.mo` using `getCompanyBenefitPrograms()` filtered by the logged-in Principal’s `companyId`.
+* Each benefit object includes fields such as `type`, `amount`, and `frequency`, which are stored in stable memory.
+* React components are dynamically rendered from canister actor interfaces exposed via `@dfinity/agent`.
+
+
+#### **Strategic Role in the Platform**
+
+This screen empowers the HR department to:
+
+* Transparently manage their benefits offering.
+* Adjust allocations based on internal HR policies or financial planning.
+* Comply with auditing requirements by relying solely on on-chain definitions.
+
+By consolidating all benefit data into a single interface, BeneChain simplifies HR operations while maximizing trust and verifiability.
+
+
+---
+
+### **Screen: Create New Benefit Program**
+
+**User Role:** Human Resources (HR Manager)
+
+**Purpose:** To allow HR representatives to configure and register new benefit programs for their company’s workers. These programs define the distribution rules and eligibility for on-chain employee allowances.
+
+![6](./assets/cel/6.jpeg)
+
+#### **Functional Overview**
+
+This form-based interface guides HR managers through the process of registering a new benefit program. Once submitted, the program is persisted fully on-chain via the `benefits_manager.mo` canister and becomes eligible for assignment to employees.
+
+
+#### **UI Elements and Fields**
+
+| Field                       | Description                                                              |
+| --------------------------- | ------------------------------------------------------------------------ |
+| **Program Name**            | Free-text input to define a user-friendly label for the benefit program. |
+| **Amount per Worker (ICP)** | Defines the fixed value that will be distributed to each worker in ICP.  |
+| **Benefit Type**            | Selection field with predefined categories (Food, Culture, Health, etc.) |
+| **Create Program Button**   | Triggers a call to `createBenefitProgram()` with the entered parameters. |
+
+
+#### **Technical Integration**
+
+* On submission, the frontend uses `@dfinity/agent` to send an authenticated call to the `benefits_manager.mo` canister.
+* The underlying Motoko type for benefit programs is:
+
+```motoko
+type BenefitProgram = {
+  id: Text;
+  type: BenefitType;
+  companyId: Text;
+  amount: Nat;
+  frequency: Frequency;
+  day: Nat;
+};
 ```
 
+* Benefit metadata is stored in stable memory and retrievable via `getCompanyBenefitPrograms()`.
+
+
+#### **Strategic Role in the Platform**
+
+This screen is central to the system's programmability. It allows companies to:
+
+* Tailor employee incentives to different verticals (e.g., food or transport).
+* Ensure reproducible, automated distributions via smart contracts.
+* Maintain financial control and transparency through immutable program definitions.
+
+By placing benefit creation directly in the hands of HR managers, BeneChain empowers organizations with on-chain flexibility while eliminating the need for intermediaries or external integrations.
+
 ---
 
-## Testing & Developer Tools
+### **Screen: Worker Management**
 
-* [ ] Unit tests or PocketIC simulation tests
-* [ ] `README` includes command-line test flow 
-* [ ] Well-commented and typed code
-* [ ] Canister interfaces (IDL) included
+**User Role:** Human Resources (HR Manager)
+
+**Purpose:** To assign workers to benefit programs and manage individual allocation adjustments, enabling personalized and controlled distribution of funds.
+
+![7](./assets/cel/7.jpeg)
+
+#### **Functional Overview**
+
+This interface supports two key operations:
+
+1. Assigning workers to predefined benefit programs.
+2. Updating benefit values individually for specific workers (e.g., bonuses, adjustments).
+
+These functions connect directly to the `benefits_manager.mo` canister for persistent and auditable on-chain configuration.
+
+
+#### **UI Elements and Functionalities**
+
+| Section                         | Description                                                              |
+| ------------------------------- | ------------------------------------------------------------------------ |
+| **Worker Principal**            | Input field for the user’s Internet Identity (Principal ID).             |
+| **Benefit Program**             | Dropdown populated with existing programs registered by the company.     |
+| **Assign Worker Button**        | Calls `assignWorkerToBenefit()` to persist association on-chain.         |
+| **Change Benefit Amount (CTA)** | Opens a modal or route to allow individual adjustment of benefit values. |
+
+
+#### **Technical Integration**
+
+* The `assignWorkerToBenefit(principal, programId)` function is invoked via the frontend using `@dfinity/agent`.
+* Validations are done using helper calls to `hasRole(principal, #Worker)` and `belongsToCompany(principal, companyId)` from the `identity_auth.mo` canister.
+* On successful assignment, the mapping is stored in `benefits_manager.mo` to be referenced during automated or manual distributions.
+
+
+#### **Strategic Role in the Platform**
+
+This interface embodies BeneChain’s commitment to **multi-tenant, granular control** over benefit flows:
+
+* Enables HR managers to build dynamic and modular distribution schemes.
+* Allows for exception handling and personalized adjustments.
+* Ensures transparent, role-bound benefit management across the organization.
+
+This flexibility is critical in enterprise-grade benefit systems where workers may have varying entitlements or operational roles.
+
+---
+
+### **Screen: Worker Wallet & Transaction Statement**
+
+**User Role:** Worker
+
+**Purpose:** To allow individual workers to view their current benefit balances, track their spending, and access their transaction history in a transparent and user-friendly interface.
+
+![8](./assets/cel/8.jpeg)
+
+#### **Functional Overview**
+
+This screen functions as the on-chain wallet interface for workers. It displays categorized balances and provides a detailed timeline of past transactions, including credits (from benefit programs) and debits (from purchases at registered merchants).
+
+#### **UI Elements and Functionalities**
+
+| Section                  | Field / Element               | Description                                                                                              |
+| ------------------------ | ----------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **My Balances**          | Benefit Category (e.g., Food) | Shows the current balance for each benefit type in ICP. Pulled from `wallets.mo`.                        |
+| **Statement**            | Transaction List              | Displays a chronological list of activity for the selected benefit type.                                 |
+|                          | Credit Entry                  | Shows benefit top-ups (e.g., “VisaAlimentação”), with timestamp and value.                               |
+|                          | Debit Entry                   | Shows purchases with value deduction and merchant name or tag (e.g., “Compra”).                          |
+| **QR Button** (floating) | Action Button                 | Shortcut for generating a payment QR code or scanning to make a purchase (depending on the worker flow). |
+
+#### **Technical Integration**
+
+* Balances are fetched from `wallets.mo` via the `getWallet(principal)` method, using the logged-in Internet Identity.
+* Each transaction is a record in a `[Transaction]` array stored in stable memory and queried using `getTransactionHistory()`.
+* Data is filtered by `principal` and benefit `type`, ensuring strict isolation per user.
+* All entries are immutable and cryptographically linked to on-chain activity.
+
+#### **Strategic Role in the Platform**
+
+This screen embodies BeneChain’s **end-user empowerment and transparency principles**:
+
+* Workers can verify that they’ve received expected benefits.
+* All spending is logged on-chain and visible without intermediaries.
+* Promotes financial literacy and personal control over benefit usage.
+* Builds trust through real-time, auditable information on mobile devices.
+
+This mobile-first wallet is crucial for onboarding non-technical users and ensuring high usability across diverse worker profiles.
+
+---
+
+### **Screen: Canister Fund Management – Deposit Simulation**
+
+**User Role:** Human Resources (HR Manager)
+
+**Purpose:** To simulate the deposit of ICP funds into the company’s canister, which are later distributed to workers through scheduled or manual payments.
+
+![9](./assets/cel/9.jpeg)
+
+
+#### **Functional Overview**
+
+This screen enables HR users to manage the available ICP balance held in their organization’s canister. Although no real tokens are transferred in this version, the system simulates deposits to test and demonstrate the funding flow. It supports validation of logic, UI feedback, and backend state transitions without relying on a live wallet.
+
+
+#### **UI Elements and Functionalities**
+
+| Section                       | Description                                                                     |
+| ----------------------------- | ------------------------------------------------------------------------------- |
+| **Available Balance**         | Displays the total ICP tokens currently simulated as deposited in the canister. |
+| **Amount to Deposit (ICP)**   | Input field where the HR user defines how much ICP to simulate as deposited.    |
+| **Deposit Funds Button**      | Triggers the simulated deposit by updating the backend’s canister balance.      |
+| **Deposit Simulation Notice** | Informs the user that the deposit is only a simulation, not a live transaction. |
+
+#### **Technical Integration**
+
+* When the user submits the deposit form, a simulated backend method is called on the `benefits_manager.mo` or `wallets.mo` canister to increment the company’s available distribution balance.
+* This design allows for testing of all downstream functionality (like crediting workers) without requiring a real wallet or transfer of ICP.
+* The `Deposit Funds` button triggers internal state updates and renders the new available amount immediately.
+
+#### **Strategic Role in the Platform**
+
+This simulation is a **crucial usability and developer feature**:
+
+* Allows HR teams to test workflows without needing live ICP tokens.
+* Simplifies demos and hackathon testing without risking real funds.
+* Supports future evolution to real wallet-based deposits via wallet integration or Chain Key Bitcoin/ICP bridge.
+
+The simulation mode will later be swapped by live wallet deposits using a dedicated frontend bridge or through QR-based wallet scans.
+
+### **Screen: QR Code Scanner – Payment Execution**
+
+**User Role:** Worker
+
+**Purpose:** Enables workers to scan a QR code presented by a merchant to initiate a payment using their on-chain benefits. This interface streamlines the purchase process using camera-based interaction.
+
+![10](./assets/cel/10.jpeg)
+
+#### **Functional Overview**
+
+This screen activates the device camera to scan QR codes generated by merchants. These codes contain payment instructions (worker principal, amount, benefit type), which are parsed and submitted as payment requests to the BeneChain backend.
+
+If access to the camera is denied or unavailable, a fallback option allows workers to manually enter the payment key.
+
+
+#### **UI Elements and Functionalities**
+
+| Section              | Description                                                                           |
+| -------------------- | ------------------------------------------------------------------------------------- |
+| **Scanner Area**     | The central bounding box activates the device’s camera to detect a QR code.           |
+| **Error Message**    | Displays the current scanner status (e.g., `NotAllowedError` for denied permissions). |
+| **Instruction Text** | Reminds the user to stay still while scanning.                                        |
+| **Enter Key Button** | Redirects to a fallback screen where the user can manually input the payment key.     |
+
+
+#### **Technical Integration**
+
+* The camera is accessed via Web APIs (e.g., `navigator.mediaDevices.getUserMedia()`), typically wrapped by a frontend QR scanner library.
+* Upon successful scan, the decoded payload is sent to `establishment.mo -> processPayment()` and `wallets.mo -> debitBalance()` based on authorization checks.
+* All scanner logic runs client-side, and the result is verified server-side before funds are deducted or approved.
+
+
+#### **Strategic Role in the Platform**
+
+This interface is essential to **real-world usability and trustless commerce**:
+
+* Provides a seamless, low-friction payment experience for workers using benefit tokens.
+* Eliminates the need for usernames or manual address entry.
+* Bridges the worker–merchant interaction with immediate feedback and clear fallback mechanisms.
+* Encourages real adoption by mimicking familiar behavior from consumer wallets and payment apps.
+
+The fallback mechanism ensures accessibility even in low-connectivity or permission-restricted contexts, making the solution robust for a diverse user base.
+
+---
+
+### **Screen: User Profile & Identification Key**
+
+**User Role:** All (Worker, HR, Merchant)
+
+**Purpose:** Provides users with a concise summary of their identity within the BeneChain platform, including their principal (public key), current organization, and role-specific metadata.
+
+![11](./assets/cel/11.jpeg)
+
+#### **Functional Overview**
+
+This screen displays a user’s decentralized identity, allowing them to verify their **Internet Identity–issued principal**, understand which organization they are associated with, and access logout functionality. It supports both transparency and accountability by making user identifiers explicitly visible.
+
+
+#### **UI Elements and Functionalities**
+
+| Section                              | Description                                                                    |
+| ------------------------------------ | ------------------------------------------------------------------------------ |
+| **User Info**                        | Displays the user's name and Internet Identity–derived principal (public key). |
+| **Identification Key**               | A base32-encoded `Principal` that uniquely identifies the user on-chain.       |
+| **Current Company**                  | Shows the company to which the user is currently linked, based on their role.  |
+| **Receipts (if Worker or Merchant)** | Shows a count of receipts or transaction logs tied to that user’s principal.   |
+| **Logout Button**                    | Clears the session and returns the user to the login/authentication screen.    |
+
+
+#### **Technical Integration**
+
+* User identity is managed via **Internet Identity**, and the returned `Principal` is used to map the user to a profile in `identity_auth.mo`.
+* Profile data is fetched via `getProfile(principal)`, which returns structured metadata: name, role, and companyId.
+* The “Receipts” count is derived from `getTransactionHistory()` and filtered by user and role.
+
+#### **Strategic Role in the Platform**
+
+This screen reinforces the platform’s commitment to **self-sovereign identity** and **on-chain traceability**:
+
+* Makes users aware of their persistent on-chain identity.
+* Facilitates debugging and user support by exposing their own public key.
+* Establishes a single source of truth for role-based access and company linking.
+* Prepares users for features like **portable benefit profiles**, multi-company linkage, or tokenized reputation scores.
+
+This profile screen is particularly helpful for HR managers auditing employee data, and for workers who may use their principal in external integrations (e.g., wallet import, QR scan confirmation).
+
+---
+
+### **Screen: Manual QR Payload Submission**
+
+**User Role:** Worker
+
+**Purpose:** Allows workers to manually input the QR code payload if camera scanning fails or is unavailable, ensuring payment processing is still possible.
+
+![12](./assets/cel/12.jpeg)
+
+#### **Functional Overview**
+
+This screen provides a manual fallback for QR code scanning, enabling users to paste raw JSON data (containing `establishmentId`, `amount`, and optionally benefit type and description) into a text box. Once the payload is validated, a payment request is submitted.
+
+
+#### **UI Elements and Functionalities**
+
+| Section                    | Description                                                                          |
+| -------------------------- | ------------------------------------------------------------------------------------ |
+| **Instruction Header**     | Guides the user to paste the QR code content, typically a JSON string.               |
+| **Text Area**              | Input field for the raw payload (e.g., `{"establishmentId": "...", "amount": ...}`). |
+| **Confirm Payment Button** | Triggers the parsing and submission of the payment to the backend.                   |
+| **Back to Scanner**        | Navigates the user back to the camera-based scanner for QR capture.                  |
+
+
+#### **Technical Integration**
+
+* The pasted JSON is parsed client-side and validated before sending a payment request to `establishment.mo -> processPayment()` and `wallets.mo -> debitBalance()`.
+* Common validation includes structure, existence of keys, numeric value of amount, and proper principal formatting.
+* On success, a `confirmPayment()` mutation is triggered with authentication scoped to the currently logged-in worker.
+
+
+#### **Strategic Role in the Platform**
+
+This fallback screen strengthens the **resilience and inclusivity** of the BeneChain platform:
+
+* Ensures accessibility for users in environments with limited camera access, restricted permissions, or broken hardware.
+* Avoids dead-ends in the payment flow by supporting manual override without compromising security.
+* Aligns with Web3's principle of **trustless openness** by allowing the user to transparently inspect the payment payload.
+
+The manual confirmation option is a key differentiator for field deployment, especially for industrial workers or lower-end device contexts.
+
+---
+
+### **Screen: Manual Payment Submission (HR Role)**
+
+**User Role:** HR Manager
+
+**Purpose:** Enables HR managers to directly issue benefit payments to workers on an ad-hoc basis.
+
+![13](./assets/cel/13.jpeg)
+
+#### **Functional Overview**
+
+This interface is designed for scenarios where HR needs to manually credit a worker’s wallet outside of scheduled programs—such as reimbursements, bonuses, or corrective actions. It allows full control over payment parameters, including benefit type and description.
+
+#### **UI Elements and Functionalities**
+
+| Element                 | Description                                                                         |
+| ----------------------- | ----------------------------------------------------------------------------------- |
+| **Worker Principal**    | Input for the recipient's unique Internet Identity principal.                       |
+| **Amount (ICP)**        | Specifies how much to transfer in ICP (token denomination).                         |
+| **Benefit Type**        | Lets the manager categorize the nature of the benefit (Food, Health, etc).          |
+| **Payment Description** | Optional free-text field for internal tracking (e.g., "Meal compensation").         |
+| **Make Payment Button** | Submits the payment, invoking backend canisters (`wallets.mo`, `identity_auth.mo`). |
+
+
+#### **Technical Workflow**
+
+1. **Authorization**: Ensures the current user has HR role (`identity_auth.hasRole(principal, #HR)`).
+2. **Validation**:
+
+   * Confirms that `principal` exists and belongs to the HR’s company.
+   * Checks worker enrollment in the selected benefit program.
+3. **Execution**:
+
+   * Invokes `wallets.mo -> creditBalance()` with typed payload including amount, benefit type, and memo.
+   * Logs the transaction in the internal ledger (persistent stable var).
+4. **Error Handling**:
+
+   * Captures insufficient balance, invalid principal, or permission mismatches.
+
+
+#### **Strategic Relevance**
+
+* **Flexibility**: Supports unscheduled distributions and corrective entries that don’t require full benefit program creation.
+* **Transparency**: Logged transactions maintain auditability and allow reconciliation in `reporting.rs`.
+* **Usability**: Keeps HR autonomous by reducing reliance on technical workflows for one-off disbursements.
 
 ---
 
@@ -1092,6 +1623,13 @@ Example use cases:
 
 * Worker opts to receive a portion of their benefits directly in BTC
 * Merchant converts benefit tokens to BTC at settlement
+
+### **DAO Governance**
+Transition program management to a decentralized autonomous organization (DAO), allowing participating companies, employees, and community members to vote on:
+
+* Funding rules
+* Platform upgrades
+* Whitelisted benefit types or vendors
 
 ---
 
