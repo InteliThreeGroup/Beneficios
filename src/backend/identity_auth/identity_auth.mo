@@ -1,4 +1,3 @@
-// identity_auth.mo - VERSÃO COM VERIFICAÇÃO DE USUÁRIO CORRIGIDA
 import Principal "mo:base/Principal";
 import HashMap "mo:base/HashMap";
 import Time "mo:base/Time";
@@ -9,7 +8,6 @@ import Array "mo:base/Array";
 import Option "mo:base/Option";
 
 actor IdentityAuth {
-    
     public type UserRole = { #HR; #Worker; #Establishment };
     public type UserProfile = { principal: Principal; name: Text; role: UserRole; companyId: ?Text; createdAt: Int; isActive: Bool };
     public type CreateProfileRequest = { name: Text; role: UserRole; companyId: ?Text };
@@ -38,7 +36,6 @@ actor IdentityAuth {
         }
     };
 
-    // CORREÇÃO: A função agora recebe o 'user' como argumento.
     public query func hasRole(user: Principal, role: UserRole) : async Bool {
         switch (userProfiles.get(user)) {
             case (?profile) { profile.role == role and profile.isActive };
@@ -46,7 +43,6 @@ actor IdentityAuth {
         }
     };
 
-    // CORREÇÃO: A função agora recebe o 'user' como argumento.
     public query func belongsToCompany(user: Principal, companyId: Text) : async Bool {
         switch (userProfiles.get(user)) {
             case (?profile) {
