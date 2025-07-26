@@ -1,3 +1,5 @@
+## Business Plan - BeneChain
+
 ## Executive Summary
 
 The corporate benefits market moves billions globally and is directly linked to talent attraction and retention strategies. However, it is hampered by structural inefficiencies such as:
@@ -11,6 +13,8 @@ The corporate benefits market moves billions globally and is directly linked to 
 This scenario directly affects three pillars of the ecosystem: employers, employees, and commercial establishments.
 
 In this context, **BeneChain** emerges as a decentralized corporate benefits platform, built entirely on the Internet Computer Protocol (ICP), which eliminates intermediaries, reduces costs, and promotes end-to-end transparency.
+
+![](https://github.com/InteliThreeGroup/Beneficios/blob/main/assets/Sol1.png)
 
 ---
 
@@ -76,10 +80,9 @@ The market faces significant challenges that create pain points for everyone inv
 ## Personas
 
 ### Persona 1 (Human Resources):
-**Marcelo Torres**
-**Age:** 42 years old
-**City:** São Paulo (SP)
-**Profession:** Human Resources Manager
+
+![](https://github.com/InteliThreeGroup/Beneficios/blob/main/assets/Persona1.png)
+
 **Goals:**
 * Increase company attractiveness in the talent market
 * Retain the most strategic employees
@@ -95,10 +98,9 @@ The market faces significant challenges that create pain points for everyone inv
 * Reduced turnover and increased internal engagement
 
 ### Persona 2 (Employee):
-**Ana Paula da Silva**
-**Age:** 34 years old
-**City:** Recife (PE)
-**Profession:** Systems Analyst
+
+![](https://github.com/InteliThreeGroup/Beneficios/blob/main/assets/Persona2.png)
+
 **Goals:**
 * Ensure financial stability and access to healthy food
 * Have easy access to health and well-being services
@@ -114,10 +116,9 @@ The market faces significant challenges that create pain points for everyone inv
 * Full transparency of balances and benefit usage via app
 
 ### Persona 3 (Establishment):
-**José Mendes**
-**Age:** 46 years old
-**City:** Belo Horizonte (MG)
-**Profession:** Owner of a chain of popular restaurants
+
+![](https://github.com/InteliThreeGroup/Beneficios/blob/main/assets/Persona3.png)
+
 **Goals:**
 * Increase sales volume and customer loyalty
 * Improve cash flow with faster receipts
@@ -139,6 +140,8 @@ The market faces significant challenges that create pain points for everyone inv
 ## Solution
 
 **BeneChain** is a digital corporate benefits platform built entirely on the **Internet Computer Protocol (ICP)**. With it, companies can create, distribute, and track benefits for their employees 100% securely, without intermediaries, abusive fees, or manual processes.
+
+![](https://github.com/InteliThreeGroup/Beneficios/blob/main/assets/Sol2.png)
 
 ### For HR Departments:
 
@@ -189,6 +192,8 @@ To rewrite the global corporate benefits infrastructure with decentralized techn
 
 ### TAM SAM SOM
 
+![](https://github.com/InteliThreeGroup/Beneficios/blob/main/assets/Market.png)
+
 **TAM (Total Addressable Market):**
 The TAM represents the total revenue that can be generated if 100% of the target market buys the product or service. In the context of the benefits market, the TAM would be the total value spent by all companies (regardless of size, sector, or location) on corporate benefits for their employees, in addition to transaction fees and related services.
 The global corporate benefits market is gigantic and continues to expand. Global market estimates point to hundreds of billions to trillions of dollars annually, depending on the breadth of the "benefits" definition. For example, the global employee benefits market was valued at US$232 billion in 2023.
@@ -204,7 +209,9 @@ The SOM is the realistic portion of the SAM that a company can conquer within a 
 
 ## Business Model Canvas
 
-### Value Proposition
+![](https://github.com/InteliThreeGroup/Beneficios/blob/main/assets/Canvas.png)
+
+### 1) Value Proposition
 
 * Elimination of financial intermediaries and fee reduction (to 0.5% to 1%)
 * Instant and traceable payments with blockchain
@@ -213,36 +220,36 @@ The SOM is the realistic portion of the SAM that a company can conquer within a 
 * Automatic payment settlement for establishments
 * Open, interoperable, and scalable infrastructure for multiple countries
 
-### Customer Segments
+### 2) Customer Segments
 
 * Human Resources departments that want to customize their benefit programs and offer better conditions for employees
 * Employees who receive benefits and seek flexibility and control
 * Commercial Establishments that accept benefits and seek lower fees and liquidity
 
-### Channels
+### 3) Channels
 
 * Web and Mobile Platform (for HR, employees, and establishments)
 * Social media for service promotion
 * Digital onboarding materials, tutorials, and online support
 
-### Customer Relationships
+### 4) Customer Relationships
 
 * Automated technical and educational support (chatbot and FAQ)
 * Service via digital channels for HR and establishments
 * Guided onboarding for new users (companies, businesses, and employees)
 
-### Revenue Streams
+### 5) Revenue Streams
 
 * Transaction fees (0.5% to 1%) paid by commercial establishments
 * Subscription plans for companies with advanced features (for benefit customization)
 
-### Key Resources
+### 6) Key Resources
 
 * Technology and infrastructure on the Internet Computer Protocol (ICP)
 * Technical team (developers, blockchain engineers, DevOps)
 * Support and onboarding team
 
-### Key Activities
+### 7) Key Activities
 
 * Platform development and maintenance
 * Partnerships with HR and establishments
@@ -250,13 +257,13 @@ The SOM is the realistic portion of the SAM that a company can conquer within a 
 * Ensuring on-chain compliance and security
 * Institutional communication and marketing
 
-### Key Partnerships
+### 8) Key Partnerships
 
 * Internet Computer Protocol developers and community (DFINITY)
 * Local commercial establishments and food/wellness networks
 * Organizations focused on ESG, financial inclusion, and well-being
 
-### Cost Structure
+### 9) Cost Structure
 
 * Platform development and maintenance
 * Infrastructure costs
