@@ -13,11 +13,9 @@ BeneChain offers a paradigm shift. By leveraging the unique capabilities of ICP,
 
 ![image](./assets/Sol1.png)
 
-**Business Plan:** [Link](https://github.com/InteliThreeGroup/Beneficios/blob/main/BusinessPlan.md)
+**Business Plan:** [Link](./BusinessPlan.md)
 
-**Technical Documentation:** [Link](https://github.com/InteliThreeGroup/Beneficios/blob/main/docs.md)
-
-**Pitch Deck:** [Link](https://github.com/InteliThreeGroup/Beneficios/blob/main/assets/Pitch%20Deck%20BeneChain.pdf)
+**Pitch Deck:** [Link](./assets/Pitch%20Deck%20BeneChain.pdf)
 
 **Demo Video:** [Link](https://youtu.be/UYSJWSu4KBE)
 
@@ -1037,9 +1035,11 @@ dfx deploy
 
 **Purpose:** To allow a merchant to request a payment from a worker by generating a QR code that encodes the transaction details.
 
+<div align="center">
 
 ![1](./assets/cel/1.jpeg)
 
+</div>
 
 #### **Functional Overview**
 
@@ -1083,8 +1083,11 @@ The QR-based flow offers:
 
 **Purpose:** To display the registration details and financial summary of the establishment.
 
+<div align="center">
 
 ![2](./assets/cel/2.jpeg)
+
+</div>
 
 #### **Functional Overview**
 
@@ -1125,7 +1128,11 @@ Key advantages:
 
 **Purpose:** To provide the HR manager with visibility over their identity, company linkage, and the available balance for distributing benefits to workers.
 
+<div align="center">
+
 ![3](./assets/cel/3.jpeg)
+
+</div>
 
 #### **Functional Overview**
 
@@ -1164,7 +1171,11 @@ This dashboard supports the platform’s goal of **decentralized, auditable fund
 
 **Purpose:** To allow establishments to view all received payments from benefit transactions, categorized by origin, amount, type, and timestamp.
 
+<div align="center">
+
 ![4](./assets/cel/4.jpeg)
+
+</div>
 
 #### **Functional Overview**
 
@@ -1204,7 +1215,11 @@ This screen supports **financial transparency and self-verification** for mercha
 
 **Purpose:** To enable HR teams to visualize, manage, and create benefit programs that will be distributed to their employees via the BeneChain platform.
 
+<div align="center">
+
 ![5](./assets/cel/5.jpeg)
+
+</div>
 
 #### **Functional Overview**
 
@@ -1248,7 +1263,11 @@ By consolidating all benefit data into a single interface, BeneChain simplifies 
 
 **Purpose:** To allow HR representatives to configure and register new benefit programs for their company’s workers. These programs define the distribution rules and eligibility for on-chain employee allowances.
 
+<div align="center">
+
 ![6](./assets/cel/6.jpeg)
+
+</div>
 
 #### **Functional Overview**
 
@@ -1302,7 +1321,11 @@ By placing benefit creation directly in the hands of HR managers, BeneChain empo
 
 **Purpose:** To assign workers to benefit programs and manage individual allocation adjustments, enabling personalized and controlled distribution of funds.
 
+<div align="center">
+
 ![7](./assets/cel/7.jpeg)
+
+</div>
 
 #### **Functional Overview**
 
@@ -1349,7 +1372,11 @@ This flexibility is critical in enterprise-grade benefit systems where workers m
 
 **Purpose:** To allow individual workers to view their current benefit balances, track their spending, and access their transaction history in a transparent and user-friendly interface.
 
+<div align="center">
+
 ![8](./assets/cel/8.jpeg)
+
+</div>
 
 #### **Functional Overview**
 
@@ -1391,8 +1418,11 @@ This mobile-first wallet is crucial for onboarding non-technical users and ensur
 
 **Purpose:** To simulate the deposit of ICP funds into the company’s canister, which are later distributed to workers through scheduled or manual payments.
 
+<div align="center">
+
 ![9](./assets/cel/9.jpeg)
 
+</div>
 
 #### **Functional Overview**
 
@@ -1430,7 +1460,11 @@ The simulation mode will later be swapped by live wallet deposits using a dedica
 
 **Purpose:** Enables workers to scan a QR code presented by a merchant to initiate a payment using their on-chain benefits. This interface streamlines the purchase process using camera-based interaction.
 
+<div align="center">
+
 ![10](./assets/cel/10.jpeg)
+
+</div>
 
 #### **Functional Overview**
 
@@ -1475,7 +1509,11 @@ The fallback mechanism ensures accessibility even in low-connectivity or permiss
 
 **Purpose:** Provides users with a concise summary of their identity within the BeneChain platform, including their principal (public key), current organization, and role-specific metadata.
 
+<div align="center">
+
 ![11](./assets/cel/11.jpeg)
+
+</div>
 
 #### **Functional Overview**
 
@@ -1518,7 +1556,11 @@ This profile screen is particularly helpful for HR managers auditing employee da
 
 **Purpose:** Allows workers to manually input the QR code payload if camera scanning fails or is unavailable, ensuring payment processing is still possible.
 
+<div align="center">
+
 ![12](./assets/cel/12.jpeg)
+
+</div>
 
 #### **Functional Overview**
 
@@ -1560,7 +1602,11 @@ The manual confirmation option is a key differentiator for field deployment, esp
 
 **Purpose:** Enables HR managers to directly issue benefit payments to workers on an ad-hoc basis.
 
+<div align="center">
+
 ![13](./assets/cel/13.jpeg)
+
+</div>
 
 #### **Functional Overview**
 
