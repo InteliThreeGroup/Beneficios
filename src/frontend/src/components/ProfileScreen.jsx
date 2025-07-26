@@ -1,54 +1,83 @@
-// src/BENEFICIOS_frontend/src/components/ProfileScreen.jsx
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
+"use client"
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faCopy, faUser } from "@fortawesome/free-solid-svg-icons"
 
 const ProfileScreen = ({ profile, principal, logout }) => {
+  const userRole = profile?.role ? Object.keys(profile.role)[0] : "Undefined"
+
+  const handleCopyPrincipal = () => {
+    navigator.clipboard.writeText(principal?.toString())
+    // You can add a notification here if you want
+  }
+
+  const getRoleLabel = (role) => {
+    switch (role) {
+      case "Worker":
+        return "Worker"
+      case "HR":
+        return "Human Resources"
+      case "Establishment":
+        return "Establishment"
+      default:
+        return role
+    }
+  }
+
   return (
-    <main>
-      <div className="profile-header" style={{ marginBottom: '1rem' }}> {/* Adjusted margin for profile screen */}
-        <div className="profile-avatar">
-          <img src="https://via.placeholder.com/150/cccccc/ffffff?text=U" alt="Avatar" /> {/* Placeholder image */}
+    <div className="mobile-profile-screen">
+      {/* Mobile Header */}
+      <div className="mobile-profile-header">
+        <h1 className="mobile-profile-title">Profile</h1>
+      </div>
+
+      {/* Profile Info Section */}
+      <div className="mobile-profile-info-section">
+        <div className="mobile-profile-avatar">
+          <FontAwesomeIcon icon={faUser} />
         </div>
-        <div className="profile-info">
-          <h2 style={{ fontSize: '1.6rem' }}>{profile?.name || 'Nome do Usuário'}</h2> {/* Adjusted font size */}
-          <p>Chave de Identificação</p>
+        <div className="mobile-profile-details">
+          <h2 className="mobile-profile-name">{profile?.name || "User Name"}</h2>
+          <p className="mobile-profile-subtitle">Identification Key</p>
         </div>
       </div>
 
-      <div className="profile-card-group">
-        <div className="profile-card">
-          <span className="profile-card-label">Chave Pública</span>
-          <div className="profile-card-value">
-            {principal?.toString().substring(0, 20)}...
-            <button onClick={() => navigator.clipboard.writeText(principal?.toString())} style={{ background: 'none', border: 'none', color: '#007bff', padding: '5px', cursor: 'pointer', width: 'auto' }}>
+      {/* Profile Cards */}
+      <div className="mobile-profile-cards">
+        {/* Principal Card */}
+        <div className="mobile-profile-card principal-card">
+          <div className="mobile-card-content">
+            <div className="mobile-principal-text">{principal?.toString()}</div>
+            <button onClick={handleCopyPrincipal} className="mobile-copy-button">
               <FontAwesomeIcon icon={faCopy} />
             </button>
           </div>
+          <div className="mobile-card-label">Public Key</div>
         </div>
 
-        {profile?.companyId && ( // Assuming companyId is available in profile for Establishment
-          <div className="profile-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-              <div style={{ flex: 1 }}>
-                <span className="profile-card-label">Nome da Empresa</span>
-                <span className="profile-card-value">{profile.companyId[0] || 'N/A'}</span> {/* Use companyId for name if available */}
-                <span className="profile-card-label" style={{ fontSize: '0.9rem', color: '#555' }}>Empresa Atual</span>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <span className="profile-card-value" style={{ fontSize: '1.4rem' }}>12</span> {/* Placeholder for number of receipts */}
-                <span className="profile-card-label" style={{ fontSize: '0.9rem', color: '#555' }}>Recebimentos</span>
-              </div>
+        {/* Company Info Card */}
+        <div className="mobile-profile-card company-card">
+          <div className="mobile-card-row">
+            <div className="mobile-card-left">
+              <div className="mobile-card-title">{profile?.companyId?.[0] || "Company Name"}</div>
+              <div className="mobile-card-subtitle">Current Company</div>
+            </div>
+            <div className="mobile-card-right">
+              <div className="mobile-card-number">12</div>
+              <div className="mobile-card-subtitle">Receipts</div>
             </div>
           </div>
-        )}
+        </div>
       </div>
 
-      <button onClick={logout} className="secondary" style={{ width: '100%', marginTop: '20px' }}>
-        Sair
-      </button>
-    </main>
-  );
-};
+      {/* Logout Button */}
+      <div className="mobile-logout-section">
+        <button onClick={logout} className="mobile-logout-button">
+          Logout
+        </button>
+      </div>
+    </div>
+  )
+}
 
-export default ProfileScreen;
+export default ProfileScreen

@@ -1,7 +1,7 @@
 // src/frontend/src/components/AuthClientContext.jsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { AuthClient } from '@dfinity/auth-client';
-import { HttpAgent, Actor } from '@dfinity/agent';
+import { HttpAgent } from '@dfinity/agent'; // Removed Actor as it's not directly used for agent creation
 import { Principal } from '@dfinity/principal';
 
 // Importa os canister IDs e createActor para todos os seus canisters de backend
@@ -9,8 +9,7 @@ import { canisterId as identityCanisterId, createActor as createIdentityActor } 
 import { canisterId as benefitsManagerCanisterId, createActor as createBenefitsManagerActor } from '../../../declarations/benefits_manager';
 import { canisterId as establishmentCanisterId, createActor as createEstablishmentActor } from '../../../declarations/establishment';
 import { canisterId as walletsCanisterId, createActor as createWalletsActor } from '../../../declarations/wallets';
-// NOVO: Importar o reporting canister
-import { canisterId as reportingCanisterId, createActor as createReportingActor } from '../../../declarations/reporting'; // <-- ADICIONE ESTA LINHA
+import { canisterId as reportingCanisterId, createActor as createReportingActor } from '../../../declarations/reporting';
 
 
 const AuthContext = createContext();
@@ -58,10 +57,11 @@ export const AuthProvider = ({ children }) => {
       benefits_manager: createBenefitsManagerActor(benefitsManagerCanisterId, { agent }),
       establishment: createEstablishmentActor(establishmentCanisterId, { agent }),
       wallets: createWalletsActor(walletsCanisterId, { agent }),
-      reporting: createReportingActor(reportingCanisterId, { agent }), // <-- ADICIONE ESTA LINHA
+      reporting: createReportingActor(reportingCanisterId, { agent }),
     };
     setActors(_actors);
 
+    // Tenta buscar o perfil
     let fetchedProfile = null;
     try {
       const profileResult = await _actors.identity_auth.getProfile();
@@ -74,9 +74,15 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Erro ao buscar perfil:", error);
-      setProfile(null);
+      setProfile(null); // Certifica que o perfil é null em caso de erro
     }
 
+    // Se o perfil é nulo, refreshProfile é chamado para forçar a criação se o usuário precisar
+    // if (fetchedProfile === null) { // <-- Removido, handleAuthenticated já chama refreshProfile se necessário
+    //   await refreshProfile();
+    // }
+
+    // Cria/Verifica carteira (sempre para qualquer usuário autenticado)
     if (userPrincipal && _actors.wallets) {
         try {
             const walletCreationResult = await _actors.wallets.createWallet(userPrincipal);
@@ -122,11 +128,11 @@ export const AuthProvider = ({ children }) => {
         if (profileResult.ok) {
           setProfile(profileResult.ok);
         } else {
-          setProfile(null);
+          setProfile(null); // Perfil não encontrado ou erro, define como null
         }
       } catch (error) {
         console.error("Erro ao atualizar perfil:", error);
-        setProfile(null);
+        setProfile(null); // Em caso de erro, define como null
       }
     }
   };

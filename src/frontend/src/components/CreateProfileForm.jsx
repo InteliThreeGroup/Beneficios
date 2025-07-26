@@ -1,128 +1,207 @@
-// src/components/CreateProfileForm.jsx
-import React, { useState } from 'react';
-import { useAuth } from './AuthClientContext';
+"use client"
+
+import { useState } from "react"
+import { useAuth } from "./AuthClientContext"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import {
+  faUser,
+  faUserTie,
+  faUsers,
+  faStore,
+  faBuilding,
+  faSpinner,
+  faCheckCircle,
+  faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons"
 
 const CreateProfileForm = () => {
-  const { actors, principal, refreshProfile } = useAuth();
-  const [name, setName] = useState('');
-  const [role, setRole] = useState('Worker');
-  const [companyId, setCompanyId] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const { actors, principal, refreshProfile } = useAuth()
+  const [name, setName] = useState("")
+  const [role, setRole] = useState("Worker")
+  const [companyId, setCompanyId] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState("")
+
+  const roleOptions = [
+    { value: "Worker", label: "Worker", icon: faUser, description: "Receive and use corporate benefits" },
+    { value: "HR", label: "Human Resources", icon: faUserTie, description: "Manage programs and workers" },
+    {
+      value: "Establishment",
+      label: "Establishment",
+      icon: faStore,
+      description: "Receive benefit payments",
+    },
+  ]
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage('');
+    e.preventDefault()
+    setLoading(true)
+    setMessage("")
 
     if (!actors || !actors.identity_auth) {
-      setMessage("Erro: Atores do canister não carregados.");
-      setLoading(false);
-      return;
+      setMessage("Error: Canister actors not loaded.")
+      setLoading(false)
+      return
     }
 
     try {
-      let selectedRole;
-      if (role === 'HR') selectedRole = { HR: null };
-      else if (role === 'Worker') selectedRole = { Worker: null };
-      else if (role === 'Establishment') selectedRole = { Establishment: null };
+      let selectedRole
+      if (role === "HR") selectedRole = { HR: null }
+      else if (role === "Worker") selectedRole = { Worker: null }
+      else if (role === "Establishment") selectedRole = { Establishment: null }
       else {
-        setMessage("Erro: Tipo de cargo inválido.");
-        setLoading(false);
-        return;
+        setMessage("Error: Invalid role type.")
+        setLoading(false)
+        return
       }
 
-      // --- NOVA TENTATIVA DE CORREÇÃO PARA companyId ---
-      let finalCompanyId; // Não inicialize com null
-      if (role !== 'Establishment' && companyId.trim() !== '') {
-          finalCompanyId = [companyId.trim()]; // Opção Some(Text)
+      let finalCompanyId
+      if (role !== "Establishment" && companyId.trim() !== "") {
+        finalCompanyId = [companyId.trim()]
       } else {
-          finalCompanyId = []; // Opção None - Array vazio para representar null/None
+        finalCompanyId = []
       }
-      // A representação de 'Option<T>' no agente às vezes aceita [] para 'None'
-      // ao invés de 'null' ou 'undefined'. Vale a pena testar.
-
 
       const request = {
         name: name,
         role: selectedRole,
-        companyId: finalCompanyId, // Usa a variável corrigida
-      };
+        companyId: finalCompanyId,
+      }
 
-      const result = await actors.identity_auth.createProfile(request);
+      const result = await actors.identity_auth.createProfile(request)
 
       if (result.ok) {
-        setMessage("Perfil criado com sucesso!");
-        await refreshProfile();
+        setMessage("Profile created successfully!")
+        await refreshProfile()
       } else {
-        setMessage(`Erro ao criar perfil: ${result.err}`);
+        setMessage(`Error creating profile: ${result.err}`)
       }
     } catch (error) {
-      console.error("Erro na criação do perfil:", error);
-      setMessage(`Erro inesperado: ${error.message}`);
+      console.error("Error creating profile:", error)
+      setMessage(`Unexpected error: ${error.message}`)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '500px', margin: 'auto', border: '1px solid #ccc', borderRadius: '8px' }}>
-      <h2>Criar Perfil</h2>
-      <p>Seu Principal: {principal?.toString()}</p>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="name" style={{ display: 'block', marginBottom: '0.5rem' }}>Nome:</label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ddd' }}
-          />
-        </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="role" style={{ display: 'block', marginBottom: '0.5rem' }}>Cargo:</label>
-          <select
-            id="role"
-            value={role}
-            onChange={(e) => {
-                setRole(e.target.value);
-                if (e.target.value === 'Establishment') {
-                    setCompanyId('');
-                }
-            }}
-            style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ddd' }}
-          >
-            <option value="Worker">Trabalhador</option>
-            <option value="HR">RH</option>
-            <option value="Establishment">Estabelecimento</option>
-          </select>
-        </div>
-        {role !== 'Establishment' && (
-          <div style={{ marginBottom: '1rem' }}>
-            <label htmlFor="companyId" style={{ display: 'block', marginBottom: '0.5rem' }}>ID da Empresa (opcional):</label>
-            <input
-              type="text"
-              id="companyId"
-              value={companyId}
-              onChange={(e) => setCompanyId(e.target.value)}
-              placeholder="Ex: company-01"
-              style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ddd' }}
-            />
+    <div className="create-profile-screen">
+      <div className="create-profile-container">
+        <div className="dashboard-card profile-creation-card">
+          <div className="card-header">
+            <div className="card-icon">
+              <FontAwesomeIcon icon={faUsers} />
+            </div>
+            <div>
+              <h3>Create Profile</h3>
+              <p>Complete your registration to access the platform</p>
+            </div>
           </div>
-        )}
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ padding: '0.75rem 1.5rem', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-        >
-          {loading ? 'Criando...' : 'Criar Perfil'}
-        </button>
-        {message && <p style={{ marginTop: '1rem', color: message.startsWith('Erro') ? 'red' : 'green' }}>{message}</p>}
-      </form>
-    </div>
-  );
-};
 
-export default CreateProfileForm;
+          <div className="principal-info">
+            <div className="principal-display">
+              <span className="principal-label">Your Principal ID:</span>
+              <span className="principal-value">{principal?.toString()}</span>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="profile-form">
+            <div className="form-group">
+              <label htmlFor="name">
+                <FontAwesomeIcon icon={faUser} />
+                Full Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="form-input"
+                placeholder="Enter your full name"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Account Type</label>
+              <div className="role-selector">
+                {roleOptions.map((option) => (
+                  <div
+                    key={option.value}
+                    className={`role-option ${role === option.value ? "selected" : ""}`}
+                    onClick={() => {
+                      setRole(option.value)
+                      if (option.value === "Establishment") {
+                        setCompanyId("")
+                      }
+                    }}
+                  >
+                    <div className="role-icon">
+                      <FontAwesomeIcon icon={option.icon} />
+                    </div>
+                    <div className="role-info">
+                      <div className="role-title">{option.label}</div>
+                      <div className="role-description">{option.description}</div>
+                    </div>
+                    <div className="role-radio">
+                      <input
+                        type="radio"
+                        name="role"
+                        value={option.value}
+                        checked={role === option.value}
+                        onChange={() => {}}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {role !== "Establishment" && (
+              <div className="form-group">
+                <label htmlFor="companyId">
+                  <FontAwesomeIcon icon={faBuilding} />
+                  Company ID (optional)
+                </label>
+                <input
+                  type="text"
+                  id="companyId"
+                  value={companyId}
+                  onChange={(e) => setCompanyId(e.target.value)}
+                  placeholder="Ex: company-01"
+                  className="form-input"
+                />
+                <div className="field-help">Leave blank if you don't know or don't have a specific company ID</div>
+              </div>
+            )}
+
+            <div className="form-actions">
+              <button type="submit" disabled={loading} className="btn btn-primary create-profile-button">
+                {loading ? (
+                  <>
+                    <FontAwesomeIcon icon={faSpinner} spin />
+                    Creating Profile...
+                  </>
+                ) : (
+                  <>
+                    <FontAwesomeIcon icon={faCheckCircle} />
+                    Create Profile
+                  </>
+                )}
+              </button>
+            </div>
+
+            {message && (
+              <div className={`message ${message.startsWith("Error") ? "message-error" : "message-success"}`}>
+                <FontAwesomeIcon icon={message.startsWith("Error") ? faExclamationTriangle : faCheckCircle} />
+                {message}
+              </div>
+            )}
+          </form>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default CreateProfileForm
