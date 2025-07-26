@@ -15,7 +15,7 @@ BeneChain offers a paradigm shift. By leveraging the unique capabilities of ICP,
 
 **Business Plan:** [Link](./BusinessPlan.md)
 
-**Pitch Deck:** [Link](./assets/Pitch%20Deck%20BeneChain.pdf)
+**Pitch Deck:** [Link](https://github.com/InteliThreeGroup/Beneficios/blob/main/assets/Pitch%20Deck%20BeneChain.pdf)
 
 **Demo Video:** [Link](https://youtu.be/UYSJWSu4KBE)
 
