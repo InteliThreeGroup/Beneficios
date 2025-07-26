@@ -11,6 +11,14 @@ Traditional corporate benefits systems are plagued by inefficiencies:
 
 BeneChain offers a paradigm shift. By leveraging the unique capabilities of ICP, we’ve created a decentralized platform that connects HR managers, employees, and merchants directly through on-chain logic — with zero reliance on Web2 infrastructure or third-party processors.
 
+![](https://github.com/InteliThreeGroup/Beneficios/blob/main/assets/Sol1.png)
+
+**Business Plan:** [Link](https://github.com/InteliThreeGroup/Beneficios/blob/main/BusinessPlan.md)
+
+**Technical Documentation:** [Link](https://github.com/InteliThreeGroup/Beneficios/blob/main/docs.md)
+
+**Pitch Deck:** [Link](https://github.com/InteliThreeGroup/Beneficios/blob/main/assets/Pitch%20Deck%20BeneChain.pdf)
+
 ### Core Value Proposition
 
 * **HR Departments** gain full control over benefit rules, real-time dashboards, and audit trails — reducing fraud and manual work.
