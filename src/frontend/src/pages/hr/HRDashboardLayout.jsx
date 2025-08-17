@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from "react-router-dom";
-import { useAuth } from "./AuthClientContext";
+import { useAuth } from "../auth/AuthClientContext";
 import { HandCoins, LogOut, LayoutDashboard, Briefcase, Users, FileText, Bell, UserCheck } from "lucide-react";
 
 export default function HRDashboardLayout() {

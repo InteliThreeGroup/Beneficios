@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "../AuthClientContext";
+import { useAuth } from "../../auth/AuthClientContext";
 import { Loader2, AlertTriangle, CheckCircle, PlusCircle, Tag, Coins, Calendar, Clock } from "lucide-react";
 
 const benefitOptions = [

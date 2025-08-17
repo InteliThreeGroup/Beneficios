@@ -5,11 +5,11 @@ import { HttpAgent } from '@dfinity/agent'; // Removed Actor as it's not directl
 import { Principal } from '@dfinity/principal';
 
 // Importa os canister IDs e createActor para todos os seus canisters de backend
-import { canisterId as identityCanisterId, createActor as createIdentityActor } from '../../../declarations/identity_auth';
-import { canisterId as benefitsManagerCanisterId, createActor as createBenefitsManagerActor } from '../../../declarations/benefits_manager';
-import { canisterId as establishmentCanisterId, createActor as createEstablishmentActor } from '../../../declarations/establishment';
-import { canisterId as walletsCanisterId, createActor as createWalletsActor } from '../../../declarations/wallets';
-import { canisterId as reportingCanisterId, createActor as createReportingActor } from '../../../declarations/reporting';
+import { canisterId as identityCanisterId, createActor as createIdentityActor } from '../../../../declarations/identity_auth';
+import { canisterId as benefitsManagerCanisterId, createActor as createBenefitsManagerActor } from '../../../../declarations/benefits_manager';
+import { canisterId as establishmentCanisterId, createActor as createEstablishmentActor } from '../../../../declarations/establishment';
+import { canisterId as walletsCanisterId, createActor as createWalletsActor } from '../../../../declarations/wallets';
+import { canisterId as reportingCanisterId, createActor as createReportingActor } from '../../../../declarations/reporting';
 
 
 const AuthContext = createContext();

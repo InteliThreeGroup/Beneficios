@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "../AuthClientContext";
+import { useAuth } from "../../auth/AuthClientContext";
 import { Loader2, AlertTriangle, Wallet, DollarSign, ArrowUp, CheckCircle } from "lucide-react";
 
 export default function HRFundsManagement() {

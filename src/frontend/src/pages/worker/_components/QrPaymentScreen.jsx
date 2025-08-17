@@ -1,7 +1,7 @@
 // src/components/QrPaymentScreen.jsx
 
 import { useState } from "react";
-import { useAuth } from "./AuthClientContext";
+import { useAuth } from "../../auth/AuthClientContext";
 import { Principal } from "@dfinity/principal";
 import { QrReader } from "@blackbox-vision/react-qr-reader";
 import { useNavigate } from "react-router-dom";

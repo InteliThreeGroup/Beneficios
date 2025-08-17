@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "./AuthClientContext";
+import { useAuth } from "../../auth/AuthClientContext";
 import QRCode from "react-qr-code";
 import { Loader2, AlertTriangle, QrCode, History, Utensils, BookOpen, HeartPulse, Bus, GraduationCap, Building, Copy, Check, Link } from "lucide-react";
 

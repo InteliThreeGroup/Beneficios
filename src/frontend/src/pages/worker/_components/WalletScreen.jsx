@@ -1,10 +1,10 @@
 // src/components/WalletScreen.jsx
 
 import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "./AuthClientContext";
+import { useAuth } from "../../auth/AuthClientContext";
 import { Link } from "react-router-dom";
 import { Bell, Utensils, BookOpen, HeartPulse, Bus, GraduationCap, Building, Loader2, AlertTriangle } from "lucide-react";
-import { ConfirmPaymentModal } from './ConfirmPaymentModal'; // Certifique-se que este componente existe
+import { ConfirmPaymentModal } from '../../../components/ConfirmPaymentModal'; // Certifique-se que este componente existe
 
 export function WalletScreen() {
   const { actors, principal, profile } = useAuth();

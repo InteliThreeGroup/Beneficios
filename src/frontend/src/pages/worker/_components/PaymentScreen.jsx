@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "./AuthClientContext";
+import { useAuth } from "../../auth/AuthClientContext";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Principal } from "@dfinity/principal";
 import { ArrowLeft, Loader2, CheckCircle, AlertTriangle, Store, Coins, Calendar, User } from "lucide-react";

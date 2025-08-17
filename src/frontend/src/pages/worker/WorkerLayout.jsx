@@ -1,5 +1,5 @@
 import { Outlet, NavLink, Link } from "react-router-dom";
-import { useAuth } from "./AuthClientContext";
+import { useAuth } from "../auth/AuthClientContext";
 import { Wallet, User, QrCode, HandCoins, LogOut, Bell } from "lucide-react";
 
 export function WorkerLayout() {
@@ -11,7 +11,7 @@ export function WorkerLayout() {
 
   // Classes para os links da barra de navegação no mobile
   const activeMobileLinkClasses = "text-blue-500";
-  const inactiveMobileLinkClasses = "text-gray-400";
+  const inactiveMobileLinkClasses = "text-gray-400";  
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans text-gray-800">

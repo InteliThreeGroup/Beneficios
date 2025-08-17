@@ -1,26 +1,26 @@
-import { AuthProvider, useAuth } from "./components/AuthClientContext";
+import { AuthProvider, useAuth } from "./pages/auth/AuthClientContext";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from 'react-hot-toast';
 import { Loader2, HandCoins } from "lucide-react";
 
 // Layouts e Componentes de Roteamento
-import CreateProfileForm from "./components/CreateProfileForm";
-import EstablishmentDashboard from "./components/EstablishmentDashboard";
-import EstablishmentLayout from "./components/EstablishmentLayout";
-import HRDashboardLayout from "./components/HRDashboardLayout";
+import CreateProfileForm from "./pages/auth/CreateProfileForm";
+import EstablishmentDashboard from "./pages/establishment/_components/EstablishmentDashboard";
+import EstablishmentLayout from "./pages/establishment/EstablishmentLayout";
+import HRDashboardLayout from "./pages/hr/HRDashboardLayout";
 
 // Novas Telas e Layout do Trabalhador (com design atualizado)
-import { WorkerLayout } from "./components/WorkerLayout";
-import { WalletScreen } from "./components/WalletScreen";
-import { QrPaymentScreen } from "./components/QrPaymentScreen";
-import { PaymentScreen } from "./components/PaymentScreen";
-import { ProfileScreen } from "./components/ProfileScreen";
+import { WorkerLayout } from "./pages/worker/WorkerLayout";
+import { WalletScreen } from "./pages/worker/_components/WalletScreen";
+import { QrPaymentScreen } from "./pages/worker/_components/QrPaymentScreen";
+import { PaymentScreen } from "./pages/worker/_components/PaymentScreen";
+import { ProfileScreen } from "./pages/worker/_components/ProfileScreen";
 
 // Páginas do RH (permanecem as mesmas)
-import HRMainDashboardPage from "./components/hr_dashboard/pages/HRMainDashboardPage";
-import HRProgramsPage from "./components/hr_dashboard/pages/HRProgramsPage";
-import HRWorkersPage from "./components/hr_dashboard/pages/HRWorkersPage";
-import HRReporting from "./components/hr_dashboard/HRReporting";
+import HRMainDashboardPage from "./pages/hr/_components/pages/HRMainDashboardPage";
+import HRProgramsPage from "./pages/hr/_components/pages/HRProgramsPage";
+import HRWorkersPage from "./pages/hr/_components/pages/HRWorkersPage";
+import HRReporting from "./pages/hr/_components/HRReporting";
 
 // Componente que decide qual painel mostrar com base no perfil do usuário
 const DashboardDispatcher = () => {

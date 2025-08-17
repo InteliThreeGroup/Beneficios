@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from "react-router-dom";
-import { useAuth } from "./AuthClientContext";
+import { useAuth } from "../auth/AuthClientContext";
 import { HandCoins, LogOut, LayoutDashboard, Store, Bell } from "lucide-react";
 
 export default function EstablishmentLayout() {

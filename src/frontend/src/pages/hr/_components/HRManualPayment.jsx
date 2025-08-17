@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../AuthClientContext';
+import { useAuth } from '../../auth/AuthClientContext';
 import { Principal } from '@dfinity/principal';
 import { Loader2, AlertTriangle, CheckCircle, Banknote, User, Coins, FileText } from 'lucide-react';
 

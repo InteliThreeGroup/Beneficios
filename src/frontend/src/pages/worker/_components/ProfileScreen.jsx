@@ -1,6 +1,6 @@
 // src/components/ProfileScreen.jsx
 
-import { useAuth } from "./AuthClientContext";
+import { useAuth } from "../../auth/AuthClientContext";
 import { LogOut, Copy, Building, Receipt } from "lucide-react";
 import { toast, Toaster } from 'react-hot-toast'; // Você pode precisar instalar: npm install react-hot-toast
 

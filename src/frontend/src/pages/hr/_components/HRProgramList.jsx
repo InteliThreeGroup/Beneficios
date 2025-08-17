@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "../AuthClientContext";
+import { useAuth } from "../../auth/AuthClientContext";
 import { Loader2, AlertTriangle, List, Coins, Utensils, BookOpen, HeartPulse, Bus, GraduationCap, Building } from "lucide-react";
 
 const benefitDetails = {

@@ -1,9 +1,7 @@
 import React from 'react';
-import { useAuth } from '../../AuthClientContext';
+import { useAuth } from '../../../auth/AuthClientContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers, faChartLine } from '@fortawesome/free-solid-svg-icons';
-
-// Importando o componente que já busca e gerencia os fundos corretamente
 import HRFundsManagement from '../HRFundsManagement';
 
 const HRMainDashboardPage = () => {
