@@ -5,18 +5,18 @@ import HRUpdateBenefitAmount from '../HRUpdateBenefitAmount';
 
 const HRWorkersPage = () => {
     return (
-        <div className="hr-workers-page">
-            <div className="workers-page-header">
-                <h2>Worker Management</h2>
-                <p>Manage workers, payments, and benefits</p>
+        <div className="space-y-8">
+            <div>
+                <h1 className="text-4xl font-bold text-gray-800">Gerenciamento de Trabalhadores</h1>
+                <p className="text-gray-500 mt-1">Gerencie trabalhadores, pagamentos e benefícios.</p>
             </div>
             
-            <div className="workers-page-grid">
-                <div className="workers-left-column">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
+                <div className="space-y-6">
                     <HRAssignWorker />
                     <HRUpdateBenefitAmount />
                 </div>
-                <div className="workers-right-column">
+                <div className="space-y-6">
                     <HRManualPayment />
                 </div>
             </div>

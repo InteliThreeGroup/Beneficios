@@ -1,229 +1,122 @@
-"use client"
+import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "../AuthClientContext";
+import { Loader2, AlertTriangle, Wallet, DollarSign, ArrowUp, CheckCircle } from "lucide-react";
 
-import { useState, useEffect, useCallback } from "react"
-import { useAuth } from "../AuthClientContext"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import {
-  faWallet,
-  faDollarSign,
-  faArrowUp,
-  faInfo,
-  faSpinner,
-  faCheckCircle,
-  faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons"
+export default function HRFundsManagement() {
+  const { actors } = useAuth();
+  const [availableFunds, setAvailableFunds] = useState(0);
+  const [depositAmount, setDepositAmount] = useState("");
+  const [depositMessage, setDepositMessage] = useState({ text: "", type: "" });
+  const [depositLoading, setDepositLoading] = useState(false);
+  const [isLoadingFunds, setIsLoadingFunds] = useState(true);
 
-const HRFundsManagement = () => {
-  const { actors } = useAuth()
-  const [availableFunds, setAvailableFunds] = useState(0)
-  const [depositAmount, setDepositAmount] = useState("")
-  const [depositMessage, setDepositMessage] = useState("")
-  const [depositLoading, setDepositLoading] = useState(false)
-  const [isLoadingFunds, setIsLoadingFunds] = useState(true)
-  const [fundsError, setFundsError] = useState("")
-
-  const formatAmount = (amount) => (Number(amount) / 10000).toFixed(2)
+  const formatAmount = (amount) => (Number(amount) / 10000).toFixed(2);
 
   const fetchFunds = useCallback(async () => {
-    if (!actors?.benefits_manager) {
-      return
-    }
-
-    setIsLoadingFunds(true)
-    setFundsError("")
-
+    if (!actors?.benefits_manager) return;
+    setIsLoadingFunds(true);
     try {
-      const fundsResult = await actors.benefits_manager.getAvailableFunds()
-      if (typeof fundsResult !== "undefined") {
-        setAvailableFunds(Number(fundsResult))
-      } else {
-        if (fundsResult.ok) {
-          setAvailableFunds(Number(fundsResult.ok))
-        } else {
-          throw new Error(fundsResult.err || "Unknown error fetching funds.")
-        }
-      }
-    } catch (err) {
-      console.error("Error fetching funds:", err)
-      setFundsError("Failed to load available balance.")
+      const fundsResult = await actors.benefits_manager.getAvailableFunds();
+      setAvailableFunds(Number(fundsResult));
+    } catch (error) {
+      console.error("Error fetching funds:", error);
+      setDepositMessage({ text: "Failed to load available funds.", type: "error" });
     } finally {
-      setIsLoadingFunds(false)
+      setIsLoadingFunds(false);
     }
-  }, [actors])
+  }, [actors]);
 
   useEffect(() => {
-    fetchFunds()
-  }, [fetchFunds])
+    fetchFunds();
+  }, [fetchFunds]);
 
   const handleDeposit = async (e) => {
-    e.preventDefault()
-    setDepositLoading(true)
-    setDepositMessage("")
-
-    if (!actors?.benefits_manager || !depositAmount) {
-      setDepositMessage("Error: Please enter the deposit amount.")
-      setDepositLoading(false)
-      return
+    e.preventDefault();
+    if (!actors?.benefits_manager) {
+        setDepositMessage({ text: "Error: Benefits manager actor not available.", type: "error" });
+        return;
     }
-
+    setDepositLoading(true);
+    setDepositMessage({ text: "", type: "" });
     try {
-      const amountInNats = BigInt(Math.floor(Number.parseFloat(depositAmount) * 10000))
-      const result = await actors.benefits_manager.depositFunds(amountInNats)
-
+      const amountInNats = BigInt(Math.floor(parseFloat(depositAmount) * 10000));
+      const result = await actors.benefits_manager.depositFunds(amountInNats);
       if (result.ok) {
-        setDepositMessage(`Deposit of ${formatAmount(amountInNats)} ICP completed successfully!`)
-        setDepositAmount("")
-        await fetchFunds()
+        setDepositMessage({ text: `Successfully deposited $${depositAmount}.`, type: "success" });
+        setDepositAmount("");
+        fetchFunds(); // Refresh funds after deposit
       } else {
-        setDepositMessage(`Failed to deposit funds: ${result.err}`)
+        setDepositMessage({ text: `Failed to deposit: ${result.err}`, type: "error" });
       }
-    } catch (err) {
-      console.error("Error depositing funds:", err)
-      setDepositMessage(`Unexpected error depositing funds: ${err.message}`)
+    } catch (error) {
+      console.error("Error during deposit:", error);
+      setDepositMessage({ text: "An unexpected error occurred during deposit.", type: "error" });
     } finally {
-      setDepositLoading(false)
+      setDepositLoading(false);
     }
-  }
-
-  const renderFundsDisplay = () => {
-    if (isLoadingFunds) {
-      return (
-        <div className="funds-loading">
-          <FontAwesomeIcon icon={faSpinner} spin />
-          <span>Loading balance...</span>
-        </div>
-      )
-    }
-
-    if (fundsError) {
-      return (
-        <div className="funds-error">
-          <FontAwesomeIcon icon={faExclamationTriangle} />
-          <span>{fundsError}</span>
-        </div>
-      )
-    }
-
-    return (
-      <div className="funds-amount">
-        <FontAwesomeIcon icon={faDollarSign} />
-        <span>{formatAmount(availableFunds)} ICP</span>
-      </div>
-    )
-  }
+  };
 
   return (
-    <div className="dashboard-card funds-management-card">
-      {/* Card Header */}
-      <div className="card-header">
-        <div className="card-icon">
-          <FontAwesomeIcon icon={faWallet} />
+    <div className="bg-white rounded-xl shadow-md p-6 space-y-6">
+      <div className="flex items-center space-x-4">
+        <div className="bg-green-100 text-green-600 p-3 rounded-full">
+          <Wallet size={24} />
         </div>
-        <div className="card-title-section">
-          <h3>Canister Funds Management</h3>
-          <p>Manage and distribute funds to your workers</p>
+        <div>
+          <h3 className="text-xl font-semibold text-gray-900">Fundos da Empresa</h3>
+          <p className="text-sm text-gray-500">Deposite e visualize os fundos disponíveis.</p>
         </div>
       </div>
 
-      {/* Available Balance Section */}
-      <div className="funds-balance-section">
-        <div className="balance-card">
-          <div className="balance-header">
-            <div className="balance-label">
-              <FontAwesomeIcon icon={faWallet} />
-              <span>Available Balance for Distribution</span>
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+        <p className="text-sm font-medium text-gray-500 mb-1">Total Disponível</p>
+        {isLoadingFunds ? (
+          <Loader2 className="animate-spin text-blue-500 mx-auto" />
+        ) : (
+          <p className="text-3xl font-bold text-gray-800">${formatAmount(availableFunds)}</p>
+        )}
+      </div>
+
+      <form onSubmit={handleDeposit} className="space-y-4">
+        <div>
+          <label htmlFor="depositAmount" className="block text-sm font-medium text-gray-700">
+            Valor do Depósito (em ICP)
+          </label>
+          <div className="mt-1 relative rounded-md shadow-sm">
+            <div className="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
+              <DollarSign className="h-5 w-5 text-gray-400" />
             </div>
-            <div className="balance-display">{renderFundsDisplay()}</div>
+            <input
+              type="number"
+              id="depositAmount"
+              value={depositAmount}
+              onChange={(e) => setDepositAmount(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+              placeholder="0.00"
+              step="0.01"
+              required
+              disabled={depositLoading}
+            />
           </div>
         </div>
-      </div>
+        <button
+          type="submit"
+          disabled={depositLoading}
+          className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-700 disabled:bg-blue-400 flex items-center justify-center gap-2"
+        >
+          {depositLoading ? <Loader2 className="animate-spin" /> : <ArrowUp size={16} />}
+          {depositLoading ? "Processando..." : "Depositar Fundos"}
+        </button>
+      </form>
 
-      {/* Deposit Section */}
-      <div className="deposit-section">
-        <div className="section-header">
-          <h4>
-            <FontAwesomeIcon icon={faArrowUp} />
-            Add Funds
-          </h4>
-          <p>Deposit funds into the canister to distribute to workers</p>
+      {depositMessage.text && (
+        <div className={`p-3 rounded-lg flex items-center gap-3 text-sm ${
+            depositMessage.type === 'error' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+        }`}>
+          {depositMessage.type === 'error' ? <AlertTriangle size={16} /> : <CheckCircle size={16} />}
+          <span>{depositMessage.text}</span>
         </div>
-
-        <form onSubmit={handleDeposit} className="deposit-form">
-          <div className="form-group">
-            <label htmlFor="depositAmount">
-              <FontAwesomeIcon icon={faDollarSign} />
-              Amount to Deposit (ICP)
-            </label>
-            <div className="input-wrapper">
-              <input
-                type="number"
-                id="depositAmount"
-                value={depositAmount}
-                onChange={(e) => setDepositAmount(e.target.value)}
-                placeholder="Ex: 100.00"
-                step="0.01"
-                required
-                className="form-input deposit-input"
-                min="0"
-              />
-              <div className="input-suffix">ICP</div>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={depositLoading || !depositAmount || isLoadingFunds}
-            className="btn btn-primary deposit-button"
-          >
-            {depositLoading ? (
-              <>
-                <FontAwesomeIcon icon={faSpinner} spin />
-                Processing Deposit...
-              </>
-            ) : (
-              <>
-                <FontAwesomeIcon icon={faArrowUp} />
-                Deposit Funds
-              </>
-            )}
-          </button>
-
-          {depositMessage && (
-            <div
-              className={`message ${
-                depositMessage.startsWith("Failed") || depositMessage.startsWith("Error")
-                  ? "message-error"
-                  : "message-success"
-              }`}
-            >
-              <FontAwesomeIcon
-                icon={
-                  depositMessage.startsWith("Failed") || depositMessage.startsWith("Error")
-                    ? faExclamationTriangle
-                    : faCheckCircle
-                }
-              />
-              <span>{depositMessage}</span>
-            </div>
-          )}
-        </form>
-      </div>
-
-      {/* Info Note */}
-      <div className="info-note">
-        <div className="info-icon">
-          <FontAwesomeIcon icon={faInfo} />
-        </div>
-        <div className="info-content">
-          <h5>Deposit Simulation</h5>
-          <p>
-            This is a simulated deposit for the canister. In a real application, you would transfer ICP or tokens to the
-            canister's Principal through a connected wallet.
-          </p>
-        </div>
-      </div>
+      )}
     </div>
-  )
+  );
 }
-
-export default HRFundsManagement

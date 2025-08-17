@@ -1,225 +1,118 @@
-"use client"
+import { useState } from "react";
+import { useAuth } from "../AuthClientContext";
+import { Loader2, AlertTriangle, CheckCircle, PlusCircle, Tag, Coins, Calendar, Clock } from "lucide-react";
 
-import { useState } from "react"
-import { useAuth } from "../AuthClientContext"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import {
-  faPlusCircle,
-  faUtensils,
-  faGraduationCap,
-  faHeartbeat,
-  faBus,
-  faPalette,
-  faSpinner,
-  faCheckCircle,
-  faExclamationTriangle,
-  faTag,
-  faCoins,
-  faCalendarAlt,
-  faClock,
-} from "@fortawesome/free-solid-svg-icons"
+const benefitOptions = [
+    { key: "Food", label: "Alimentação" },
+    { key: "Culture", label: "Cultura" },
+    { key: "Health", label: "Saúde" },
+    { key: "Transport", label: "Transporte" },
+    { key: "Education", label: "Educação" },
+];
 
-const benefitIcons = {
-  Food: faUtensils,
-  Education: faGraduationCap,
-  Health: faHeartbeat,
-  Transport: faBus,
-  Culture: faPalette,
-}
-
-const benefitLabels = {
-  Food: "Food",
-  Culture: "Culture",
-  Health: "Health",
-  Transport: "Transport",
-  Education: "Education",
-}
-
-const HRProgramCreation = () => {
-  const { actors, profile } = useAuth()
-  const [programName, setProgramName] = useState("")
-  const [benefitType, setBenefitType] = useState("Food")
-  const [amountPerWorker, setAmountPerWorker] = useState("")
-  const [frequency, setFrequency] = useState("Monthly")
-  const [paymentDay, setPaymentDay] = useState("1")
-  const [creationMessage, setCreationMessage] = useState("")
-  const [creationLoading, setCreationLoading] = useState(false)
+export default function HRProgramCreation() {
+  const { actors, profile } = useAuth();
+  const [programName, setProgramName] = useState("");
+  const [benefitType, setBenefitType] = useState("Food");
+  const [amountPerWorker, setAmountPerWorker] = useState("");
+  const [frequency, setFrequency] = useState("Monthly");
+  const [paymentDay, setPaymentDay] = useState("1");
+  const [message, setMessage] = useState({ text: "", type: "" });
+  const [loading, setLoading] = useState(false);
 
   const handleCreateProgram = async (e) => {
-    e.preventDefault()
-    setCreationLoading(true)
-    setCreationMessage("")
-
-    if (!programName || !amountPerWorker || !frequency || !paymentDay || !profile?.companyId?.[0]) {
-      setCreationMessage("Please fill in all fields and make sure the HR profile is loaded.")
-      setCreationLoading(false)
-      return
+    e.preventDefault();
+    setLoading(true);
+    setMessage({ text: "", type: "" });
+    
+    if (!profile?.companyId?.[0]) {
+      setMessage({ text: "Erro: Company ID não encontrado no perfil.", type: "error" });
+      setLoading(false);
+      return;
     }
-
+    
     try {
-      if (actors && actors.benefits_manager) {
-        
-        // --- CORREÇÃO FINAL E DEFINITIVA ---
-        // A função no backend espera 6 argumentos separados, e não um objeto.
-        const result = await actors.benefits_manager.createBenefitProgram(
-          programName,                              // 1. name: Text
-          { [benefitType]: null },                   // 2. benefitType: BenefitType
-          profile.companyId[0],                     // 3. companyId: Text
-          BigInt(Math.floor(Number.parseFloat(amountPerWorker) * 10000)), // 4. amountPerWorker: Nat
-          { [frequency]: null },                     // 5. frequency: PaymentFrequency
-          BigInt(paymentDay)                          // 6. paymentDay: Nat
-        );
-        // --- FIM DA CORREÇÃO ---
+      // Corrigindo a ordem dos parâmetros conforme a assinatura no backend:
+      // createBenefitProgram(name, benefitType, companyId, amountPerWorker, frequency, paymentDay)
+      const result = await actors.benefits_manager.createBenefitProgram(
+        programName,                                              // name: Text
+        { [benefitType]: null },                                 // benefitType: BenefitType
+        profile.companyId[0],                                    // companyId: Text
+        BigInt(Math.floor(parseFloat(amountPerWorker) * 10000)), // amountPerWorker: Nat
+        { [frequency]: null },                                   // frequency: PaymentFrequency
+        BigInt(paymentDay)                                       // paymentDay: Nat
+      );
 
-        if (result.ok) {
-          setCreationMessage(`Program "${programName}" created successfully!`)
-          // Limpa o formulário
-          setProgramName("")
-          setAmountPerWorker("")
-          setBenefitType("Food")
-          setFrequency("Monthly")
-          setPaymentDay("1")
-        } else {
-          setCreationMessage(`Error creating program: ${result.err}`)
-        }
+      if (result.ok) {
+        setMessage({ text: "Programa criado com sucesso!", type: "success" });
+        setProgramName("");
+        setAmountPerWorker("");
       } else {
-        setCreationMessage("Error: Benefits management module not loaded.")
+        setMessage({ text: `Erro: ${result.err}`, type: "error" });
       }
     } catch (error) {
-      console.error("Error creating program:", error)
-      setCreationMessage(`Unexpected error creating program: ${error.message}`)
+      console.error("Error creating program:", error);
+      setMessage({ text: "Ocorreu um erro inesperado.", type: "error" });
     } finally {
-      setCreationLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  // O restante do componente (JSX) permanece o mesmo...
   return (
-    <div className="dashboard-card program-creation-card">
-      <div className="card-header">
-        <div className="card-icon">
-          <FontAwesomeIcon icon={faPlusCircle} />
+    <div className="bg-white rounded-xl shadow-md p-6">
+      <h3 className="text-xl font-semibold text-gray-900 mb-4">Criar Novo Programa</h3>
+      <form onSubmit={handleCreateProgram} className="space-y-4">
+        <div>
+          <label htmlFor="programName" className="block text-sm font-medium text-gray-700">Nome do Programa</label>
+          <div className="mt-1 relative">
+            <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input type="text" id="programName" value={programName} onChange={(e) => setProgramName(e.target.value)} required className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg" placeholder="Ex: Benefício Alimentação"/>
+          </div>
         </div>
         <div>
-          <h3>Create New Benefit Program</h3>
-          <p>Set up a new program for your workers</p>
+          <label htmlFor="benefitType" className="block text-sm font-medium text-gray-700">Tipo de Benefício</label>
+          <select id="benefitType" value={benefitType} onChange={(e) => setBenefitType(e.target.value)} className="mt-1 w-full py-2 px-3 border border-gray-300 rounded-lg">
+            {benefitOptions.map(opt => <option key={opt.key} value={opt.key}>{opt.label}</option>)}
+          </select>
         </div>
-      </div>
-
-      <form onSubmit={handleCreateProgram} className="program-form">
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="programName">
-              <FontAwesomeIcon icon={faTag} />
-              Program Name
-            </label>
-            <input
-              type="text"
-              id="programName"
-              value={programName}
-              onChange={(e) => setProgramName(e.target.value)}
-              placeholder="Ex: Meal Voucher 2024"
-              required
-              className="form-input"
-              disabled={creationLoading}
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="amountPerWorker">
-              <FontAwesomeIcon icon={faCoins} />
-              Amount per Worker (ICP)
-            </label>
-            <input
-              type="number"
-              id="amountPerWorker"
-              value={amountPerWorker}
-              onChange={(e) => setAmountPerWorker(e.target.value)}
-              placeholder="Ex: 50.00"
-              step="0.01"
-              min="0"
-              required
-              className="form-input"
-              disabled={creationLoading}
-            />
+        <div>
+          <label htmlFor="amountPerWorker" className="block text-sm font-medium text-gray-700">Valor por Trabalhador</label>
+          <div className="mt-1 relative">
+            <Coins className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input type="number" id="amountPerWorker" value={amountPerWorker} onChange={(e) => setAmountPerWorker(e.target.value)} required className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg" placeholder="0.00" step="0.01"/>
           </div>
         </div>
-
-        <div className="form-row">
-            <div className="form-group">
-                <label htmlFor="frequency">
-                    <FontAwesomeIcon icon={faClock} />
-                    Payment Frequency
-                </label>
-                <select 
-                    id="frequency" 
-                    value={frequency} 
-                    onChange={(e) => setFrequency(e.target.value)} 
-                    className="form-input"
-                    disabled={creationLoading}
-                >
-                    <option value="Monthly">Monthly</option>
-                    <option value="Annually">Annually</option>
-                </select>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="frequency" className="block text-sm font-medium text-gray-700">Frequência</label>
+            <div className="mt-1 relative">
+              <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <select id="frequency" value={frequency} onChange={(e) => setFrequency(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg">
+                <option value="Monthly">Mensal</option>
+              </select>
             </div>
-            <div className="form-group">
-                <label htmlFor="paymentDay">
-                    <FontAwesomeIcon icon={faCalendarAlt} />
-                    Payment Day
-                </label>
-                <input 
-                    type="number" 
-                    id="paymentDay"
-                    value={paymentDay}
-                    onChange={(e) => setPaymentDay(e.target.value)}
-                    placeholder="Ex: 1"
-                    min="1"
-                    max="28"
-                    required
-                    className="form-input"
-                    disabled={creationLoading}
-                />
+          </div>
+          <div>
+            <label htmlFor="paymentDay" className="block text-sm font-medium text-gray-700">Dia do Pagamento</label>
+            <div className="mt-1 relative">
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input type="number" id="paymentDay" value={paymentDay} onChange={(e) => setPaymentDay(e.target.value)} required className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg" min="1" max="28"/>
             </div>
-        </div>
-
-        <div className="form-group">
-          <label>Benefit Type</label>
-          <div className="benefit-type-selector">
-            {Object.entries(benefitLabels).map(([key, label]) => (
-              <div
-                key={key}
-                className={`benefit-option ${benefitType === key ? "selected" : ""}`}
-                onClick={() => !creationLoading && setBenefitType(key)}
-                role="button"
-                tabIndex={0}
-                onKeyPress={(e) => { if (e.key === "Enter" && !creationLoading) { setBenefitType(key) } }}
-              >
-                <FontAwesomeIcon icon={benefitIcons[key]} />
-                <span>{label}</span>
-              </div>
-            ))}
           </div>
         </div>
-
-        <div className="form-actions">
-          <button type="submit" disabled={creationLoading} className="btn btn-primary create-button">
-            {creationLoading ? (
-              <><FontAwesomeIcon icon={faSpinner} spin /> Creating...</>
-            ) : (
-              <><FontAwesomeIcon icon={faPlusCircle} /> Create Program</>
-            )}
-          </button>
-        </div>
-
-        {creationMessage && (
-          <div className={`message ${creationMessage.includes("Error") || creationMessage.includes("error") ? "message-error" : "message-success"}`}>
-            <FontAwesomeIcon icon={creationMessage.includes("Error") || creationMessage.includes("error") ? faExclamationTriangle : faCheckCircle} />
-            {creationMessage}
+        <button type="submit" disabled={loading} className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-700 disabled:bg-blue-400 flex items-center justify-center gap-2">
+          {loading ? <Loader2 className="animate-spin" /> : <PlusCircle size={16} />}
+          {loading ? "Criando..." : "Criar Programa"}
+        </button>
+        {message.text && (
+          <div className={`p-3 rounded-lg flex items-center gap-3 text-sm ${
+              message.type === 'error' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+          }`}>
+            {message.type === 'error' ? <AlertTriangle size={16} /> : <CheckCircle size={16} />}
+            <span>{message.text}</span>
           </div>
         )}
       </form>
     </div>
-  )
+  );
 }
-
-export default HRProgramCreation;

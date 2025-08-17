@@ -1,266 +1,157 @@
-"use client"
+// src/components/WalletScreen.jsx
 
-import { useState, useEffect, useCallback } from "react"
-import { useAuth } from "./AuthClientContext"
-import { useNavigate } from "react-router-dom"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import {
-  faUtensils,
-  faBookOpen,
-  faHeartbeat,
-  faBus,
-  faGraduationCap,
-  faQrcode,
-  faSpinner,
-  faExclamationTriangle,
-  faBell,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons"
+import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "./AuthClientContext";
+import { Link } from "react-router-dom";
+import { Bell, Utensils, BookOpen, HeartPulse, Bus, GraduationCap, Building, Loader2, AlertTriangle } from "lucide-react";
+import { ConfirmPaymentModal } from './ConfirmPaymentModal'; // Certifique-se que este componente existe
 
-const WalletScreen = () => {
-  const { actors, principal, profile } = useAuth()
-  const navigate = useNavigate()
-  const [wallet, setWallet] = useState(null)
-  const [transactions, setTransactions] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
+export function WalletScreen() {
+  const { actors, principal, profile } = useAuth();
+  const [wallet, setWallet] = useState(null);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const getBenefitIcon = (type) => {
-    switch (type) {
-      case "Food":
-        return faUtensils
-      case "Culture":
-        return faBookOpen
-      case "Health":
-        return faHeartbeat
-      case "Transport":
-        return faBus
-      case "Education":
-        return faGraduationCap
-      default:
-        return faQrcode
-    }
-  }
+  // Mapeamento de tipos de benefício para ícones e nomes
+  const benefitDetails = {
+    Food: { icon: <Utensils size={24} className="text-blue-500" />, name: "Alimentação" },
+    Culture: { icon: <BookOpen size={24} className="text-purple-500" />, name: "Cultura" },
+    Health: { icon: <HeartPulse size={24} className="text-green-500" />, name: "Saúde" },
+    Transport: { icon: <Bus size={24} className="text-orange-500" />, name: "Mobilidade" },
+    Education: { icon: <GraduationCap size={24} className="text-red-500" />, name: "Educação" },
+    Default: { icon: <Building size={24} className="text-gray-500" />, name: "Outros" }
+  };
 
-  const getBenefitLabel = (type) => {
-    switch (type) {
-      case "Food":
-        return "Food"
-      case "Culture":
-        return "Culture"
-      case "Health":
-        return "Health"
-      case "Transport":
-        return "Mobility"
-      case "Education":
-        return "Education"
-      default:
-        return type
-    }
-  }
+  const getBenefitDetails = (type) => {
+    return benefitDetails[type] || benefitDetails.Default;
+  };
 
-  const getBenefitColor = (type) => {
-    switch (type) {
-      case "Food":
-        return "#2196F3"
-      case "Culture":
-        return "#9C27B0"
-      case "Health":
-        return "#4CAF50"
-      case "Transport":
-        return "#FF9800"
-      case "Education":
-        return "#F44336"
-      default:
-        return "#2196F3"
-    }
-  }
+  const formatBenefitType = (typeObj) => Object.keys(typeObj)[0] || "Default";
+  const formatAmount = (amount) => (Number(amount) / 10000).toFixed(2);
+  const formatTime = (timestamp) => new Date(Number(timestamp) / 1_000_000).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
   const fetchData = useCallback(async () => {
     if (!actors || !actors.wallets || !principal) {
-      setLoading(false)
-      return
+      setError("Cliente de autenticação não está pronto.");
+      setLoading(false);
+      return;
     }
-    setLoading(true)
-    setError("")
+    setLoading(true);
+    setError("");
     try {
-      const walletResult = await actors.wallets.getWallet(principal)
+      const walletResult = await actors.wallets.getWallet(principal);
       if (walletResult.ok) {
-        setWallet(walletResult.ok)
+        setWallet(walletResult.ok);
       } else {
-        setError(`Error fetching wallet: ${walletResult.err}`)
+        setError(`Erro ao buscar carteira: ${walletResult.err}`);
       }
 
-      const txHistoryResult = await actors.wallets.getTransactionHistory(principal, [BigInt(10)])
-      setTransactions(txHistoryResult)
+      const txHistoryResult = await actors.wallets.getTransactionHistory(principal, [BigInt(5)]); // Busca as últimas 5
+      if(txHistoryResult){
+        setTransactions(txHistoryResult);
+      }
     } catch (err) {
-      console.error("Error fetching worker data:", err)
-      setError("Failed to load wallet data.")
+      console.error("Erro ao buscar dados da carteira:", err);
+      setError("Falha ao carregar os dados da carteira.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [actors, principal])
+  }, [actors, principal]);
 
   useEffect(() => {
-    fetchData()
-  }, [fetchData])
-
-  const formatBenefitType = (type) => Object.keys(type)[0] || "Unknown"
-  const formatAmount = (amount) => (Number(amount) / 10000).toFixed(2)
-  const formatTime = (timestamp) => {
-    const date = new Date(Number(timestamp) / 1_000_000)
-    return date.toLocaleTimeString("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-  }
-
-  const formatDate = (timestamp) => {
-    const date = new Date(Number(timestamp) / 1_000_000)
-    const today = new Date()
-    const yesterday = new Date(today)
-    yesterday.setDate(yesterday.getDate() - 1)
-
-    if (date.toDateString() === today.toDateString()) {
-      return "Today"
-    } else if (date.toDateString() === yesterday.toDateString()) {
-      return "Yesterday"
-    } else {
-      return date.toLocaleDateString("en-US", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-      })
-    }
-  }
-
-  const groupTransactionsByDate = (txs) => {
-    return txs.reduce((acc, tx) => {
-      const dateKey = formatDate(tx.timestamp)
-      if (!acc[dateKey]) acc[dateKey] = []
-      acc[dateKey].push(tx)
-      return acc
-    }, {})
-  }
+    fetchData();
+  }, [fetchData]);
 
   if (loading) {
     return (
-      <div className="mobile-loading">
-        <FontAwesomeIcon icon={faSpinner} spin />
-        <p>Loading wallet...</p>
+      <div className="flex justify-center items-center h-full p-8">
+        <Loader2 className="animate-spin text-blue-500" size={48} />
       </div>
-    )
+    );
   }
 
   if (error) {
     return (
-      <div className="mobile-error">
-        <FontAwesomeIcon icon={faExclamationTriangle} />
-        <p>{error}</p>
+      <div className="flex flex-col justify-center items-center h-full p-8 text-center">
+        <AlertTriangle className="text-red-500" size={48} />
+        <p className="mt-4 text-red-700">{error}</p>
+        <button onClick={fetchData} className="mt-4 bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg">Tentar Novamente</button>
       </div>
-    )
+    );
   }
 
-  const groupedTransactions = groupTransactionsByDate(transactions)
+  const latestTransaction = transactions[0];
 
   return (
-    <div className="mobile-wallet-screen">
-      {/* Mobile Header */}
-      <div className="mobile-header">
-        <div className="mobile-header-top">
-          <h1 className="mobile-title">Wallet</h1>
-          <div className="mobile-header-actions">
-            <button className="mobile-notification-btn">
-              <FontAwesomeIcon icon={faBell} />
-            </button>
-            <div className="mobile-avatar">
-              <FontAwesomeIcon icon={faUser} />
-            </div>
+    <>
+      <div className="container mx-auto p-4 md:p-8 pb-28 md:pb-8">
+        <header className="flex justify-between items-center mb-6">
+          <div>
+            <p className="text-gray-500">Carteira</p>
+            <h1 className="text-3xl font-bold">Benefícios</h1>
           </div>
-        </div>
-        <h2 className="mobile-subtitle">Benefits</h2>
-        <p className="mobile-section-title">My Balances</p>
-      </div>
+          <div className="flex items-center space-x-4">
+            <button className="relative p-2">
+              <Bell size={24} className="text-gray-600" />
+              <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-blue-500"></span>
+            </button>
+            <img src={`https://avatars.dicebear.com/api/initials/${profile?.name || 'User'}.svg`} alt="Foto do usuário" className="w-10 h-10 rounded-full bg-gray-200" />
+          </div>
+        </header>
 
-      {/* Balance Cards */}
-      <div className="mobile-balance-section">
-        {wallet?.balances && wallet.balances.length > 0 ? (
-          <div className="mobile-balance-cards">
-            {wallet.balances.map((b) => {
-              const benefitType = formatBenefitType(b.benefitType)
-              const color = getBenefitColor(benefitType)
-              return (
-                <div key={benefitType} className="mobile-balance-card">
-                  <div className="mobile-balance-icon" style={{ backgroundColor: color }}>
-                    <FontAwesomeIcon icon={getBenefitIcon(benefitType)} />
+        <section>
+          <h2 className="text-lg font-semibold text-gray-700 mb-4">Meus Saldos</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            {wallet?.balances && wallet.balances.length > 0 ? (
+              wallet.balances.map((b) => {
+                const type = formatBenefitType(b.benefitType);
+                const details = getBenefitDetails(type);
+                return (
+                  <div key={type} className="bg-white rounded-xl shadow-sm p-4 flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="bg-blue-100 p-3 rounded-lg">{details.icon}</div>
+                      <span className="font-medium">{details.name}</span>
+                    </div>
+                    <span className="font-bold text-lg">$ {formatAmount(b.balance)}</span>
                   </div>
-                  <div className="mobile-balance-info">
-                    <span className="mobile-balance-type">{getBenefitLabel(benefitType)}</span>
-                    <span className="mobile-balance-amount">$ {formatAmount(b.balance)}</span>
+                );
+              })
+            ) : (
+              <p className="text-gray-500 col-span-full">Nenhum saldo encontrado.</p>
+            )}
+          </div>
+        </section>
+
+        <section className="mt-8 bg-white rounded-xl shadow-sm p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold text-gray-700">Extrato Recente</h2>
+            <Link to="/extrato" className="text-blue-500 font-semibold">Ver Mais</Link>
+          </div>
+          {latestTransaction ? (
+             <div>
+                <h3 className="text-gray-500 font-medium mb-3">Terça - Feira</h3>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="font-semibold">{latestTransaction.description}</p>
+                    <p className="text-sm text-blue-500 font-medium">
+                      {getBenefitDetails(formatBenefitType(latestTransaction.benefitType)).name}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-red-500">$ {formatAmount(latestTransaction.amount)}</p>
+                    <p className="text-sm text-gray-400">{formatTime(latestTransaction.timestamp)}</p>
                   </div>
                 </div>
-              )
-            })}
-          </div>
-        ) : (
-          <div className="mobile-empty-balances">
-            <p>No benefit balance found.</p>
-          </div>
-        )}
-      </div>
-
-      {/* Extract Section */}
-      <div className="mobile-extract-section">
-        <div className="mobile-extract-header">
-          <h3 className="mobile-extract-title">Statement</h3>
-          <button className="mobile-see-more">See More</button>
-        </div>
-
-        {Object.keys(groupedTransactions).length > 0 ? (
-          <div className="mobile-transactions">
-            {Object.entries(groupedTransactions).map(([date, dailyTransactions]) => (
-              <div key={date} className="mobile-transaction-group">
-                <div className="mobile-transaction-date">{date}</div>
-                {dailyTransactions.map((tx) => {
-                  const benefitType = formatBenefitType(tx.benefitType)
-                  const color = getBenefitColor(benefitType)
-                  const isCredit = Object.keys(tx.transactionType)[0] === "Credit"
-                  return (
-                    <div key={tx.id} className="mobile-transaction-item">
-                      <div className="mobile-transaction-icon" style={{ backgroundColor: color }}>
-                        <FontAwesomeIcon icon={getBenefitIcon(benefitType)} />
-                      </div>
-                      <div className="mobile-transaction-details">
-                        <div className="mobile-transaction-name">{tx.description}</div>
-                        <div className="mobile-transaction-category">{getBenefitLabel(benefitType)}</div>
-                      </div>
-                      <div className="mobile-transaction-right">
-                        <div className={`mobile-transaction-amount ${isCredit ? "credit" : "debit"}`}>
-                          {isCredit ? "" : "-"} $ {formatAmount(tx.amount)}
-                        </div>
-                        <div className="mobile-transaction-time">{formatTime(tx.timestamp)}</div>
-                      </div>
-                    </div>
-                  )
-                })}
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="mobile-empty-transactions">
-            <p>No transactions found.</p>
-          </div>
-        )}
+          ) : (
+            <p className="text-gray-500">Nenhuma transação recente.</p>
+          )}
+        </section>
       </div>
 
-      {/* QR Code Button */}
-      <div className="mobile-qr-section">
-        <button onClick={() => navigate("/pagar-qr")} className="mobile-qr-button">
-          <FontAwesomeIcon icon={faQrcode} />
-        </button>
-      </div>
-    </div>
-  )
+      {isModalOpen && <ConfirmPaymentModal onClose={() => setIsModalOpen(false)} />}
+    </>
+  );
 }
-
-export default WalletScreen

@@ -276,4 +276,13 @@ actor Establishment {
     public query(msg) func getTransactionHistory(limit: ?Nat) : async [PaymentTransaction] {
         let caller = msg.caller;
         let maxResults = Option.get(limit, 50);
-        let result = Iter.toArray(Iter.map(Iter.filter(transactions.entries(), func((txId: Text, tx: PaymentTransaction)) : Bool { tx.establishmentId == caller }), func((txId: Text, tx: PaymentTransaction)
+        let result = Iter.toArray(Iter.map(
+            Iter.filter(transactions.entries(), func((txId: Text, tx: PaymentTransaction)) : Bool { tx.establishmentId == caller }),
+            func((txId: Text, tx: PaymentTransaction)) : PaymentTransaction { tx }
+        ));
+        let sorted = Array.sort<PaymentTransaction>(result, func(a: PaymentTransaction, b: PaymentTransaction) : {#less; #equal; #greater} {
+            if (a.createdAt > b.createdAt) #less else #greater
+        });
+        Array.take<PaymentTransaction>(sorted, maxResults)
+    }
+}

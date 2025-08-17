@@ -1,149 +1,84 @@
-"use client"
+import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "../AuthClientContext";
+import { Loader2, AlertTriangle, List, Coins, Utensils, BookOpen, HeartPulse, Bus, GraduationCap, Building } from "lucide-react";
 
-import { useState, useEffect, useCallback } from "react"
-import { useAuth } from "../AuthClientContext"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import {
-  faListAlt,
-  faUtensils,
-  faGraduationCap,
-  faHeartbeat,
-  faBus,
-  faPalette,
-  faCoins,
-  faSpinner,
-  faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons"
+const benefitDetails = {
+    Food: { icon: <Utensils className="text-blue-500" />, name: "Alimentação" },
+    Culture: { icon: <BookOpen className="text-purple-500" />, name: "Cultura" },
+    Health: { icon: <HeartPulse className="text-green-500" />, name: "Saúde" },
+    Transport: { icon: <Bus className="text-orange-500" />, name: "Mobilidade" },
+    Education: { icon: <GraduationCap className="text-red-500" />, name: "Educação" },
+    Default: { icon: <Building className="text-gray-500" />, name: "Outros" }
+};
 
-const benefitIcons = {
-  Food: faUtensils,
-  Education: faGraduationCap,
-  Health: faHeartbeat,
-  Transport: faBus,
-  Culture: faPalette,
-}
+export default function HRProgramList() {
+  const { actors, profile } = useAuth();
+  const [programs, setPrograms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-const benefitLabels = {
-  Food: "Food",
-  Education: "Education",
-  Health: "Health",
-  Transport: "Transport",
-  Culture: "Culture",
-}
-
-const HRProgramList = () => {
-  const { actors, profile } = useAuth()
-  const [programs, setPrograms] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
-
-  const formatBenefitType = (type) => Object.keys(type)[0] || "Unknown"
-  const formatAmount = (amount) => (Number(amount) / 10000).toFixed(2)
+  const formatBenefitType = (type) => Object.keys(type)[0] || "Default";
+  const formatAmount = (amount) => (Number(amount) / 10000).toFixed(2);
 
   const fetchPrograms = useCallback(async () => {
     if (!actors?.benefits_manager || !profile?.companyId?.[0]) {
-      setError("Incomplete profile or company information.")
-      setLoading(false)
-      return
+      setError("Perfil ou informações da empresa incompletas.");
+      setLoading(false);
+      return;
     }
-
-    setLoading(true)
-    setError("")
+    setLoading(true);
     try {
-      const companyId = profile.companyId[0]
-      const result = await actors.benefits_manager.getCompanyBenefitPrograms(companyId)
-      setPrograms(result)
+      const companyId = profile.companyId[0];
+      const result = await actors.benefits_manager.getCompanyBenefitPrograms(companyId);
+      setPrograms(result);
     } catch (err) {
-      console.error("Error fetching programs:", err)
-      setError("Failed to load benefit programs.")
+      console.error("Error fetching programs:", err);
+      setError("Falha ao carregar os programas.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [actors, profile])
+  }, [actors, profile]);
 
   useEffect(() => {
-    fetchPrograms()
-  }, [fetchPrograms])
-
-  if (loading) {
-    return (
-      <div className="dashboard-card programs-list-card">
-        <div className="card-header">
-          <div className="card-icon">
-            <FontAwesomeIcon icon={faListAlt} />
-          </div>
-          <div>
-            <h3>Existing Benefit Programs</h3>
-            <p>View all programs created for your company</p>
-          </div>
-        </div>
-        <div className="loading-spinner">
-          <FontAwesomeIcon icon={faSpinner} spin />
-          Loading programs...
-        </div>
-      </div>
-    )
-  }
+    fetchPrograms();
+  }, [fetchPrograms]);
 
   return (
-    <div className="dashboard-card programs-list-card">
-      <div className="card-header">
-        <div className="card-icon">
-          <FontAwesomeIcon icon={faListAlt} />
-        </div>
-        <div>
-          <h3>Existing Benefit Programs</h3>
-          <p>View all programs created for your company</p>
-        </div>
-      </div>
-
-      {error && (
-        <div className="message message-error">
-          <FontAwesomeIcon icon={faExclamationTriangle} />
-          {error}
-        </div>
-      )}
-
-      {!error && programs.length > 0 ? (
-        <div className="programs-grid">
-          {programs.map((program) => {
-            const benefitTypeKey = formatBenefitType(program.benefitType)
-            const icon = benefitIcons[benefitTypeKey] || faListAlt
-            const label = benefitLabels[benefitTypeKey] || benefitTypeKey
-
-            return (
-              <div key={program.id} className="program-card">
-                <div className="program-header">
-                  <div className="program-icon">
-                    <FontAwesomeIcon icon={icon} />
+    <div className="bg-white rounded-xl shadow-md p-6">
+      <h3 className="text-xl font-semibold text-gray-900 mb-4">Programas Ativos</h3>
+      {loading && <div className="flex justify-center py-4"><Loader2 className="animate-spin text-blue-500" /></div>}
+      {error && <div className="p-3 rounded-lg flex items-center gap-3 text-sm bg-red-100 text-red-800"><AlertTriangle size={16} /><span>{error}</span></div>}
+      {!loading && !error && (
+        programs.length > 0 ? (
+          <div className="space-y-3">
+            {programs.map((program) => {
+              const benefitTypeKey = formatBenefitType(program.benefitType);
+              const details = benefitDetails[benefitTypeKey] || benefitDetails.Default;
+              return (
+                <div key={program.id} className="p-4 border border-gray-200 rounded-lg flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-gray-100 p-2 rounded-full">{details.icon}</div>
+                    <div>
+                      <p className="font-semibold">{program.name}</p>
+                      <p className="text-sm text-gray-500">{details.name}</p>
+                    </div>
                   </div>
-                  <div className="program-info">
-                    <h4 className="program-name">{program.name}</h4>
-                    <span className="program-type">{label}</span>
+                  <div className="text-right">
+                    <p className="font-bold text-gray-800 flex items-center gap-1"><Coins size={14}/> {formatAmount(program.amountPerWorker)}</p>
+                    <p className="text-xs text-gray-500">Mensal</p>
                   </div>
                 </div>
-                <div className="program-amount">
-                  <FontAwesomeIcon icon={faCoins} />
-                  <span>{formatAmount(program.amountPerWorker)} ICP</span>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      ) : (
-        !error && (
-          <div className="empty-state">
-            <div className="empty-icon">
-              <FontAwesomeIcon icon={faListAlt} />
-            </div>
-            <h4>No programs found</h4>
-            <p>No benefit programs have been created for this company yet.</p>
-            <p className="empty-subtitle">Create your first program to get started!</p>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center text-gray-500 py-8">
+            <List size={40} className="mx-auto mb-2"/>
+            <p>Nenhum programa encontrado.</p>
+            <p className="text-sm">Crie seu primeiro programa para começar.</p>
           </div>
         )
       )}
     </div>
-  )
+  );
 }
-
-export default HRProgramList

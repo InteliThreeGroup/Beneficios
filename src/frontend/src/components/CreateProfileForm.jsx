@@ -1,207 +1,187 @@
-"use client"
+import { useState } from "react";
+import { useAuth } from "./AuthClientContext";
+import { User, UserCheck, Store, Building, Loader2, CheckCircle, AlertTriangle } from "lucide-react";
 
-import { useState } from "react"
-import { useAuth } from "./AuthClientContext"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import {
-  faUser,
-  faUserTie,
-  faUsers,
-  faStore,
-  faBuilding,
-  faSpinner,
-  faCheckCircle,
-  faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons"
+const roleOptions = [
+  { value: "Worker", label: "Trabalhador", icon: <User size={24} />, description: "Receber e usar benefícios corporativos" },
+  { value: "HR", label: "Recursos Humanos", icon: <UserCheck size={24} />, description: "Gerenciar programas e trabalhadores" },
+  { value: "Establishment", label: "Estabelecimento", icon: <Store size={24} />, description: "Receber pagamentos de benefícios" },
+];
 
-const CreateProfileForm = () => {
-  const { actors, principal, refreshProfile } = useAuth()
-  const [name, setName] = useState("")
-  const [role, setRole] = useState("Worker")
-  const [companyId, setCompanyId] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState("")
-
-  const roleOptions = [
-    { value: "Worker", label: "Worker", icon: faUser, description: "Receive and use corporate benefits" },
-    { value: "HR", label: "Human Resources", icon: faUserTie, description: "Manage programs and workers" },
-    {
-      value: "Establishment",
-      label: "Establishment",
-      icon: faStore,
-      description: "Receive benefit payments",
-    },
-  ]
+export default function CreateProfileForm() {
+  const { actors, refreshProfile, principal } = useAuth();
+  const [name, setName] = useState("");
+  const [role, setRole] = useState("Worker");
+  const [companyId, setCompanyId] = useState(""); // Novo estado para o ID da empresa
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ text: "", type: "" });
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setMessage("")
+    e.preventDefault();
+    setLoading(true);
+    setMessage({ text: "", type: "" });
 
     if (!actors || !actors.identity_auth) {
-      setMessage("Error: Canister actors not loaded.")
-      setLoading(false)
-      return
+      setMessage({ text: "Erro: Atores do canister não carregados.", type: "error" });
+      setLoading(false);
+      return;
     }
 
     try {
-      let selectedRole
-      if (role === "HR") selectedRole = { HR: null }
-      else if (role === "Worker") selectedRole = { Worker: null }
-      else if (role === "Establishment") selectedRole = { Establishment: null }
-      else {
-        setMessage("Error: Invalid role type.")
-        setLoading(false)
-        return
-      }
+      let selectedRole;
+      if (role === "HR") selectedRole = { HR: null };
+      else if (role === "Establishment") selectedRole = { Establishment: null };
+      else selectedRole = { Worker: null };
 
-      let finalCompanyId
-      if (role !== "Establishment" && companyId.trim() !== "") {
-        finalCompanyId = [companyId.trim()]
-      } else {
-        finalCompanyId = []
-      }
-
-      const request = {
+      // --- CORREÇÃO APLICADA ---
+      // Monta o objeto (record) para enviar ao canister, agora incluindo o companyId.
+      const profileData = {
         name: name,
         role: selectedRole,
-        companyId: finalCompanyId,
-      }
+        // Em Candid/JS, um array com um item representa o valor Some(Text),
+        // e um array vazio `[]` representa o valor `null` para o tipo opcional `?Text`.
+        companyId: companyId ? [companyId] : [],
+      };
 
-      const result = await actors.identity_auth.createProfile(request)
+      const result = await actors.identity_auth.createProfile(profileData);
 
       if (result.ok) {
-        setMessage("Profile created successfully!")
-        await refreshProfile()
+        // Se é um estabelecimento, registra também no canister de establishment
+        if (role === "Establishment") {
+          try {
+            const establishmentData = {
+              name: name,
+              country: "Brasil", // Padrão por enquanto
+              businessCode: "GENERAL", // Padrão por enquanto
+              walletPrincipal: principal, // Usa o próprio principal como carteira
+              acceptedBenefitTypes: [
+                { Food: null },
+                { Culture: null },
+                { Health: null },
+                { Transport: null },
+                { Education: null }
+              ], // Aceita todos os tipos por padrão
+            };
+            
+            const establishmentResult = await actors.establishment.registerEstablishment(establishmentData);
+            if (establishmentResult.ok) {
+              console.log("Estabelecimento registrado com sucesso!");
+            } else {
+              console.warn("Erro ao registrar estabelecimento:", establishmentResult.err);
+            }
+          } catch (establishmentError) {
+            console.error("Erro ao registrar estabelecimento:", establishmentError);
+          }
+        }
+        
+        setMessage({ text: "Perfil criado com sucesso! Redirecionando...", type: "success" });
+        setTimeout(() => {
+          refreshProfile();
+        }, 1500);
       } else {
-        setMessage(`Error creating profile: ${result.err}`)
+        setMessage({ text: `Erro ao criar perfil: ${result.err}`, type: "error" });
       }
-    } catch (error) {
-      console.error("Error creating profile:", error)
-      setMessage(`Unexpected error: ${error.message}`)
+    } catch (err) {
+      console.error("Erro ao submeter o formulário:", err);
+      setMessage({ text: "Ocorreu um erro inesperado.", type: "error" });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="create-profile-screen">
-      <div className="create-profile-container">
-        <div className="dashboard-card profile-creation-card">
-          <div className="card-header">
-            <div className="card-icon">
-              <FontAwesomeIcon icon={faUsers} />
-            </div>
-            <div>
-              <h3>Create Profile</h3>
-              <p>Complete your registration to access the platform</p>
-            </div>
-          </div>
+    <div className="flex justify-center items-center py-8 bg-gray-50">
+      <div className="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-8">
+        <h2 className="text-3xl font-bold text-center text-gray-800">Crie seu Perfil</h2>
+        <p className="text-center text-gray-500 mt-2 mb-8">Escolha seu tipo de perfil para começar a usar o BeneChain.</p>
 
-          <div className="principal-info">
-            <div className="principal-display">
-              <span className="principal-label">Your Principal ID:</span>
-              <span className="principal-value">{principal?.toString()}</span>
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit} className="profile-form">
-            <div className="form-group">
-              <label htmlFor="name">
-                <FontAwesomeIcon icon={faUser} />
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="form-input"
-                placeholder="Enter your full name"
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Account Type</label>
-              <div className="role-selector">
-                {roleOptions.map((option) => (
-                  <div
-                    key={option.value}
-                    className={`role-option ${role === option.value ? "selected" : ""}`}
-                    onClick={() => {
-                      setRole(option.value)
-                      if (option.value === "Establishment") {
-                        setCompanyId("")
-                      }
-                    }}
-                  >
-                    <div className="role-icon">
-                      <FontAwesomeIcon icon={option.icon} />
-                    </div>
-                    <div className="role-info">
-                      <div className="role-title">{option.label}</div>
-                      <div className="role-description">{option.description}</div>
-                    </div>
-                    <div className="role-radio">
-                      <input
-                        type="radio"
-                        name="role"
-                        value={option.value}
-                        checked={role === option.value}
-                        onChange={() => {}}
-                      />
-                    </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tipo de Perfil
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {roleOptions.map((option) => (
+                <div
+                  key={option.value}
+                  onClick={() => setRole(option.value)}
+                  className={`cursor-pointer p-4 border-2 rounded-lg text-center transition-all ${
+                    role === option.value ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-400"
+                  }`}
+                >
+                  <div className={`mx-auto w-12 h-12 rounded-full flex items-center justify-center mb-3 ${
+                    role === option.value ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-500'
+                  }`}>
+                    {option.icon}
                   </div>
-                ))}
-              </div>
+                  <h3 className="font-semibold text-gray-800">{option.label}</h3>
+                  <p className="text-xs text-gray-500 mt-1">{option.description}</p>
+                </div>
+              ))}
             </div>
+          </div>
 
-            {role !== "Establishment" && (
-              <div className="form-group">
-                <label htmlFor="companyId">
-                  <FontAwesomeIcon icon={faBuilding} />
-                  Company ID (optional)
-                </label>
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              Seu Nome / Nome do Estabelecimento
+            </label>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Digite o nome"
+              required
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          {/* --- CAMPO CONDICIONAL PARA ID DA EMPRESA --- */}
+          {(role === "Worker" || role === "HR") && (
+            <div>
+              <label htmlFor="companyId" className="block text-sm font-medium text-gray-700 mb-1">
+                ID da Empresa (Nome da Empresa)
+              </label>
+              <div className="mt-1 relative">
+                <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
-                  type="text"
                   id="companyId"
+                  type="text"
                   value={companyId}
                   onChange={(e) => setCompanyId(e.target.value)}
-                  placeholder="Ex: company-01"
-                  className="form-input"
+                  placeholder="Digite o nome da empresa"
+                  required
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                 />
-                <div className="field-help">Leave blank if you don't know or don't have a specific company ID</div>
               </div>
-            )}
-
-            <div className="form-actions">
-              <button type="submit" disabled={loading} className="btn btn-primary create-profile-button">
-                {loading ? (
-                  <>
-                    <FontAwesomeIcon icon={faSpinner} spin />
-                    Creating Profile...
-                  </>
-                ) : (
-                  <>
-                    <FontAwesomeIcon icon={faCheckCircle} />
-                    Create Profile
-                  </>
-                )}
-              </button>
             </div>
-
-            {message && (
-              <div className={`message ${message.startsWith("Error") ? "message-error" : "message-success"}`}>
-                <FontAwesomeIcon icon={message.startsWith("Error") ? faExclamationTriangle : faCheckCircle} />
-                {message}
-              </div>
+          )}
+          
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="animate-spin mr-2" />
+                Criando Perfil...
+              </>
+            ) : (
+              "Criar e Acessar"
             )}
-          </form>
-        </div>
+          </button>
+
+          {message.text && (
+            <div className={`p-4 rounded-lg flex items-center gap-3 mt-4 ${
+                message.type === 'error' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+            }`}>
+              {message.type === 'error' ? <AlertTriangle /> : <CheckCircle />}
+              <span>{message.text}</span>
+            </div>
+          )}
+        </form>
       </div>
     </div>
-  )
+  );
 }
-
-export default CreateProfileForm

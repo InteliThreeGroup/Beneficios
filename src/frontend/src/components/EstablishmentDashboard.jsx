@@ -1,768 +1,257 @@
-"use client"
+import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "./AuthClientContext";
+import QRCode from "react-qr-code";
+import { Loader2, AlertTriangle, QrCode, History, Utensils, BookOpen, HeartPulse, Bus, GraduationCap, Building, Copy, Check, Link } from "lucide-react";
 
-import { useState, useEffect } from "react"
-import { useAuth } from "./AuthClientContext"
-import { Principal } from "@dfinity/principal"
-import QRCode from "react-qr-code"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import {
-  faBuilding,
-  faGlobe,
-  faHashtag,
-  faWallet,
-  faCoins,
-  faReceipt,
-  faMoneyBillWave,
-  faUser,
-  faQrcode,
-  faSpinner,
-  faCheckCircle,
-  faExclamationTriangle,
-  faStore,
-  faHistory,
-  faUtensils,
-  faGraduationCap,
-  faHeartbeat,
-  faBus,
-  faPalette,
-  faTimes,
-} from "@fortawesome/free-solid-svg-icons"
-import { faBtc } from "@fortawesome/free-brands-svg-icons"
+// Mapeamento de benefícios para ícones e nomes
+const benefitDetails = {
+    Food: { icon: <Utensils className="text-blue-500" />, name: "Alimentação" },
+    Culture: { icon: <BookOpen className="text-purple-500" />, name: "Cultura" },
+    Health: { icon: <HeartPulse className="text-green-500" />, name: "Saúde" },
+    Transport: { icon: <Bus className="text-orange-500" />, name: "Mobilidade" },
+    Education: { icon: <GraduationCap className="text-red-500" />, name: "Educação" },
+    Default: { icon: <Building className="text-gray-500" />, name: "Outros" }
+};
+const getBenefitDetails = (type) => benefitDetails[type] || benefitDetails.Default;
+const formatBenefitType = (typeObj) => Object.keys(typeObj)[0] || "Default";
+const formatAmount = (amount) => (Number(amount) / 10000).toFixed(2);
+const formatTime = (timestamp) => new Date(Number(timestamp) / 1_000_000).toLocaleString("pt-BR");
 
-const EstablishmentDashboard = () => {
-  const { actors, principal, profile } = useAuth()
-  const [establishmentProfile, setEstablishmentProfile] = useState(null)
-  const [transactionHistory, setTransactionHistory] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
+export default function EstablishmentDashboard() {
+  const { actors, principal, profile } = useAuth();
+  const [transactionHistory, setTransactionHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [activeTab, setActiveTab] = useState("qrCode");
 
-  // Estado para controlar a aba ativa
-  const [activeTab, setActiveTab] = useState("profile")
+  // Estado para o gerador de QR Code
+  const [qrAmount, setQrAmount] = useState("");
+  const [qrBenefitType, setQrBenefitType] = useState("Food");
+  const [qrCodeValue, setQrCodeValue] = useState("");
+  const [paymentLink, setPaymentLink] = useState("");
+  const [copied, setCopied] = useState(false);
 
-  // Estados do formulário de registro
-  const [registerName, setRegisterName] = useState("")
-  const [registerCountry, setRegisterCountry] = useState("")
-  const [registerBusinessCode, setRegisterBusinessCode] = useState("")
-  const [registerWalletPrincipal, setRegisterWalletPrincipal] = useState(principal ? principal.toText() : "")
-  const [acceptedBenefitTypes, setAcceptedBenefitTypes] = useState(["Food"])
-  const [registerLoading, setRegisterLoading] = useState(false)
-  const [registerMessage, setRegisterMessage] = useState("")
-
-  // Estados do pagamento
-  const [workerPrincipalInput, setWorkerPrincipalInput] = useState("")
-  const [paymentAmount, setPaymentAmount] = useState("")
-  const [benefitType, setBenefitType] = useState("Food")
-  const [description, setDescription] = useState("")
-  const [paymentMessage, setPaymentMessage] = useState("")
-  const [paymentLoading, setPaymentLoading] = useState(false)
-  const [qrCodeData, setQrCodeData] = useState("")
-  const [showQrCode, setShowQrCode] = useState(false)
-  // Estado para feedback de cópia do QR
-  const [copyQrFeedback, setCopyQrFeedback] = useState("")
-
-  // Estados do Bitcoin
-  const [btcAddressLoading, setBtcAddressLoading] = useState(false)
-  const [btcAddressMessage, setBtcAddressMessage] = useState("")
-  const [btcBalance, setBtcBalance] = useState("N/A")
-  const [btcBalanceLoading, setBtcBalanceLoading] = useState(false)
-  const [btcBalanceMessage, setBtcBalanceMessage] = useState("")
-
-  const benefitIcons = {
-    Food: faUtensils,
-    Education: faGraduationCap,
-    Health: faHeartbeat,
-    Transport: faBus,
-    Culture: faPalette,
-  }
-
-  const benefitLabels = {
-    Food: "Food",
-    Culture: "Culture",
-    Health: "Health",
-    Transport: "Transport",
-    Education: "Education",
-  }
-
-  const fetchEstablishmentData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     if (!actors || !actors.establishment || !principal) {
-      setLoading(false)
-      return
+      setError("Cliente de autenticação não está pronto.");
+      setLoading(false);
+      return;
     }
-    setLoading(true)
-    setError("")
+    setLoading(true);
+    setError("");
     try {
-      const estProfileResult = await actors.establishment.getEstablishment()
-      if (estProfileResult.ok) {
-        setEstablishmentProfile(estProfileResult.ok)
-        const txHistoryResult = await actors.establishment.getTransactionHistory([BigInt(10)])
-        setTransactionHistory(txHistoryResult)
+      // --- CORREÇÃO APLICADA ---
+      // Removemos a chamada para a função 'getEstablishment' que não existe.
+      // Agora, buscamos apenas o histórico de transações.
+      const historyResult = await actors.establishment.getTransactionHistory([]); // Passa um array vazio para o argumento opcional
+      if (historyResult) {
+        setTransactionHistory(historyResult);
       } else {
-        setEstablishmentProfile(null)
-        setTransactionHistory([])
-        setError("You have not registered an establishment yet. Please fill out the form below.")
+        setError("Não foi possível carregar o histórico de transações.");
       }
     } catch (err) {
-      console.error("Erro ao buscar dados do estabelecimento:", err)
-      setError("Failed to load establishment data.")
+      console.error("Erro ao buscar dados do painel:", err);
+      setError("Falha ao carregar o histórico de transações. Tente recarregar a página.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  }, [actors, principal]);
 
   useEffect(() => {
-    if (principal && !registerWalletPrincipal) {
-      setRegisterWalletPrincipal(principal.toText())
-    }
-    fetchEstablishmentData()
-  }, [actors, principal])
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
-  useEffect(() => {
-    const fetchBtcData = async () => {
-      if (establishmentProfile && establishmentProfile.btcAddress && actors && actors.establishment) {
-        setBtcBalanceLoading(true)
-        setBtcBalanceMessage("")
-        try {
-          const btcBalanceResult = await actors.establishment.getBtcBalance({ regtest: null }, null)
-          if (btcBalanceResult.ok) {
-            setBtcBalance(`${(Number(btcBalanceResult.ok) / 100_000_000).toFixed(8)} BTC`)
-          } else {
-            setBtcBalanceMessage(`Failed to fetch BTC balance: ${btcBalanceResult.err}`)
-            setBtcBalance("0.00000000 BTC")
-          }
-        } catch (err) {
-          console.error("Erro ao buscar saldo BTC:", err)
-          setBtcBalanceMessage(`Unexpected error fetching BTC balance: ${err.message}`)
-          setBtcBalance("N/A")
-        } finally {
-          setBtcBalanceLoading(false)
-        }
-      } else {
-        setBtcBalance("N/A")
-      }
+  const handleGenerateQrCode = (e) => {
+    e.preventDefault();
+    const amountNumber = parseFloat(qrAmount);
+    if (isNaN(amountNumber) || amountNumber <= 0) {
+      alert("Por favor, insira um valor válido.");
+      return;
     }
-    fetchBtcData()
-  }, [establishmentProfile, actors])
+    const qrData = {
+      establishmentId: principal.toText(),
+      description: profile?.name || "Estabelecimento",
+      amount: amountNumber,
+      benefitType: qrBenefitType,
+    };
+    
+    const qrDataString = JSON.stringify(qrData);
+    setQrCodeValue(qrDataString);
+    
+    // Gerar link de pagamento
+    const encodedData = encodeURIComponent(qrDataString);
+    const baseUrl = window.location.origin;
+    const link = `${baseUrl}/payment?data=${encodedData}`;
+    setPaymentLink(link);
+    setCopied(false);
+  };
 
-  const handleRegisterEstablishment = async (e) => {
-    e.preventDefault()
-    setRegisterLoading(true)
-    setRegisterMessage("")
-    if (!actors || !actors.establishment) {
-      setRegisterMessage("Error: Canister actors not loaded.")
-      setRegisterLoading(false)
-      return
-    }
+  const handleCopyLink = async () => {
     try {
-      const walletId = Principal.fromText(registerWalletPrincipal)
-      const parsedAcceptedBenefitTypes = acceptedBenefitTypes.map((type) => ({ [type]: null })).filter(Boolean)
-      const request = {
-        name: registerName,
-        country: registerCountry,
-        businessCode: registerBusinessCode,
-        walletPrincipal: walletId,
-        acceptedBenefitTypes: parsedAcceptedBenefitTypes,
-      }
-      const result = await actors.establishment.registerEstablishment(request)
-      if (result.ok) {
-        setRegisterMessage("Establishment registered successfully!")
-        await fetchEstablishmentData()
-      } else {
-        setRegisterMessage(`Failed to register establishment: ${result.err}`)
-      }
+      await navigator.clipboard.writeText(paymentLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error("Erro ao registrar estabelecimento:", err)
-      setRegisterMessage(`Unexpected error registering: ${err.message}`)
-    } finally {
-      setRegisterLoading(false)
+      console.error('Erro ao copiar link:', err);
+      // Fallback para navegadores que não suportam clipboard API
+      const textArea = document.createElement('textarea');
+      textArea.value = paymentLink;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
-  }
-
-  const handlePaymentSubmit = async (e) => {
-    e.preventDefault()
-    setPaymentLoading(true)
-    setPaymentMessage("")
-    setQrCodeData("")
-    setShowQrCode(false)
-
-    if (!actors || !actors.establishment) {
-      setPaymentMessage("Error: Canister actors not loaded.")
-      setPaymentLoading(false)
-      return
-    }
-    try {
-      if (!workerPrincipalInput || !paymentAmount || !benefitType || !description) {
-        setPaymentMessage("Please fill in all payment fields.")
-        setPaymentLoading(false)
-        return
-      }
-
-      const qrData = {
-        establishmentId: principal.toText(),
-        amount: Number.parseFloat(paymentAmount),
-        benefitType: benefitType,
-        description: description,
-      }
-
-      const qrCodeString = JSON.stringify(qrData)
-      setQrCodeData(qrCodeString)
-      setShowQrCode(true)
-      setPaymentMessage("QR Code generated. Ask the worker to scan and confirm the payment.")
-    } catch (err) {
-      console.error("Erro ao gerar QR Code de pagamento:", err)
-      setPaymentMessage(`Unexpected error generating QR Code: ${err.message}`)
-    } finally {
-      setPaymentLoading(false)
-    }
-  }
-
-  const handleGenerateBtcAddress = async () => {
-    setBtcAddressLoading(true)
-    setBtcAddressMessage("")
-    if (!actors || !actors.establishment) {
-      setBtcAddressMessage("Error: Canister actors not loaded.")
-      setBtcAddressLoading(false)
-      return
-    }
-    try {
-      const result = await actors.establishment.generateBtcAddress()
-      if (result.ok) {
-        setBtcAddressMessage("BTC address generated successfully!")
-        await fetchEstablishmentData()
-      } else {
-        setBtcAddressMessage(`Failed to generate BTC address: ${result.err}`)
-      }
-    } catch (err) {
-      console.error("Erro ao gerar endereço BTC:", err)
-      setBtcAddressMessage(`Unexpected error: ${err.message}`)
-    } finally {
-      setBtcAddressLoading(false)
-    }
-  }
-
-  const formatBenefitType = (type) => Object.keys(type)[0] || "Unknown"
-  const formatAmount = (amount) => (Number(amount) / 10000).toFixed(2)
-  const formatTimestamp = (ts) => (ts ? new Date(Number(ts) / 1_000_000).toLocaleString() : "N/A")
-
-  const handleBenefitTypeChange = (e) => {
-    const { value, checked } = e.target
-    setAcceptedBenefitTypes((prev) => (checked ? [...prev, value] : prev.filter((t) => t !== value)))
-  }
+  };
 
   if (loading) {
-    return (
-      <div className="loading-spinner">
-        <FontAwesomeIcon icon={faSpinner} spin />
-        Loading establishment dashboard...
-      </div>
-    )
+    return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-blue-500" size={48} /></div>;
+  }
+  if (error) {
+    return <div className="bg-red-100 text-red-800 p-4 rounded-lg flex items-center gap-3"><AlertTriangle /> {error}</div>;
   }
 
   return (
-    <div className="establishment-screen">
-      <div className="establishment-header">
-        <h2>Establishment Dashboard</h2>
-        <p>Welcome, {profile?.name}! Manage your establishment and receive payments.</p>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-4xl font-bold text-gray-800">Painel do Estabelecimento</h1>
+        <p className="text-gray-500 mt-1">Gere cobranças e visualize seu histórico de transações.</p>
       </div>
 
-      {error && !establishmentProfile && (
-        <div className="message message-warning">
-          <FontAwesomeIcon icon={faExclamationTriangle} />
-          {error}
-        </div>
-      )}
+      {/* Abas de Navegação */}
+      <div className="border-b border-gray-200">
+        <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+          <button onClick={() => setActiveTab('qrCode')} className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${activeTab === 'qrCode' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>
+            <QrCode size={16}/> Gerar QR Code
+          </button>
+          <button onClick={() => setActiveTab('history')} className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${activeTab === 'history' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>
+            <History size={16}/> Histórico
+          </button>
+        </nav>
+      </div>
 
-      {establishmentProfile ? (
-        <>
-          {/* Tab Navigation */}
-          <div className="establishment-tabs">
-            <button
-              className={`tab-button ${activeTab === "profile" ? "active" : ""}`}
-              onClick={() => setActiveTab("profile")}
-            >
-              <FontAwesomeIcon icon={faUser} />
-              <span>Profile & Statement</span>
-            </button>
-            <button
-              className={`tab-button ${activeTab === "payment" ? "active" : ""}`}
-              onClick={() => setActiveTab("payment")}
-            >
-              <FontAwesomeIcon icon={faQrcode} />
-              <span>Generate Payment</span>
-            </button>
-          </div>
-
-          {/* Profile Tab Content */}
-          {activeTab === "profile" && (
-            <div className="tab-content">
-              <div className="establishment-profile-grid">
-                {/* Establishment Info Card */}
-                <div className="dashboard-card establishment-info-card">
-                  <div className="card-header">
-                    <div className="card-icon">
-                      <FontAwesomeIcon icon={faStore} />
-                    </div>
-                    <div>
-                      <h3>Establishment Information</h3>
-                      <p>Registration data and statistics</p>
-                    </div>
-                  </div>
-
-                  <div className="establishment-details">
-                    <div className="detail-item">
-                      <div className="detail-icon">
-                        <FontAwesomeIcon icon={faBuilding} />
-                      </div>
-                      <div className="detail-content">
-                        <span className="detail-label">Name</span>
-                        <span className="detail-value">{establishmentProfile.name}</span>
-                      </div>
-                    </div>
-
-                    <div className="detail-item">
-                      <div className="detail-icon">
-                        <FontAwesomeIcon icon={faGlobe} />
-                      </div>
-                      <div className="detail-content">
-                        <span className="detail-label">Country</span>
-                        <span className="detail-value">{establishmentProfile.country}</span>
-                      </div>
-                    </div>
-
-                    <div className="detail-item">
-                      <div className="detail-icon">
-                        <FontAwesomeIcon icon={faHashtag} />
-                      </div>
-                      <div className="detail-content">
-                        <span className="detail-label">Code</span>
-                        <span className="detail-value">{establishmentProfile.businessCode}</span>
-                      </div>
-                    </div>
-
-                    <div className="detail-item">
-                      <div className="detail-icon">
-                        <FontAwesomeIcon icon={faWallet} />
-                      </div>
-                      <div className="detail-content">
-                        <span className="detail-label">Total Received</span>
-                        <span className="detail-value total-received">
-                          R$ {formatAmount(establishmentProfile.totalReceived)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+      {/* Conteúdo das Abas */}
+      <div>
+        {activeTab === 'qrCode' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            {/* Formulário */}
+            <div className="bg-white p-6 rounded-xl shadow-md">
+              <h2 className="text-2xl font-semibold mb-4">Gerar Cobrança</h2>
+              <form onSubmit={handleGenerateQrCode} className="space-y-4">
+                <div>
+                  <label htmlFor="amount" className="block text-sm font-medium text-gray-700">Valor (R$)</label>
+                  <input type="number" id="amount" value={qrAmount} onChange={(e) => setQrAmount(e.target.value)}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="0.00" step="0.01" min="0.01" required
+                  />
                 </div>
-
-                {/* Transactions History Card */}
-                <div className="dashboard-card transactions-card">
-                  <div className="card-header">
-                    <div className="card-icon">
-                      <FontAwesomeIcon icon={faHistory} />
-                    </div>
-                    <div>
-                      <h3>Transaction History</h3>
-                      <p>Latest payments received</p>
-                    </div>
-                  </div>
-
-                  {transactionHistory.length > 0 ? (
-                    <div className="transactions-list">
-                      {transactionHistory.map((tx) => {
-                        const benefitTypeKey = formatBenefitType(tx.benefitType)
-                        return (
-                          <div key={tx.id} className="transaction-item">
-                            <div className="transaction-icon">
-                              <FontAwesomeIcon icon={benefitIcons[benefitTypeKey] || faReceipt} />
-                            </div>
-                            <div className="transaction-details">
-                              <div className="transaction-description">{tx.description}</div>
-                              <div className="transaction-meta">
-                                <span className="transaction-worker">
-                                  From: {tx.workerId.toText().substring(0, 15)}...
-                                </span>
-                                <span className="transaction-type">
-                                  {benefitLabels[benefitTypeKey] || benefitTypeKey}
-                                </span>
-                                <span className="transaction-time">{formatTimestamp(tx.createdAt)}</span>
-                              </div>
-                            </div>
-                            <div className="transaction-amount credit">+ R$ {formatAmount(tx.amount)}</div>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  ) : (
-                    <div className="empty-state">
-                      <div className="empty-icon">
-                        <FontAwesomeIcon icon={faReceipt} />
-                      </div>
-                      <p>No transactions received yet.</p>
-                    </div>
-                  )}
+                <div>
+                  <label htmlFor="benefitType" className="block text-sm font-medium text-gray-700">Tipo de Benefício</label>
+                  <select id="benefitType" value={qrBenefitType} onChange={(e) => setQrBenefitType(e.target.value)}
+                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                    {Object.keys(benefitDetails).filter(k => k !== 'Default').map(key => (
+                        <option key={key} value={key}>{benefitDetails[key].name}</option>
+                    ))}
+                  </select>
                 </div>
-              </div>
+                <button type="submit" className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-700">
+                  Gerar QR Code
+                </button>
+              </form>
             </div>
-          )}
-
-          {/* Payment Tab Content */}
-          {activeTab === "payment" && (
-            <div className="tab-content">
-              <div className="payment-grid">
-                {/* Payment Generation Card */}
-                <div className="dashboard-card payment-generation-card">
-                  <div className="card-header">
-                    <div className="card-icon">
-                      <FontAwesomeIcon icon={faMoneyBillWave} />
+            {/* Visualizador do QR Code */}
+            <div className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center justify-center min-h-[300px]">
+              {qrCodeValue ? (
+                <div className="space-y-6 w-full flex flex-col items-center">
+                  <QRCode value={qrCodeValue} size={256} />
+                  
+                  {/* Link de pagamento */}
+                  <div className="w-full max-w-md space-y-3">
+                    <div className="text-center">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-2">Link de Pagamento</h3>
+                      <p className="text-sm text-gray-600">Compartilhe este link para pagamento direto:</p>
                     </div>
-                    <div>
-                      <h3>Generate Payment (ICP)</h3>
-                      <p>Create a QR Code to receive payments</p>
-                    </div>
-                  </div>
-
-                  <form onSubmit={handlePaymentSubmit} className="payment-form">
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label htmlFor="workerPrincipal">
-                          <FontAwesomeIcon icon={faUser} />
-                          Worker's Principal (reference)
-                        </label>
-                        <input
-                          type="text"
-                          id="workerPrincipal"
-                          value={workerPrincipalInput}
-                          onChange={(e) => setWorkerPrincipalInput(e.target.value)}
-                          placeholder="Worker's Principal"
-                          className="form-input"
-                        />
-                      </div>
-
-                      <div className="form-group">
-                        <label htmlFor="paymentAmount">
-                          <FontAwesomeIcon icon={faCoins} />
-                          Amount (ICP)
-                        </label>
-                        <input
-                          type="number"
-                          id="paymentAmount"
-                          value={paymentAmount}
-                          onChange={(e) => setPaymentAmount(e.target.value)}
-                          step="0.01"
-                          required
-                          placeholder="Ex: 25.50"
-                          className="form-input"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-group">
-                      <label htmlFor="benefitType">Benefit Type</label>
-                      <select
-                        id="benefitType"
-                        value={benefitType}
-                        onChange={(e) => setBenefitType(e.target.value)}
-                        className="form-select"
-                      >
-                        <option value="Food">Food</option>
-                        <option value="Culture">Culture</option>
-                        <option value="Health">Health</option>
-                        <option value="Transport">Transport</option>
-                        <option value="Education">Education</option>
-                      </select>
-                    </div>
-
-                    <div className="form-group">
-                      <label htmlFor="description">
-                        <FontAwesomeIcon icon={faReceipt} />
-                        Description
-                      </label>
+                    
+                    <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg border">
+                      <Link size={20} className="text-gray-500 flex-shrink-0" />
                       <input
                         type="text"
-                        id="description"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Ex: Lunch purchase"
-                        required
-                        className="form-input"
+                        value={paymentLink}
+                        readOnly
+                        className="flex-1 bg-transparent text-sm text-gray-700 outline-none"
                       />
-                    </div>
-
-                    <div className="form-actions">
                       <button
-                        type="submit"
-                        disabled={paymentLoading || showQrCode}
-                        className="btn btn-primary generate-qr-button"
-                      >
-                        {paymentLoading ? (
-                          <>
-                            <FontAwesomeIcon icon={faSpinner} spin />
-                            Generating...
-                          </>
-                        ) : (
-                          <>
-                            <FontAwesomeIcon icon={faQrcode} />
-                            Generate Payment QR Code
-                          </>
-                        )}
-                      </button>
-                    </div>
-
-                    {paymentMessage && (
-                      <div
-                        className={`message ${
-                          paymentMessage.startsWith("Failed") ? "message-error" : "message-success"
+                        onClick={handleCopyLink}
+                        className={`flex items-center space-x-1 px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                          copied 
+                            ? 'bg-green-100 text-green-700' 
+                            : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
                         }`}
                       >
-                        <FontAwesomeIcon
-                          icon={paymentMessage.startsWith("Failed") ? faExclamationTriangle : faCheckCircle}
-                        />
-                        {paymentMessage}
-                      </div>
-                    )}
-
-                    {showQrCode && qrCodeData && (
-                      <div className="qr-code-display">
-                        <div className="qr-code-header">
-                          <h4>Payment QR Code</h4>
-                          <button type="button" onClick={() => setShowQrCode(false)} className="close-qr-button">
-                            <FontAwesomeIcon icon={faTimes} />
-                          </button>
-                        </div>
-                        <div className="qr-code-container">
-                          <QRCode value={qrCodeData} size={200} />
-                        </div>
-                        <button
-                          type="button"
-                          className="btn btn-secondary copy-qr-button"
-                          style={{ marginTop: "1rem" }}
-                          onClick={async () => {
-                            try {
-                              await navigator.clipboard.writeText(qrCodeData)
-                              setCopyQrFeedback("QR code data copied to clipboard!")
-                              setTimeout(() => setCopyQrFeedback(""), 2000)
-                            } catch (err) {
-                              setCopyQrFeedback("Failed to copy QR code data.")
-                              setTimeout(() => setCopyQrFeedback(""), 2000)
-                            }
-                          }}
-                        >
-                          Copy QR Code Data
-                        </button>
-                        {copyQrFeedback && (
-                          <div className={`message ${copyQrFeedback.startsWith("Failed") ? "message-error" : "message-success"}`} style={{ marginTop: "0.5rem" }}>
-                            <FontAwesomeIcon icon={copyQrFeedback.startsWith("Failed") ? faExclamationTriangle : faCheckCircle} />
-                            {copyQrFeedback}
-                          </div>
-                        )}
-                        <p className="qr-instructions">Ask the worker to scan this code</p>
-                      </div>
-                    )}
-                  </form>
-                </div>
-
-                {/* Bitcoin Card */}
-                <div className="dashboard-card bitcoin-card">
-                  <div className="card-header">
-                    <div className="card-icon bitcoin-icon">
-                      <FontAwesomeIcon icon={faBtc} />
-                    </div>
-                    <div>
-                      <h3>Bitcoin (BTC) Integration</h3>
-                      <p>Receive payments in Bitcoin</p>
-                    </div>
-                  </div>
-
-                  {establishmentProfile.btcAddress ? (
-                    <div className="bitcoin-info">
-                      <div className="bitcoin-address">
-                        <label>Bitcoin Address:</label>
-                        <div className="address-display">
-                          <span className="address-text">{establishmentProfile.btcAddress}</span>
-                        </div>
-                      </div>
-                      <div className="bitcoin-balance">
-                        <label>Bitcoin Balance:</label>
-                        <div className="balance-display">
-                          {btcBalanceLoading ? (
-                            <span className="loading-text">
-                              <FontAwesomeIcon icon={faSpinner} spin />
-                              Loading...
-                            </span>
-                          ) : (
-                            <span className="balance-amount">{btcBalance}</span>
-                          )}
-                        </div>
-                      </div>
-                      {btcBalanceMessage && (
-                        <div className="message message-error">
-                          <FontAwesomeIcon icon={faExclamationTriangle} />
-                          {btcBalanceMessage}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="bitcoin-setup">
-                      <p>To accept Bitcoin payments, generate a BTC address for your establishment.</p>
-                      <button
-                        onClick={handleGenerateBtcAddress}
-                        disabled={btcAddressLoading}
-                        className="btn btn-primary bitcoin-generate-button"
-                      >
-                        {btcAddressLoading ? (
+                        {copied ? (
                           <>
-                            <FontAwesomeIcon icon={faSpinner} spin />
-                            Generating...
+                            <Check size={16} />
+                            <span>Copiado!</span>
                           </>
                         ) : (
                           <>
-                            <FontAwesomeIcon icon={faBtc} />
-                            Generate Bitcoin Address
+                            <Copy size={16} />
+                            <span>Copiar</span>
                           </>
                         )}
                       </button>
-                      {btcAddressMessage && (
-                        <div
-                          className={`message ${
-                            btcAddressMessage.startsWith("Failed") ? "message-error" : "message-success"
-                          }`}
-                        >
-                          <FontAwesomeIcon
-                            icon={btcAddressMessage.startsWith("Failed") ? faExclamationTriangle : faCheckCircle}
-                          />
-                          {btcAddressMessage}
-                        </div>
-                      )}
                     </div>
-                  )}
+                    
+                    <div className="text-xs text-gray-500 text-center">
+                      O trabalhador pode escanear o QR Code ou usar o link para realizar o pagamento
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          )}
-        </>
-      ) : (
-        /* Registration Form */
-        <div className="dashboard-card registration-card">
-          <div className="card-header">
-            <div className="card-icon">
-              <FontAwesomeIcon icon={faStore} />
-            </div>
-            <div>
-              <h3>Register your Establishment</h3>
-              <p>Complete the registration to start receiving payments</p>
+              ) : (
+                <div className="text-center text-gray-500">
+                  <QrCode size={64} className="mx-auto mb-4"/>
+                  <p>O QR Code aparecerá aqui após preencher os dados e clicar em "Gerar".</p>
+                </div>
+              )}
             </div>
           </div>
+        )}
 
-          <form onSubmit={handleRegisterEstablishment} className="registration-form">
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="registerName">
-                  <FontAwesomeIcon icon={faBuilding} />
-                  Establishment Name
-                </label>
-                <input
-                  type="text"
-                  id="registerName"
-                  value={registerName}
-                  onChange={(e) => setRegisterName(e.target.value)}
-                  required
-                  className="form-input"
-                  placeholder="Ex: João's Restaurant"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="registerCountry">
-                  <FontAwesomeIcon icon={faGlobe} />
-                  Country
-                </label>
-                <input
-                  type="text"
-                  id="registerCountry"
-                  value={registerCountry}
-                  onChange={(e) => setRegisterCountry(e.target.value)}
-                  required
-                  className="form-input"
-                  placeholder="Ex: Brazil"
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="registerBusinessCode">
-                <FontAwesomeIcon icon={faHashtag} />
-                Business Code
-              </label>
-              <input
-                type="text"
-                id="registerBusinessCode"
-                value={registerBusinessCode}
-                onChange={(e) => setRegisterBusinessCode(e.target.value)}
-                required
-                className="form-input"
-                placeholder="Ex: REST001"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="registerWalletPrincipal">
-                <FontAwesomeIcon icon={faWallet} />
-                Wallet Principal (auto-filled)
-              </label>
-              <input
-                type="text"
-                id="registerWalletPrincipal"
-                value={registerWalletPrincipal}
-                readOnly
-                className="form-input readonly-input"
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Accepted Benefit Types</label>
-              <div className="benefit-types-grid">
-                {["Food", "Culture", "Health", "Transport", "Education"].map((type) => (
-                  <label key={type} className="benefit-type-checkbox">
-                    <input
-                      type="checkbox"
-                      value={type}
-                      checked={acceptedBenefitTypes.includes(type)}
-                      onChange={handleBenefitTypeChange}
-                    />
-                    <div className="checkbox-content">
-                      <FontAwesomeIcon icon={benefitIcons[type]} />
-                      <span>{benefitLabels[type]}</span>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="form-actions">
-              <button type="submit" disabled={registerLoading} className="btn btn-primary register-button">
-                {registerLoading ? (
-                  <>
-                    <FontAwesomeIcon icon={faSpinner} spin />
-                    Registering...
-                  </>
-                ) : (
-                  <>
-                    <FontAwesomeIcon icon={faStore} />
-                    Register Establishment
-                  </>
-                )}
-              </button>
-            </div>
-
-            {registerMessage && (
-              <div className={`message ${registerMessage.startsWith("Failed") ? "message-error" : "message-success"}`}>
-                <FontAwesomeIcon icon={registerMessage.startsWith("Failed") ? faExclamationTriangle : faCheckCircle} />
-                {registerMessage}
-              </div>
-            )}
-          </form>
-        </div>
-      )}
+        {activeTab === 'history' && (
+          <div className="bg-white p-6 rounded-xl shadow-md">
+             <h2 className="text-2xl font-semibold mb-4">Histórico de Transações</h2>
+             <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                        <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Benefício</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trabalhador</th>
+                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                        {transactionHistory.length > 0 ? transactionHistory.map((tx, index) => {
+                            const type = formatBenefitType(tx.benefitType);
+                            const details = getBenefitDetails(type);
+                            return (
+                                <tr key={index} className="hover:bg-gray-50">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatTime(tx.timestamp)}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 flex items-center gap-2">{details.icon} {details.name}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono" title={tx.workerId.toText()}>{tx.workerId.toText().substring(0, 15)}...</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-semibold text-right">$ {formatAmount(tx.amount)}</td>
+                                </tr>
+                            )
+                        }) : (
+                            <tr><td colSpan="4" className="text-center py-10 text-gray-500">Nenhuma transação encontrada.</td></tr>
+                        )}
+                    </tbody>
+                </table>
+             </div>
+          </div>
+        )}
+      </div>
     </div>
-  )
+  );
 }
-
-export default EstablishmentDashboard

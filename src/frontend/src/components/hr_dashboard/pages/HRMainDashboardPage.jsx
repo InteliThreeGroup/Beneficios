@@ -1,57 +1,63 @@
-// src/components/hr_dashboard/pages/HRMainDashboardPage.jsx
 import React from 'react';
 import { useAuth } from '../../AuthClientContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers, faChartLine, faFileText, faListAlt } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import { faUsers, faChartLine } from '@fortawesome/free-solid-svg-icons';
 
-// Importing the component that already fetches and manages funds correctly
+// Importando o componente que já busca e gerencia os fundos corretamente
 import HRFundsManagement from '../HRFundsManagement';
 
 const HRMainDashboardPage = () => {
   const { profile } = useAuth();
 
   return (
-    <div className="hr-main-dashboard">
-      <div className="dashboard-grid">
-        {/* Left Column */}
-        <div className="dashboard-left-column" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          {/* Profile Card */}
-          <div className="dashboard-card profile-info-card">
-            <div className="card-header">
-              <div className="card-icon">
-                <FontAwesomeIcon icon={faUsers} />
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-4xl font-bold text-gray-800">Painel e Fundos</h1>
+        <p className="text-gray-500 mt-1">Gerencie suas informações e os fundos da empresa.</p>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
+        {/* Coluna da Esquerda */}
+        <div className="space-y-8">
+          {/* Card de Informações do Gerente */}
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="bg-blue-100 text-blue-600 p-4 rounded-full">
+                <FontAwesomeIcon icon={faUsers} className="text-2xl" />
               </div>
               <div>
-                <h3>Manager Information</h3>
-                <p>Profile and company data</p>
+                <h3 className="text-xl font-semibold text-gray-900">Informações do Gerente</h3>
               </div>
             </div>
-            <div className="profile-details">
-              <div className="profile-detail-item">
-                <span className="detail-label">Name:</span>
-                <span className="detail-value">{profile?.name}</span>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-500">Nome:</span>
+                <span className="font-semibold text-gray-900">{profile?.name}</span>
               </div>
-              <div className="profile-detail-item">
-                <span className="detail-label">Company:</span>
-                <span className="detail-value">{profile?.companyId[0]}</span>
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-500">Empresa:</span>
+                <span className="font-semibold text-gray-900">{profile?.companyId[0]}</span>
               </div>
-              <div className="profile-detail-item">
-                <span className="detail-label">Role:</span>
-                <span className="detail-value">Human Resources</span>
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-500">Perfil:</span>
+                <span className="font-semibold text-blue-600">Recursos Humanos</span>
               </div>
             </div>
           </div>
 
-          {/* Rendering the working Funds Management component */}
+          {/* Componente de Gerenciamento de Fundos */}
           <HRFundsManagement />
         </div>
 
-        {/* Right Column */}
-        <div className="dashboard-right-column">
-         
-
-          
+        {/* Coluna da Direita */}
+        <div className="space-y-8">
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="text-center text-gray-400 py-8">
+              <FontAwesomeIcon icon={faChartLine} className="text-5xl mb-4" />
+              <h3 className="text-lg font-medium text-gray-800 mb-2">Análises em Breve</h3>
+              <p className="text-sm">Métricas e análises do painel estarão disponíveis aqui.</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

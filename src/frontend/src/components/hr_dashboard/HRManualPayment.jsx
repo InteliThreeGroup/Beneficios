@@ -1,219 +1,98 @@
 import React, { useState } from 'react';
 import { useAuth } from '../AuthClientContext';
 import { Principal } from '@dfinity/principal';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faHandHoldingUsd,
-    faUser,
-    faCoins,
-    faFileText,
-    faUtensils,
-    faGraduationCap,
-    faHeartbeat,
-    faBus,
-    faPalette,
-    faSpinner,
-    faCheckCircle,
-    faExclamationTriangle
-} from '@fortawesome/free-solid-svg-icons';
+import { Loader2, AlertTriangle, CheckCircle, Banknote, User, Coins, FileText } from 'lucide-react';
 
-const benefitIcons = {
-    Food: faUtensils,
-    Education: faGraduationCap,
-    Health: faHeartbeat,
-    Transport: faBus,
-    Culture: faPalette
-};
+const benefitOptions = [
+    { key: "Food", label: "Alimentação" },
+    { key: "Culture", label: "Cultura" },
+    { key: "Health", label: "Saúde" },
+    { key: "Transport", label: "Transporte" },
+    { key: "Education", label: "Educação" },
+];
 
-const benefitLabels = {
-    Food: 'Food',
-    Culture: 'Culture',
-    Health: 'Health',
-    Transport: 'Transport',
-    Education: 'Education'
-};
-
-const HRManualPayment = () => {
+export default function HRManualPayment() {
     const { actors } = useAuth();
     const [workerPrincipal, setWorkerPrincipal] = useState('');
     const [amount, setAmount] = useState('');
     const [benefitType, setBenefitType] = useState('Food');
     const [description, setDescription] = useState('');
-    const [paymentMessage, setPaymentMessage] = useState('');
-    const [paymentLoading, setPaymentLoading] = useState(false);
+    const [message, setMessage] = useState({ text: '', type: '' });
+    const [loading, setLoading] = useState(false);
 
-    const handleManualPayment = async (e) => {
+    const handlePayment = async (e) => {
         e.preventDefault();
-        setPaymentLoading(true);
-        setPaymentMessage('');
-
-        if (!workerPrincipal || !amount || isNaN(amount) || parseFloat(amount) <= 0 || !description) {
-            setPaymentMessage('Please fill in all fields with valid values.');
-            setPaymentLoading(false);
-            return;
-        }
-
+        setLoading(true);
+        setMessage({ text: '', type: '' });
         try {
-            if (actors && actors.wallets) {
-                const workerId = Principal.fromText(workerPrincipal);
-                const benefit = { [benefitType]: null };
-                const amountInNats = BigInt(Math.floor(parseFloat(amount) * 10000));
-                
-                // --- CORREÇÃO APLICADA AQUI ---
-                // O backend espera 5 argumentos separados, e não um objeto.
-                // Adicionamos o programId como "manual" para compatibilidade.
-                const result = await actors.wallets.creditBalance(
-                    workerId,               // 1. workerId: Principal
-                    benefit,                // 2. benefitType: BenefitType
-                    amountInNats,           // 3. amount: Nat
-                    "manual_payment",       // 4. programId: Text
-                    description             // 5. description: Text
-                );
-                // --- FIM DA CORREÇÃO ---
-
-                if (result.ok) {
-                    setPaymentMessage(`Manual payment of ${parseFloat(amount).toFixed(2)} ICP to ${workerPrincipal} successfully completed!`);
-                    setWorkerPrincipal('');
-                    setAmount('');
-                    setDescription('');
-                } else {
-                    setPaymentMessage(`Error making manual payment: ${result.err}`);
-                }
+            const worker = Principal.fromText(workerPrincipal);
+            const amountInNats = BigInt(Math.floor(parseFloat(amount) * 10000));
+            // Usando creditBalance que é a função correta para pagamentos manuais
+            const result = await actors.wallets.creditBalance(
+                worker,                    // workerId: Principal
+                { [benefitType]: null },   // benefitType: BenefitType  
+                amountInNats,             // amount: Nat
+                "manual_payment",         // programId: Text
+                description               // description: Text
+            );
+            if (result.ok) {
+                setMessage({ text: `Pagamento de $${amount} para ${workerPrincipal.substring(0,10)}... realizado!`, type: 'success' });
+                setWorkerPrincipal(''); setAmount(''); setDescription('');
             } else {
-                setPaymentMessage('Error: Wallets module not loaded.');
+                setMessage({ text: `Erro: ${result.err}`, type: 'error' });
             }
         } catch (error) {
-            console.error('Error making manual payment:', error);
-            setPaymentMessage('Error processing Worker Principal. Check if the ID is correct.');
+            console.error("Error making manual payment:", error);
+            setMessage({ text: 'Principal inválido ou erro inesperado.', type: 'error' });
         } finally {
-            setPaymentLoading(false);
+            setLoading(false);
         }
     };
 
     return (
-        <div className="dashboard-card manual-payment-card">
-            <div className="card-header">
-                <div className="card-icon">
-                    <FontAwesomeIcon icon={faHandHoldingUsd} />
+        <div className="bg-white rounded-xl shadow-md p-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Pagamento Manual Avulso</h3>
+            <form onSubmit={handlePayment} className="space-y-4">
+                <div>
+                    <label htmlFor="mpWorkerPrincipal" className="block text-sm font-medium text-gray-700">Principal do Trabalhador</label>
+                    <div className="mt-1 relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <input type="text" id="mpWorkerPrincipal" value={workerPrincipal} onChange={(e) => setWorkerPrincipal(e.target.value)} required className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg" placeholder="aaaaa-aaaaa-..." />
+                    </div>
                 </div>
                 <div>
-                    <h3>Manual Payment</h3>
-                    <p>Make direct payments to workers</p>
-                </div>
-            </div>
-
-            <form onSubmit={handleManualPayment} className="payment-form">
-                <div className="form-row">
-                    <div className="form-group">
-                        <label htmlFor="workerPrincipal">
-                            <FontAwesomeIcon icon={faUser} />
-                            Worker's Principal
-                        </label>
-                        <input
-                            type="text"
-                            id="workerPrincipal"
-                            value={workerPrincipal}
-                            onChange={(e) => setWorkerPrincipal(e.target.value)}
-                            required
-                            className="form-input"
-                            placeholder="Worker's Principal ID"
-                            disabled={paymentLoading}
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="amount">
-                            <FontAwesomeIcon icon={faCoins} />
-                            Amount (ICP)
-                        </label>
-                        <input
-                            type="number"
-                            id="amount"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
-                            placeholder="Ex: 25.00"
-                            step="0.01"
-                            required
-                            className="form-input"
-                            disabled={paymentLoading}
-                        />
+                    <label htmlFor="mpAmount" className="block text-sm font-medium text-gray-700">Valor (ICP)</label>
+                    <div className="mt-1 relative">
+                        <Coins className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <input type="number" id="mpAmount" value={amount} onChange={(e) => setAmount(e.target.value)} required className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg" placeholder="0.00" step="0.01"/>
                     </div>
                 </div>
-
-                <div className="form-group">
-                    <label>Benefit Type</label>
-                    <div className="benefit-type-selector">
-                        {Object.entries(benefitLabels).map(([key, label]) => (
-                            <div
-                                key={key}
-                                className={`benefit-option ${benefitType === key ? 'selected' : ''}`}
-                                onClick={() => !paymentLoading && setBenefitType(key)}
-                                role="button"
-                                tabIndex={0}
-                                onKeyPress={(e) => {
-                                    if (e.key === 'Enter' && !paymentLoading) {
-                                        setBenefitType(key);
-                                    }
-                                }}
-                            >
-                                <FontAwesomeIcon icon={benefitIcons[key]} />
-                                <span>{label}</span>
-                            </div>
-                        ))}
+                <div>
+                    <label htmlFor="mpBenefitType" className="block text-sm font-medium text-gray-700">Tipo de Benefício</label>
+                    <select id="mpBenefitType" value={benefitType} onChange={(e) => setBenefitType(e.target.value)} className="mt-1 w-full py-2 px-3 border border-gray-300 rounded-lg">
+                        {benefitOptions.map(opt => <option key={opt.key} value={opt.key}>{opt.label}</option>)}
+                    </select>
+                </div>
+                <div>
+                    <label htmlFor="mpDescription" className="block text-sm font-medium text-gray-700">Descrição</label>
+                    <div className="mt-1 relative">
+                        <FileText className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <input type="text" id="mpDescription" value={description} onChange={(e) => setDescription(e.target.value)} required className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg" placeholder="Ex: Bônus de performance"/>
                     </div>
                 </div>
-
-                <div className="form-group">
-                    <label htmlFor="description">
-                        <FontAwesomeIcon icon={faFileText} />
-                        Payment Description
-                    </label>
-                    <input
-                        type="text"
-                        id="description"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        required
-                        className="form-input"
-                        placeholder="Describe the reason for payment"
-                        disabled={paymentLoading}
-                    />
-                </div>
-
-                <div className="form-actions">
-                    <button type="submit" className="btn btn-success payment-button" disabled={paymentLoading}>
-                        {paymentLoading ? (
-                            <>
-                                <FontAwesomeIcon icon={faSpinner} spin />
-                                Processing...
-                            </>
-                        ) : (
-                            <>
-                                <FontAwesomeIcon icon={faHandHoldingUsd} />
-                                Make Payment
-                            </>
-                        )}
-                    </button>
-                </div>
-
-                {paymentMessage && (
-                    <div className={`message ${paymentMessage.toLowerCase().includes('error') || paymentMessage.toLowerCase().includes('erro') ? 'message-error' : 'message-success'}`}>
-                        <FontAwesomeIcon icon={paymentMessage.toLowerCase().includes('error') || paymentMessage.toLowerCase().includes('erro') ? faExclamationTriangle : faCheckCircle} />
-                        {paymentMessage
-                            .replace('Erro', 'Error')
-                            .replace('Pagamento manual de', 'Manual payment of')
-                            .replace('concluído com sucesso!', 'successfully completed!')
-                            .replace('para', 'to')
-                            .replace('Erro ao realizar pagamento manual', 'Error making manual payment')
-                            .replace('Erro: Módulo de carteiras não carregado.', 'Error: Wallets module not loaded.')
-                            .replace('Erro ao processar o Principal do Trabalhador. Verifique se o ID está correto.', 'Error processing Worker Principal. Check if the ID is correct.')
-                            .replace('Por favor, preencha todos os campos com valores válidos.', 'Please fill in all fields with valid values.')
-                        }
+                <button type="submit" disabled={loading} className="w-full bg-green-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-green-700 disabled:bg-green-400 flex items-center justify-center gap-2">
+                    {loading ? <Loader2 className="animate-spin" /> : <Banknote size={16} />}
+                    {loading ? "Enviando..." : "Enviar Pagamento"}
+                </button>
+                {message.text && (
+                    <div className={`p-3 rounded-lg flex items-center gap-3 text-sm ${
+                        message.type === 'error' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                    }`}>
+                        {message.type === 'error' ? <AlertTriangle size={16} /> : <CheckCircle size={16} />}
+                        <span>{message.text}</span>
                     </div>
                 )}
             </form>
         </div>
     );
-};
-
-export default HRManualPayment;
+}
