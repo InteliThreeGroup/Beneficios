@@ -284,5 +284,12 @@ actor Establishment {
             if (a.createdAt > b.createdAt) #less else #greater
         });
         Array.take<PaymentTransaction>(sorted, maxResults)
-    }
+    };
+
+    public shared ({ caller }) func createInvoice(companyId : Nat, benefitId : Nat, amountSats : Nat64) : async { addr : Text; qr : Text; amount : Nat64 } {
+    // 1) peça ao wallets o hash160 da pubkey do pagador (caller) e gere o endereço no frontend
+    // Aqui, como estamos no canister, só retornamos o amount; o frontend chama getMyPubKeyHash160 e monta a BIP21.
+    // Para simplificar: retorne apenas amount; o frontend compõe o QR com o endereço do pagador (ou da loja, conforme seu fluxo).
+    { addr = ""; qr = ""; amount = amountSats }
+    };
 }

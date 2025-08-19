@@ -10,6 +10,8 @@ import Int "mo:base/Int";
 import Iter "mo:base/Iter";
 import Nat "mo:base/Nat";
 import Debug "mo:base/Debug";
+import BTC "canister:btc_payments";
+
 
 actor Wallet {
     // Types
@@ -349,5 +351,18 @@ actor Wallet {
             case (#Transport) { return "Transport"; };
             case (#Education) { return "Education"; };
         }
+    };
+
+    public shared ({ caller }) func getMyPubKeyHash160(companyId : Nat, benefitId : Nat) : async Blob {
+        await BTC.get_own_pubkey_hash160(companyId, benefitId)
+    };
+
+    // O frontend passa o endereço (string) gerado a partir do hash160 acima (bech32 P2WPKH)
+    public shared ({ caller }) func sendBitcoin(
+        companyId : Nat, benefitId : Nat,
+        fromAddress : Text,
+        toProgram20b : Blob, amountSats : Nat64, feeRate : Nat64
+        ) : async Text {
+        await BTC.send_btc_with_program(companyId, benefitId, fromAddress, toProgram20b, amountSats, feeRate)
     };
 }

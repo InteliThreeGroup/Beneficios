@@ -1,4 +1,8 @@
 {
+  "bitcoin": {
+    "enabled": true,
+    "network": "testnet"
+  },
   "canisters": {
     "benefits_manager": {
       "main": "src/backend/benefits_manager/benefits_manager.mo",
@@ -7,6 +11,10 @@
     "establishment": {
       "main": "src/backend/establishment/establishment.mo",
       "type": "motoko"
+    },
+    "btc_payments": {
+      "type": "motoko",
+      "main": "src/backend/bitcoin/main.mo"
     },
     "identity_auth": {
       "main": "src/backend/identity_auth/identity_auth.mo",
@@ -36,7 +44,8 @@
         "benefits_manager",
         "establishment",
         "identity_auth",
-        "wallets"
+        "wallets",
+        "btc_payments"
       ],
       "source": [
         "src/frontend/dist"
@@ -55,6 +64,15 @@
         }
       },
       "frontend": {}
+    }
+  },
+  "defaults": {
+     "build": {
+      "packtool": "",
+      "args": "",
+      "packages": {
+        "lib": "src/lib"
+      }
     }
   },
   "version": 1
