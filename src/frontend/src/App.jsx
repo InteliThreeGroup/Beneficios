@@ -1,7 +1,15 @@
 import { AuthProvider, useAuth } from "./pages/auth/AuthClientContext";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from 'react-hot-toast';
-import { Loader2, HandCoins } from "lucide-react";
+import { Loader2 } from "lucide-react";
+
+// Landing Page Components
+import { HeroSection } from "./components/landing-page/hero-section";
+import { FeaturesSection } from "./components/features-section";
+import { HowItWorksSection } from "./components/landing-page/how-it-works-section";
+import { CTASection } from "./components/landing-page/cta-section";
+import { Footer } from "./components/landing-page/footer";
+import { Header } from "./components/header";
 
 // Layouts e Componentes de Roteamento
 import CreateProfileForm from "./pages/auth/CreateProfileForm";
@@ -16,11 +24,31 @@ import { QrPaymentScreen } from "./pages/worker/_components/QrPaymentScreen";
 import { PaymentScreen } from "./pages/worker/_components/PaymentScreen";
 import { ProfileScreen } from "./pages/worker/_components/ProfileScreen";
 
-// Páginas do RH (permanecem as mesmas)
+// Páginas do RH
 import HRMainDashboardPage from "./pages/hr/_components/pages/HRMainDashboardPage";
 import HRProgramsPage from "./pages/hr/_components/pages/HRProgramsPage";
 import HRWorkersPage from "./pages/hr/_components/pages/HRWorkersPage";
 import HRReporting from "./pages/hr/_components/HRReporting";
+import HRChallengesPage from "./pages/hr/HRChallengesPage";
+
+// Telas do desafio
+import { WorkerChallengeList } from "./pages/worker/WorkerChallengeList";
+import { WorkerChallengeSubmission } from "./pages/worker/WorkerChallengeSubmission";
+import { WorkerSubmissionsPage } from "./pages/worker/WorkerSubmissionsPage";
+
+// Landing Page Component
+const LandingPage = () => {
+  return (
+    <main className="min-h-screen bg-background">
+      <Header />
+      <HeroSection />
+      <FeaturesSection />
+      <HowItWorksSection />
+      <CTASection />
+      <Footer />
+    </main>
+  );
+};
 
 // Componente que decide qual painel mostrar com base no perfil do usuário
 const DashboardDispatcher = () => {
@@ -46,10 +74,14 @@ const DashboardDispatcher = () => {
             {/* Redireciona a rota raiz para a carteira */}
             <Route index element={<Navigate to="/carteira" replace />} />
             <Route path="carteira" element={<WalletScreen />} />
+            <Route path="desafios" element={<WorkerChallengeList />} />
+            <Route path="desafios/:challengeId" element={<WorkerChallengeSubmission />} />
+            <Route path="submissoes" element={<WorkerSubmissionsPage />} />
             <Route path="pagar-qr" element={<QrPaymentScreen />} />
             {/* O ProfileScreen agora usa o hook useAuth, não precisa mais de props */}
             <Route path="perfil" element={<ProfileScreen />} />
           </Route>
+
           {/* Rota para pagamento via link (fora do layout do trabalhador) */}
           <Route path="/payment" element={<PaymentScreen />} />
           {/* Qualquer outra rota desconhecida redireciona para a carteira */}
@@ -72,6 +104,8 @@ const DashboardDispatcher = () => {
             <Route index element={<Navigate to="/hr/painel" replace />} />
             <Route path="hr/painel" element={<HRMainDashboardPage />} />
             <Route path="hr/programas" element={<HRProgramsPage />} />
+            {/* ROTA DE DESAFIOS ADICIONADA AQUI */}
+            <Route path="hr/desafios" element={<HRChallengesPage />} />
             <Route path="hr/trabalhadores" element={<HRWorkersPage />} />
             <Route path="hr/relatorios" element={<HRReporting />} />
           </Route>
@@ -101,16 +135,7 @@ const AppContent = () => {
   }
 
   if (!isAuthenticated) {
-    return (
-      <main className="min-h-screen flex flex-col justify-center items-center bg-gray-50 p-4 text-center">
-        <HandCoins size={64} className="text-blue-600 mb-4" />
-        <h1 className="text-4xl font-bold text-gray-800">Bem-vindo ao BeneChain</h1>
-        <p className="text-gray-600 mt-2 max-w-md">Sua plataforma descentralizada de benefícios corporativos na Internet Computer.</p>
-        <button onClick={login} className="mt-8 bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition-transform transform hover:scale-105">
-          Login com Internet Identity
-        </button>
-      </main>
-    );
+    return <LandingPage />;
   }
 
   if (!profile) {
@@ -119,7 +144,9 @@ const AppContent = () => {
         <header className="bg-white shadow-sm p-4">
           <div className="container mx-auto flex justify-between items-center">
             <div className="flex items-center space-x-2">
-                <HandCoins size={32} className="text-blue-600" />
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">BC</span>
+                </div>
                 <h1 className="text-2xl font-bold text-gray-800">BeneChain</h1>
             </div>
             <button onClick={logout} className="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600">

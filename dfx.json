@@ -16,27 +16,33 @@
       "main": "src/backend/wallets/wallets.mo",
       "type": "motoko"
     },
+    "challenges": {
+      "main": "src/backend/challenges/challenges.mo",
+      "type": "motoko"
+    },
     "reporting": {
       "candid": "src/backend/reporting/reporting.did",
       "type": "custom",
       "wasm": "src/backend/reporting/target/wasm32-unknown-unknown/release/reporting.wasm",
       "build": [
-    "cd src/backend/reporting && cargo build --target wasm32-unknown-unknown --release",
-    "cd src/backend/reporting && candid-extractor target/wasm32-unknown-unknown/release/reporting.wasm > reporting.did"
-  ],
+        "cd src/backend/reporting && cargo build --target wasm32-unknown-unknown --release",
+        "cd src/backend/reporting && candid-extractor target/wasm32-unknown-unknown/release/reporting.wasm > reporting.did"
+      ],
       "metadata": [
         {
           "name": "candid:service"
         }
       ],
-      "workspace": "src/backend/reporting"
+      "workspace": "src/backend/reporting",
+      "init_arg": "(principal \"u6s2n-gx777-77774-qaaba-cai\", principal \"umunu-kh777-77774-qaaca-cai\", principal \"ufxgi-4p777-77774-qaadq-cai\")"
     },
     "BENEFICIOS_frontend": {
       "dependencies": [
         "benefits_manager",
         "establishment",
         "identity_auth",
-        "wallets"
+        "wallets",
+        "challenges"
       ],
       "source": [
         "src/frontend/dist"
@@ -57,5 +63,12 @@
       "frontend": {}
     }
   },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
   "version": 1
 }

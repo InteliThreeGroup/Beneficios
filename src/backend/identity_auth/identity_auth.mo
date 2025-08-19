@@ -36,6 +36,15 @@ actor IdentityAuth {
         }
     };
 
+    // --- NOVA FUNÇÃO ADICIONADA ---
+    // Permite que outros canisters consultem o perfil de um usuário específico.
+    public query func getProfileFor(user: Principal) : async Result.Result<UserProfile, Text> {
+        switch (userProfiles.get(user)) {
+            case (?profile) { #ok(profile) };
+            case null { #err("User profile not found") };
+        }
+    };
+
     public query func hasRole(user: Principal, role: UserRole) : async Bool {
         switch (userProfiles.get(user)) {
             case (?profile) { profile.role == role and profile.isActive };
