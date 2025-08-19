@@ -1,112 +1,101 @@
-// src/frontend/src/components/AuthClientContext.jsx
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { AuthClient } from '@dfinity/auth-client';
-import { HttpAgent } from '@dfinity/agent'; // Removed Actor as it's not directly used for agent creation
-import { Principal } from '@dfinity/principal';
-
-// Importa os canister IDs e createActor para todos os seus canisters de backend
-import { canisterId as identityCanisterId, createActor as createIdentityActor } from '../../../../declarations/identity_auth';
-import { canisterId as benefitsManagerCanisterId, createActor as createBenefitsManagerActor } from '../../../../declarations/benefits_manager';
-import { canisterId as establishmentCanisterId, createActor as createEstablishmentActor } from '../../../../declarations/establishment';
-import { canisterId as walletsCanisterId, createActor as createWalletsActor } from '../../../../declarations/wallets';
-import { canisterId as reportingCanisterId, createActor as createReportingActor } from '../../../../declarations/reporting';
-
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { AuthClient } from "@dfinity/auth-client";
+import { canisterId as identityCanisterId, createActor as createIdentityActor } from "../../../../declarations/identity_auth";
+import { createActor as createBenefitsManagerActor } from "../../../../declarations/benefits_manager";
+import { createActor as createWalletsActor } from "../../../../declarations/wallets";
+import { createActor as createEstablishmentActor } from "../../../../declarations/establishment";
+import { createActor as createChallengesActor } from "../../../../declarations/challenges";
 
 const AuthContext = createContext();
 
-export const useAuth = () => useContext(AuthContext);
+const canisterIds = {
+  identity_auth: process.env.CANISTER_ID_IDENTITY_AUTH,
+  benefits_manager: process.env.CANISTER_ID_BENEFITS_MANAGER,
+  wallets: process.env.CANISTER_ID_WALLETS,
+  establishment: process.env.CANISTER_ID_ESTABLISHMENT,
+  challenges: process.env.CANISTER_ID_CHALLENGES, // <-- 2. ID DO NOVO CANISTER
+};
 
 export const AuthProvider = ({ children }) => {
   const [authClient, setAuthClient] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [principal, setPrincipal] = useState(null);
-  const [identity, setIdentity] = useState(null);
-  const [actors, setActors] = useState(null); // Pode ser null ou um objeto de atores
   const [profile, setProfile] = useState(null);
+  const [actors, setActors] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    AuthClient.create().then(async (client) => {
+  const initAuth = useCallback(async () => {
+    try {
+      const client = await AuthClient.create();
       setAuthClient(client);
       const authenticated = await client.isAuthenticated();
+      
       if (authenticated) {
         await handleAuthenticated(client);
+      } else {
+        setIsAuthenticated(false);
+        setLoading(false);
       }
+    } catch (error) {
+      console.error("Erro na inicialização do AuthClient:", error);
       setLoading(false);
-    });
+    }
   }, []);
 
+  useEffect(() => {
+    initAuth();
+  }, [initAuth]);
+
   const handleAuthenticated = async (client) => {
-    const userIdentity = client.getIdentity();
-    const userPrincipal = userIdentity.getPrincipal();
-    setIdentity(userIdentity);
+    const identity = client.getIdentity();
+    const userPrincipal = identity.getPrincipal();
+
     setPrincipal(userPrincipal);
     setIsAuthenticated(true);
 
-    const agent = new HttpAgent({ identity: userIdentity });
-    if (process.env.DFX_NETWORK !== "ic") {
-        agent.fetchRootKey().catch(err => {
-            console.warn("Unable to fetch root key. Check to ensure that your local replica is running");
-            console.error(err);
-        });
-    }
-
-    // Cria atores para TODOS os canisters de backend
     const _actors = {
-      identity_auth: createIdentityActor(identityCanisterId, { agent }),
-      benefits_manager: createBenefitsManagerActor(benefitsManagerCanisterId, { agent }),
-      establishment: createEstablishmentActor(establishmentCanisterId, { agent }),
-      wallets: createWalletsActor(walletsCanisterId, { agent }),
-      reporting: createReportingActor(reportingCanisterId, { agent }),
+      identity_auth: createIdentityActor(canisterIds.identity_auth, { agentOptions: { identity } }),
+      benefits_manager: createBenefitsManagerActor(canisterIds.benefits_manager, { agentOptions: { identity } }),
+      wallets: createWalletsActor(canisterIds.wallets, { agentOptions: { identity } }),
+      establishment: createEstablishmentActor(canisterIds.establishment, { agentOptions: { identity } }),
+      challenges: createChallengesActor(canisterIds.challenges, { agentOptions: { identity } }), // <-- 3. ATOR DO CHALLENGES CRIADO
     };
     setActors(_actors);
 
-    // Tenta buscar o perfil
-    let fetchedProfile = null;
     try {
       const profileResult = await _actors.identity_auth.getProfile();
-      if (profileResult.ok) {
-        fetchedProfile = profileResult.ok;
-        setProfile(fetchedProfile);
+      if ('ok' in profileResult) {
+        setProfile(profileResult.ok);
       } else {
-        console.log("Perfil não encontrado, precisa criar um.");
+        console.log("Nenhum perfil encontrado para este principal, o usuário precisa criar um.");
         setProfile(null);
       }
+      
+      // REMOVIDO: A chamada para createWallet foi removida pois a carteira é criada sob demanda no backend.
+      // try {
+      //   await _actors.wallets.createWallet(); 
+      // } catch (e) {
+      //   console.log("Tentativa de criar carteira (pode já existir):", e);
+      // }
+
     } catch (error) {
-      console.error("Erro ao buscar perfil:", error);
-      setProfile(null); // Certifica que o perfil é null em caso de erro
-    }
-
-    // Se o perfil é nulo, refreshProfile é chamado para forçar a criação se o usuário precisar
-    // if (fetchedProfile === null) { // <-- Removido, handleAuthenticated já chama refreshProfile se necessário
-    //   await refreshProfile();
-    // }
-
-    // Cria/Verifica carteira (sempre para qualquer usuário autenticado)
-    if (userPrincipal && _actors.wallets) {
-        try {
-            const walletCreationResult = await _actors.wallets.createWallet(userPrincipal);
-            if (walletCreationResult.ok) {
-                console.log("Carteira verificada/criada com sucesso para:", userPrincipal.toText());
-            } else {
-                console.error("Erro ao verificar/criar carteira:", walletCreationResult.err);
-            }
-        } catch (walletError) {
-            console.error("Erro inesperado ao chamar createWallet:", walletError);
-        }
+      console.error("Erro ao buscar perfil ou criar carteira:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const login = async () => {
     if (!authClient) return;
-    const identityProvider = process.env.DFX_NETWORK === "ic"
-      ? "https://identity.ic0.app"
-      : `http://${process.env.CANISTER_ID_INTERNET_IDENTITY}.localhost:4943/`;
-
+    setLoading(true);
     await authClient.login({
-      identityProvider,
-      onSuccess: () => {
-        handleAuthenticated(authClient);
+      identityProvider: process.env.DFX_NETWORK === "ic"
+        ? "https://identity.ic0.app/#authorize"
+        : `http://${process.env.CANISTER_ID_INTERNET_IDENTITY}.localhost:4943`,
+      onSuccess: () => handleAuthenticated(authClient),
+      onError: (error) => {
+        console.error("Falha no login:", error);
+        setLoading(false);
       },
     });
   };
@@ -116,43 +105,24 @@ export const AuthProvider = ({ children }) => {
     await authClient.logout();
     setIsAuthenticated(false);
     setPrincipal(null);
-    setIdentity(null);
-    setActors(null);
     setProfile(null);
+    setActors(null);
   };
 
-  const refreshProfile = async () => {
-    if (actors && actors.identity_auth) {
-      try {
-        const profileResult = await actors.identity_auth.getProfile();
-        if (profileResult.ok) {
-          setProfile(profileResult.ok);
-        } else {
-          setProfile(null); // Perfil não encontrado ou erro, define como null
-        }
-      } catch (error) {
-        console.error("Erro ao atualizar perfil:", error);
-        setProfile(null); // Em caso de erro, define como null
+  const reloadProfile = async () => {
+    if (actors?.identity_auth) {
+      const profileResult = await actors.identity_auth.getProfile();
+      if ('ok' in profileResult) {
+        setProfile(profileResult.ok);
       }
     }
   };
 
-  const contextValue = {
-    authClient,
-    isAuthenticated,
-    principal,
-    identity,
-    actors,
-    profile,
-    loading,
-    login,
-    logout,
-    refreshProfile,
-  };
-
   return (
-    <AuthContext.Provider value={contextValue}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, principal, profile, actors, loading, reloadProfile }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => useContext(AuthContext);

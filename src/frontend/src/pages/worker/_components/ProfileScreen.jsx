@@ -26,7 +26,7 @@ export function ProfileScreen() {
 
         <section className="bg-white rounded-xl shadow-sm p-6 flex flex-col items-center text-center mb-8">
           <img 
-            src={`https://avatars.dicebear.com/api/initials/${profile?.name || 'User'}.svg`} 
+            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'User')}&background=e5e7eb&color=374151`} 
             alt="Foto do perfil" 
             className="w-24 h-24 rounded-full border-4 border-gray-200 bg-gray-100" 
           />
