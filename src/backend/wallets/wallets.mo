@@ -353,16 +353,18 @@ actor Wallet {
         }
     };
 
+    // --- Funções de Integração Bitcoin ---
+
     public shared ({ caller }) func getMyPubKeyHash160(companyId : Nat, benefitId : Nat) : async Blob {
         await BTC.get_own_pubkey_hash160(companyId, benefitId)
     };
-
-    // O frontend passa o endereço (string) gerado a partir do hash160 acima (bech32 P2WPKH)
+    
     public shared ({ caller }) func sendBitcoin(
         companyId : Nat, benefitId : Nat,
         fromAddress : Text,
         toProgram20b : Blob, amountSats : Nat64, feeRate : Nat64
         ) : async Text {
-        await BTC.send_btc_with_program(companyId, benefitId, fromAddress, toProgram20b, amountSats, feeRate)
+        // CORRIGIDO: O nome da função foi trocado para 'send_btc'
+        await BTC.send_btc(companyId, benefitId, fromAddress, toProgram20b, amountSats, feeRate)
     };
 }

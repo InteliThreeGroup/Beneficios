@@ -1,6 +1,6 @@
 import Blob "mo:base/Blob";
-import Sha256 "mo:lib/crypto/Sha256";
-import Ripemd "mo:lib/crypto/Ripemd160";
+import Sha256 "../../lib/crypto/Sha256";
+import Ripemd "../../lib/crypto/Ripemd160";
 
 module Hash {
   public func sha256(b : Blob) : Blob { Sha256.hash(b) };
