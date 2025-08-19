@@ -16,8 +16,11 @@
     "src/frontend"
   ],
   "dependencies": {
-    "@dfinity/agent": "^3.1.0",
-    "@dfinity/auth-client": "^3.1.0",
+    "@dfinity/agent": "1.4.0",
+    "@dfinity/auth-client": "1.4.0",
+    "@dfinity/candid": "1.4.0",
+    "@dfinity/identity": "1.4.0",
+    "@dfinity/principal": "1.4.0",
     "@fortawesome/fontawesome-svg-core": "^7.0.0",
     "@fortawesome/free-solid-svg-icons": "^7.0.0",
     "@fortawesome/react-fontawesome": "^0.2.3",
