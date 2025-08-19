@@ -20,7 +20,7 @@ const canisterDefinitions = Object.entries(dfxJson.canisters).reduce(
       ? acc
       : {
           ...acc,
-          ["process.env.CANISTER_ID_" + name.toUpperCase()]: JSON.stringify(canisterIds[name]?.[isDev ? "local" : "ic"] || ""),
+          ["process.env.CANISTER_ID_" + name.toUpperCase().replace(/-/g, "_")]: JSON.stringify(canisterIds[name]?.[isDev ? "local" : "ic"] || ""),
         },
   {}
 );

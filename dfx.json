@@ -55,7 +55,13 @@
         }
       },
       "frontend": {}
+    },
+    "llmo-home": {
+      "main": "src/backend/llm_home/app.mo",
+      "type": "motoko",
+      "args": "--enhanced-orthogonal-persistence"
     }
+
   },
   "version": 1
 }
