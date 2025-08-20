@@ -7,7 +7,7 @@ import Nat64 "mo:base/Nat64";
 import Text "mo:base/Text";
 
 module Management {
-  public type BitcoinNetwork = { #mainnet; #testnet; };
+  public type BitcoinNetwork = { #mainnet; #testnet; #regtest};
   public type EcdsaKeyId = { curve: { #secp256k1 }; name: Text; };
   public type UTXO = { outpoint: { txid: Blob; vout: Nat32; }; value: Nat64; height: Nat32; };
   public type GetBalanceRequest = { address: Text; network: BitcoinNetwork; min_confirmations: ?Nat32; };

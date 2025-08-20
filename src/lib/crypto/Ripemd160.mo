@@ -85,10 +85,10 @@ module {
     };
 
     // comprimento (64-bit LE) — alto = 0   (fazendo os shifts em Nat32)
-    let bl32 : Nat32 = Nat32.fromNat(bitLen);
-    let lenLeLow  : [Nat8] = [ byte0(bl32), byte1(bl32), byte2(bl32), byte3(bl32) ];
-    let lenLeHigh : [Nat8] = [0,0,0,0];
-    msg := Array.append<Nat8>(msg, Array.append<Nat8>(lenLeLow, lenLeHigh));
+  let bl32 : Nat32 = Nat32.fromNat(bitLen);
+  let lenLeLow  : [Nat8] = [ byte0(bl32), byte1(bl32), byte2(bl32), byte3(bl32) ];
+  let lenLeHigh : [Nat8] = [0,0,0,0];
+  msg := Array.append<Nat8>(msg, Array.append<Nat8>(lenLeLow, lenLeHigh));
 
 
     // ---- estado inicial ----
