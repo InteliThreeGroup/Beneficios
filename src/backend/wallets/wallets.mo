@@ -1,4 +1,4 @@
-// wallets.mo
+// src/backend/wallets/wallets.mo
 import Principal "mo:base/Principal";
 import HashMap "mo:base/HashMap";
 import Array "mo:base/Array";
@@ -14,13 +14,19 @@ import BTC "canister:btc_payments";
 
 
 actor Wallet {
-    // Types
+
+    // --- CROSS-CANISTER DEFINITIONS ---
+    // ATENÇÃO: Verifique se este ID corresponde ao seu canister 'challenges' em dfx.json
+    private let challengesCanisterPrincipal : Principal = Principal.fromText("uzt4z-lp777-77774-qaabq-cai");
+
+    // --- TYPES ---
     public type BenefitType = {
         #Food;
         #Culture;
         #Health;
         #Transport;
         #Education;
+        #ChallengeToken;
     };
 
     public type TransactionType = {
@@ -64,100 +70,47 @@ actor Wallet {
         description: Text;
     };
 
-    public type ReceivedPaymentRequest = {
-        transactionId: Text;
-        workerId: Principal;
-        establishmentId: Principal;
-        benefitType: BenefitType;
-        amount: Nat;
-        description: Text;
-    };
+    // --- STATE ---
+    private stable var workerWalletsEntries : [(Principal, WorkerWallet)] = [];
+    private var workerWallets = HashMap.HashMap<Principal, WorkerWallet>(0, Principal.equal, Principal.hash);
 
-    // State
-    private stable var walletsEntries : [(Principal, WorkerWallet)] = [];
     private stable var transactionsEntries : [(Text, Transaction)] = [];
-    private stable var nextTransactionId : Nat = 1;
-
-    private var wallets = HashMap.HashMap<Principal, WorkerWallet>(0, Principal.equal, Principal.hash);
     private var transactions = HashMap.HashMap<Text, Transaction>(0, Text.equal, Text.hash);
 
-    private let reportingCanisterPrincipal : Principal = Principal.fromText("ulvla-h7777-77774-qaacq-cai");
-    private let establishmentCanisterPrincipal : Principal = Principal.fromText("uzt4z-lp777-77774-qaabq-cai");
+    private stable var transactionCounter : Nat = 0;
 
-    private type Establishment = actor {
-        registerReceivedPayment: (paymentData: ReceivedPaymentRequest) -> async Result.Result<Text, Text>;
-    };
-
+    // --- UPGRADE HOOKS ---
     system func preupgrade() {
-        walletsEntries := Iter.toArray(wallets.entries());
+        workerWalletsEntries := Iter.toArray(workerWallets.entries());
         transactionsEntries := Iter.toArray(transactions.entries());
     };
-
     system func postupgrade() {
-        wallets := HashMap.HashMap<Principal, WorkerWallet>(walletsEntries.size(), Principal.equal, Principal.hash);
-        for ((key, value) in walletsEntries.vals()) {
-            wallets.put(key, value);
-        };
-        transactions := HashMap.HashMap<Text, Transaction>(transactionsEntries.size(), Text.equal, Text.hash);
-        for ((key, value) in transactionsEntries.vals()) {
-            transactions.put(key, value);
-        };
-        walletsEntries := [];
+        workerWallets := HashMap.fromIter(Iter.fromArray(workerWalletsEntries), workerWalletsEntries.size(), Principal.equal, Principal.hash);
+        workerWalletsEntries := [];
+        transactions := HashMap.fromIter(Iter.fromArray(transactionsEntries), transactionsEntries.size(), Text.equal, Text.hash);
         transactionsEntries := [];
     };
 
-    // --- Public Functions ---
+    // --- PUBLIC UPDATE FUNCTIONS ---
 
-    public shared(msg) func createWallet(workerId: Principal) : async Result.Result<WorkerWallet, Text> {
-        switch (wallets.get(workerId)) {
-            case (?existingWallet) {
-                return #ok(existingWallet);
-            };
-            case null {
-                let newWallet: WorkerWallet = {
-                    workerId = workerId;
-                    balances = [];
-                    totalBalance = 0;
-                    createdAt = Time.now();
-                    lastActivity = Time.now();
-                };
-                wallets.put(workerId, newWallet);
-                return #ok(newWallet);
-            };
-        }
-    };
-
-    public query func getWallet(workerId: Principal) : async Result.Result<WorkerWallet, Text> {
-        switch (wallets.get(workerId)) {
-            case (?wallet) { return #ok(wallet); };
-            case null { return #err("Wallet not found"); };
-        }
-    };
-
-    public shared(msg) func creditBalance(
-        workerId: Principal,
-        benefitType: BenefitType,
-        amount: Nat,
-        programId: Text,
-        description: Text
-    ) : async Result.Result<Text, Text> {
-        let _ = await createWallet(workerId);
-        switch (wallets.get(workerId)) {
-            case (?wallet) {
-                let updatedBalances = updateBenefitBalance(wallet.balances, benefitType, amount, true);
-                let newTotalBalance = calculateTotalBalance(updatedBalances);
-                let updatedWallet: WorkerWallet = {
+    public shared(msg) func creditBalance(workerId: Principal, benefitType: BenefitType, amount: Nat, programId: Text, description: Text) : async Result.Result<Text, Text> {
+        let walletResult = getOrCreateWallet(workerId);
+        switch (walletResult) {
+            case (#ok(wallet)) {
+                let updatedBalances = updateBalances(wallet.balances, benefitType, amount, #Credit);
+                let updatedWallet : WorkerWallet = {
                     workerId = wallet.workerId;
                     balances = updatedBalances;
-                    totalBalance = newTotalBalance;
+                    totalBalance = calculateTotalBalance(updatedBalances);
                     createdAt = wallet.createdAt;
                     lastActivity = Time.now();
                 };
-                wallets.put(workerId, updatedWallet);
-                let txIdText = "tx_" # Nat.toText(nextTransactionId);
-                nextTransactionId += 1;
-                let newTransaction: Transaction = {
-                    id = txIdText;
+                workerWallets.put(workerId, updatedWallet);
+
+                transactionCounter += 1;
+                let txId = "tx-" # Nat.toText(transactionCounter);
+                let newTransaction : Transaction = {
+                    id = txId;
                     workerId = workerId;
                     benefitType = benefitType;
                     transactionType = #Credit;
@@ -168,37 +121,36 @@ actor Wallet {
                     timestamp = Time.now();
                     description = description;
                 };
-                transactions.put(txIdText, newTransaction);
-                return #ok("Balance credited successfully");
+                transactions.put(txId, newTransaction);
+
+                return #ok(txId);
             };
-            case null {
-                return #err("Failed to create or access wallet");
-            };
-        }
+            case (#err(e)) { return #err(e); };
+        };
     };
 
     public shared(msg) func debitBalance(paymentRequest: PaymentRequest) : async Result.Result<Text, Text> {
-        switch (wallets.get(paymentRequest.workerId)) {
+        let workerId = paymentRequest.workerId;
+        switch (workerWallets.get(workerId)) {
             case (?wallet) {
                 let currentBalance = getBenefitTypeBalance(wallet.balances, paymentRequest.benefitType);
                 if (currentBalance < paymentRequest.amount) {
-                    return #err("Insufficient balance for " # benefitTypeToText(paymentRequest.benefitType));
+                    return #err("Insufficient funds");
                 };
-                let updatedBalances = updateBenefitBalance(wallet.balances, paymentRequest.benefitType, paymentRequest.amount, false);
-                let newTotalBalance = calculateTotalBalance(updatedBalances);
-                let updatedWallet: WorkerWallet = {
+                let updatedBalances = updateBalances(wallet.balances, paymentRequest.benefitType, paymentRequest.amount, #Debit);
+                let updatedWallet : WorkerWallet = {
                     workerId = wallet.workerId;
                     balances = updatedBalances;
-                    totalBalance = newTotalBalance;
+                    totalBalance = calculateTotalBalance(updatedBalances);
                     createdAt = wallet.createdAt;
                     lastActivity = Time.now();
                 };
-                wallets.put(paymentRequest.workerId, updatedWallet);
-                let txIdText = "tx_" # Nat.toText(nextTransactionId);
-                nextTransactionId += 1;
-                let newTransaction: Transaction = {
-                    id = txIdText;
-                    workerId = paymentRequest.workerId;
+                workerWallets.put(workerId, updatedWallet);
+                transactionCounter += 1;
+                let txId = "tx-" # Nat.toText(transactionCounter);
+                let newTransaction : Transaction = {
+                    id = txId;
+                    workerId = workerId;
                     benefitType = paymentRequest.benefitType;
                     transactionType = #Debit;
                     amount = paymentRequest.amount;
@@ -208,97 +160,150 @@ actor Wallet {
                     timestamp = Time.now();
                     description = paymentRequest.description;
                 };
-                transactions.put(txIdText, newTransaction);
-                let receivedRequest : ReceivedPaymentRequest = {
-                    transactionId = txIdText;
-                    workerId = paymentRequest.workerId;
-                    establishmentId = paymentRequest.establishmentId;
-                    benefitType = paymentRequest.benefitType;
-                    amount = paymentRequest.amount;
-                    description = paymentRequest.description;
-                };
-                let establishment = actor(Principal.toText(establishmentCanisterPrincipal)) : Establishment;
-                let notificationResult = await establishment.registerReceivedPayment(receivedRequest);
-                switch (notificationResult) {
-                    case (#ok(_)) {
-                        Debug.print("Payment registered successfully by establishment.");
-                        return #ok(txIdText);
-                    };
-                    case (#err(errMsg)) {
-                        Debug.print("Failed to register payment with establishment: " # errMsg);
-                        return #err("Payment debited, but failed to register with establishment: " # errMsg);
-                    };
-                };
+                transactions.put(txId, newTransaction);
+                return #ok(txId);
             };
-            case null {
-                return #err("Wallet not found");
+            case (null) { return #err("Wallet not found") }
+        };
+    };
+
+    public shared(msg) func creditReward(workerId: Principal, amount: Nat) : async Result.Result<Text, Text> {
+        if (msg.caller != challengesCanisterPrincipal) {
+            return #err("Unauthorized: Only the challenges canister can call this function.");
+        };
+
+        let walletResult = getOrCreateWallet(workerId);
+        switch (walletResult) {
+            case (#ok(wallet)) {
+                let updatedBalances = updateBalances(wallet.balances, #ChallengeToken, amount, #Credit);
+                let updatedWallet : WorkerWallet = {
+                    workerId = wallet.workerId;
+                    balances = updatedBalances;
+                    totalBalance = calculateTotalBalance(updatedBalances);
+                    createdAt = wallet.createdAt;
+                    lastActivity = Time.now();
+                };
+                workerWallets.put(workerId, updatedWallet);
+
+                transactionCounter += 1;
+                let txId = "tx-" # Nat.toText(transactionCounter);
+                let newTransaction : Transaction = {
+                    id = txId;
+                    workerId = workerId;
+                    benefitType = #ChallengeToken;
+                    transactionType = #Credit;
+                    amount = amount;
+                    establishmentId = null;
+                    establishmentName = null;
+                    programId = ?"ChallengeReward";
+                    timestamp = Time.now();
+                    description = "Reward from challenges canister";
+                };
+                transactions.put(txId, newTransaction);
+
+                return #ok(txId);
             };
+            case (#err(e)) { return #err(e); };
+        };
+    };
+
+    public shared(msg) func convertTokensToCkBTC(amount: Nat) : async Result.Result<Text, Text> {
+        let workerId = msg.caller;
+
+        switch (workerWallets.get(workerId)) {
+            case (?wallet) {
+                let tokenBalance = getBenefitTypeBalance(wallet.balances, #ChallengeToken);
+                if (tokenBalance < amount) {
+                    return #err("Insufficient #ChallengeToken balance for conversion.");
+                };
+
+                let updatedBalances = updateBalances(wallet.balances, #ChallengeToken, amount, #Debit);
+                let updatedWallet : WorkerWallet = {
+                    workerId = wallet.workerId;
+                    balances = updatedBalances;
+                    totalBalance = calculateTotalBalance(updatedBalances);
+                    createdAt = wallet.createdAt;
+                    lastActivity = Time.now();
+                };
+                workerWallets.put(workerId, updatedWallet);
+
+                Debug.print("LOG: " # Principal.toText(workerId) # " debited " # Nat.toText(amount) # " challenge tokens for ckBTC conversion.");
+
+                return #ok("Tokens debited. ckBTC conversion logic pending implementation.");
+            };
+            case (null) { return #err("Worker wallet not found."); };
+        };
+    };
+
+    // --- PUBLIC QUERY FUNCTIONS ---
+
+    public query(msg) func getWallet() : async Result.Result<WorkerWallet, Text> {
+        switch (workerWallets.get(msg.caller)) {
+            case (?wallet) { #ok(wallet) };
+            case (null) { #err("Wallet not found") }
         }
     };
 
-    public query func getTransactionHistory(workerId: Principal, limit: ?Nat) : async [Transaction] {
-        let maxResults = Option.get(limit, 50);
-        let filtered = Iter.filter(transactions.vals(), func(tx : Transaction) : Bool {
-            return tx.workerId == workerId;
+    public shared(msg) func getOrCreateWalletForUser() : async Result.Result<WorkerWallet, Text> {
+        getOrCreateWallet(msg.caller)
+    };
+
+    public query(msg) func getTransactions(limit: ?Nat) : async [Transaction] {
+        let caller = msg.caller;
+        let maxResults = Option.get(limit, 100);
+        let result = Iter.toArray(Iter.map(
+            Iter.filter(transactions.entries(), func((txId : Text, tx : Transaction)) : Bool { tx.workerId == caller }),
+            func((txId : Text, tx : Transaction)) : Transaction { tx }
+        ));
+        let sorted = Array.sort<Transaction>(result, func(a : Transaction, b : Transaction) : {#less; #equal; #greater} {
+            if (a.timestamp > b.timestamp) #less else #greater
         });
-        var asArray = Iter.toArray(filtered);
-        let _ = Array.sort<Transaction>(asArray, func(a, b) : {#less; #equal; #greater} {
-            if (a.timestamp > b.timestamp) {
-                return #less;
-            } else if (a.timestamp < b.timestamp) {
-                return #greater;
-            } else {
-                return #equal;
+        return Array.take<Transaction>(sorted, maxResults);
+    };
+
+    public query func getTransactionsForReporting(workerId: Principal, limit: ?Nat) : async Result.Result<[Transaction], Text> {
+        let maxResults = Option.get(limit, 1000);
+        let result = Iter.toArray(Iter.map(
+            Iter.filter(transactions.entries(), func((txId : Text, tx : Transaction)) : Bool { tx.workerId == workerId }),
+            func((txId : Text, tx : Transaction)) : Transaction { tx }
+        ));
+        let sorted = Array.sort<Transaction>(result, func(a : Transaction, b : Transaction) : {#less; #equal; #greater} {
+            if (a.timestamp > b.timestamp) #less else #greater
+        });
+        return #ok(Array.take<Transaction>(sorted, maxResults));
+    };
+
+    // --- PRIVATE HELPERS ---
+
+    private func getOrCreateWallet(workerId: Principal) : Result.Result<WorkerWallet, Text> {
+        switch (workerWallets.get(workerId)) {
+            case (?wallet) { return #ok(wallet); };
+            case (null) {
+                let newWallet : WorkerWallet = {
+                    workerId = workerId;
+                    balances = [];
+                    totalBalance = 0;
+                    createdAt = Time.now();
+                    lastActivity = Time.now();
+                };
+                workerWallets.put(workerId, newWallet);
+                return #ok(newWallet);
             };
-        });
-        var finalResult : [Transaction] = [];
-        var i = 0;
-        while (i < asArray.size() and i < maxResults) {
-            finalResult := Array.append(finalResult, [asArray[i]]);
-            i += 1;
         };
-        return finalResult;
     };
 
-    public query func getTransactionsForReporting(workerId: Principal, limit: ?Nat) : async [Transaction] {
-        let maxResults = Option.get(limit, 50);
-        let filtered = Iter.filter(transactions.vals(), func(tx : Transaction) : Bool {
-            return tx.workerId == workerId;
-        });
-        var asArray = Iter.toArray(filtered);
-        let _ = Array.sort<Transaction>(asArray, func(a, b) : {#less; #equal; #greater} {
-            if (a.timestamp > b.timestamp) { return #less; } else if (a.timestamp < b.timestamp) { return #greater; } else { return #equal; };
-        });
-        var finalResult : [Transaction] = [];
-        var i = 0;
-        while (i < asArray.size() and i < maxResults) {
-            finalResult := Array.append(finalResult, [asArray[i]]);
-            i += 1;
-        };
-        return finalResult;
-    };
-
-    // --- Private Helper Functions ---
-
-    private func updateBenefitBalance(
-        balances: [BenefitBalance],
-        benefitType: BenefitType,
-        amount: Nat,
-        isCredit: Bool
-    ) : [BenefitBalance] {
-        let currentTime = Time.now();
+    private func updateBalances(balances: [BenefitBalance], benefitType: BenefitType, amount: Nat, txType: TransactionType) : [BenefitBalance] {
+        var updatedBalances : [BenefitBalance] = [];
         var found = false;
-        var updatedBalances: [BenefitBalance] = [];
+        let currentTime = Time.now();
+        let isCredit = (txType == #Credit);
+
         var i = 0;
-        while(i < balances.size()) {
+        while (i < balances.size()) {
             let balance = balances[i];
             if (balance.benefitType == benefitType) {
                 found := true;
-                let newBalance = if (isCredit) {
-                    balance.balance + amount
-                } else {
-                    balance.balance - amount
-                };
+                let newBalance = if (isCredit) balance.balance + amount else balance.balance - amount;
                 let newEntry : BenefitBalance = {
                     benefitType = balance.benefitType;
                     balance = newBalance;
@@ -310,6 +315,7 @@ actor Wallet {
             };
             i += 1;
         };
+
         if (not found and isCredit) {
             let newEntry : BenefitBalance = {
                 benefitType = benefitType;
@@ -337,7 +343,8 @@ actor Wallet {
         var total : Nat = 0;
         var i = 0;
         while (i < balances.size()) {
-            total += balances[i].balance;
+            let balance = balances[i];
+            total += balance.balance;
             i += 1;
         };
         return total;
@@ -350,6 +357,7 @@ actor Wallet {
             case (#Health) { return "Health"; };
             case (#Transport) { return "Transport"; };
             case (#Education) { return "Education"; };
+            case (#ChallengeToken) { return "ChallengeToken"; };
         }
     };
 
@@ -367,4 +375,5 @@ actor Wallet {
         // CORRIGIDO: O nome da função foi trocado para 'send_btc'
         await BTC.send_btc(companyId, benefitId, fromAddress, toProgram20b, amountSats, feeRate)
     };
+
 }

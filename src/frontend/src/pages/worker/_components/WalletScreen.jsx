@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../auth/AuthClientContext";
 import { Link } from "react-router-dom";
-import { Bell, Utensils, BookOpen, HeartPulse, Bus, GraduationCap, Building, Loader2, AlertTriangle } from "lucide-react";
+import { Bell, Utensils, BookOpen, HeartPulse, Bus, GraduationCap, Building, Loader2, AlertTriangle, Trophy } from "lucide-react";
 import { ConfirmPaymentModal } from '../../../components/ConfirmPaymentModal'; // Certifique-se que este componente existe
 
 export function WalletScreen() {
@@ -41,14 +41,22 @@ export function WalletScreen() {
     setLoading(true);
     setError("");
     try {
-      const walletResult = await actors.wallets.getWallet(principal);
+      // Primeiro tenta obter a carteira, se não existir, cria uma nova
+      let walletResult = await actors.wallets.getWallet();
+      
+      // Se a carteira não foi encontrada, cria uma nova
+      if (walletResult.err === "Wallet not found") {
+        console.log("Carteira não encontrada, criando nova carteira...");
+        walletResult = await actors.wallets.getOrCreateWalletForUser();
+      }
+      
       if (walletResult.ok) {
         setWallet(walletResult.ok);
       } else {
         setError(`Erro ao buscar carteira: ${walletResult.err}`);
       }
 
-      const txHistoryResult = await actors.wallets.getTransactionHistory(principal, [BigInt(5)]); // Busca as últimas 5
+      const txHistoryResult = await actors.wallets.getTransactions([BigInt(5)]); // Busca as últimas 5
       if(txHistoryResult){
         setTransactions(txHistoryResult);
       }
@@ -97,9 +105,21 @@ export function WalletScreen() {
               <Bell size={24} className="text-gray-600" />
               <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-blue-500"></span>
             </button>
-            <img src={`https://avatars.dicebear.com/api/initials/${profile?.name || 'User'}.svg`} alt="Foto do usuário" className="w-10 h-10 rounded-full bg-gray-200" />
+            <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'User')}&background=e5e7eb&color=374151`} alt="Foto do usuário" className="w-10 h-10 rounded-full bg-gray-200" />
           </div>
         </header>
+
+        {/* <<< ADICIONE ESTE BLOCO DE CÓDIGO AQUI >>> */}
+        <Link to="/desafios" className="block bg-blue-600 text-white p-6 rounded-xl shadow-lg hover:bg-blue-700 transition-all mb-8">
+            <div className="flex items-center space-x-4">
+                <Trophy size={40}/>
+                <div>
+                    <h2 className="font-bold text-lg">Participe dos Desafios!</h2>
+                    <p className="text-blue-100">Ganhe recompensas extras completando tarefas da sua empresa.</p>
+                </div>
+            </div>
+        </Link>
+        {/* <<< FIM DO BLOCO DE CÓDIGO >>> */}
 
         <section>
           <h2 className="text-lg font-semibold text-gray-700 mb-4">Meus Saldos</h2>
