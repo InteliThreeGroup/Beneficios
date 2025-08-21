@@ -23,6 +23,11 @@ import HRWorkersPage from "./pages/hr/_components/pages/HRWorkersPage";
 import HRReporting from "./pages/hr/_components/HRReporting";
 import HRChallengesPage from "./pages/hr/HRChallengesPage";
 
+// Telas do desafio
+import { WorkerChallengeList } from "./pages/worker/WorkerChallengeList";
+import { WorkerChallengeSubmission } from "./pages/worker/WorkerChallengeSubmission";
+import { WorkerSubmissionsPage } from "./pages/worker/WorkerSubmissionsPage";
+
 // Componente que decide qual painel mostrar com base no perfil do usuário
 const DashboardDispatcher = () => {
   const { profile } = useAuth();
@@ -48,6 +53,10 @@ const DashboardDispatcher = () => {
             <Route index element={<Navigate to="/carteira" replace />} />
             <Route path="carteira" element={<WalletScreen />} />
             <Route path="pagar-qr" element={<QrPaymentScreen />} />
+
+            <Route path="desafios" element={<WorkerChallengeList />} />
+            <Route path="desafios/:challengeId" element={<WorkerChallengeSubmission />} />
+            <Route path="submissoes" element={<WorkerSubmissionsPage />} />
             {/* O ProfileScreen agora usa o hook useAuth, não precisa mais de props */}
             <Route path="perfil" element={<ProfileScreen />} />
           </Route>

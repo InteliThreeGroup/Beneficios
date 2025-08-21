@@ -1,6 +1,6 @@
 import { Outlet, NavLink, Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthClientContext";
-import { Wallet, User, QrCode, HandCoins, LogOut, Bell } from "lucide-react";
+import { Wallet, User, QrCode, HandCoins, LogOut, Bell, Trophy } from "lucide-react";
 
 export function WorkerLayout() {
   const { logout, profile } = useAuth();
@@ -17,42 +17,67 @@ export function WorkerLayout() {
     <div className="min-h-screen bg-gray-100 font-sans text-gray-800">
       <div className="flex">
         {/* --- Sidebar (Menu Lateral Esquerdo) --- */}
-        <aside className="hidden md:flex md:flex-col md:w-64 bg-white border-r border-gray-200">
-          <div className="flex items-center space-x-2 p-4 border-b border-gray-200">
-            <HandCoins size={32} className="text-blue-600" />
-            <h1 className="text-2xl font-bold">BeneChain</h1>
-          </div>
-          <nav className="flex flex-col space-y-2 flex-1 p-4">
-            <NavLink 
-              to="/carteira" 
-              className={({ isActive }) => `${isActive ? activeDesktopLinkClasses : inactiveDesktopLinkClasses} flex items-center space-x-3 p-3 rounded-lg font-semibold`}
-            >
-              <Wallet size={20} />
-              <span>Carteira</span>
-            </NavLink>
-            <NavLink 
-              to="/pagar-qr" 
-              className={({ isActive }) => `${isActive ? activeDesktopLinkClasses : inactiveDesktopLinkClasses} flex items-center space-x-3 p-3 rounded-lg font-semibold`}
-            >
-              <QrCode size={20} />
-              <span>Pagar</span>
-            </NavLink>
-            <NavLink 
-              to="/perfil" 
-              className={({ isActive }) => `${isActive ? activeDesktopLinkClasses : inactiveDesktopLinkClasses} flex items-center space-x-3 p-3 rounded-lg font-semibold`}
-            >
-              <User size={20} />
-              <span>Perfil</span>
-            </NavLink>
-          </nav>
-          <div className="p-4 border-t border-gray-200">
-             <button 
-                onClick={logout} 
-                className="flex items-center space-x-3 w-full p-3 rounded-lg font-semibold text-red-500 hover:bg-red-50"
+        <aside className="hidden md:block md:w-64 bg-white border-r border-gray-200 flex-shrink-0 overflow-hidden">
+          <div className="flex flex-col h-screen">
+            {/* Header da Sidebar */}
+            <div className="flex items-center space-x-2 p-4 border-b border-gray-200 min-h-[73px] flex-shrink-0">
+              <HandCoins size={32} className="text-blue-600 flex-shrink-0" />
+              <h1 className="text-2xl font-bold truncate min-w-0">BeneChain</h1>
+            </div>
+            
+            {/* Navigation Menu */}
+            <nav className="flex flex-col space-y-2 flex-1 p-4 overflow-y-auto">
+              <NavLink 
+                to="/carteira" 
+                className={({ isActive }) => `${isActive ? activeDesktopLinkClasses : inactiveDesktopLinkClasses} flex items-center space-x-3 p-3 rounded-lg font-semibold min-w-0`}
               >
-              <LogOut size={20} />
-              <span>Sair</span>
-            </button>
+                <Wallet size={20} className="flex-shrink-0" />
+                <span className="truncate min-w-0">Carteira</span>
+              </NavLink>
+              
+              <NavLink 
+                to="/desafios" 
+                className={({isActive}) => `${isActive ? activeDesktopLinkClasses : inactiveDesktopLinkClasses} flex items-center space-x-3 p-3 rounded-lg font-semibold min-w-0`}
+              >
+                <Trophy size={20} className="flex-shrink-0" />
+                <span className="truncate min-w-0">Desafios</span>
+              </NavLink>
+              
+              <NavLink 
+                to="/submissoes" 
+                className={({isActive}) => `${isActive ? activeDesktopLinkClasses : inactiveDesktopLinkClasses} flex items-center space-x-3 p-3 rounded-lg font-semibold min-w-0`}
+              >
+                <Bell size={20} className="flex-shrink-0" />
+                <span className="truncate min-w-0">Submissões</span>
+              </NavLink>
+        
+              <NavLink 
+                to="/pagar-qr" 
+                className={({ isActive }) => `${isActive ? activeDesktopLinkClasses : inactiveDesktopLinkClasses} flex items-center space-x-3 p-3 rounded-lg font-semibold min-w-0`}
+              >
+                <QrCode size={20} className="flex-shrink-0" />
+                <span className="truncate min-w-0">Pagar</span>
+              </NavLink>
+              
+              <NavLink 
+                to="/perfil" 
+                className={({ isActive }) => `${isActive ? activeDesktopLinkClasses : inactiveDesktopLinkClasses} flex items-center space-x-3 p-3 rounded-lg font-semibold min-w-0`}
+              >
+                <User size={20} className="flex-shrink-0" />
+                <span className="truncate min-w-0">Perfil</span>
+              </NavLink>
+            </nav>
+            
+            {/* Logout Button */}
+            <div className="p-4 border-t border-gray-200 flex-shrink-0">
+               <button 
+                  onClick={logout} 
+                  className="flex items-center space-x-3 w-full p-3 rounded-lg font-semibold text-red-500 hover:bg-red-50 min-w-0"
+                >
+                <LogOut size={20} className="flex-shrink-0" />
+                <span className="truncate min-w-0">Sair</span>
+              </button>
+            </div>
           </div>
         </aside>
 
@@ -70,7 +95,7 @@ export function WorkerLayout() {
                   <p className="text-sm text-gray-500">Trabalhador</p>
                 </div>
                 <img 
-                  src={`https://avatars.dicebear.com/api/initials/${profile?.name || 'U'}.svg`} 
+                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'U')}&background=e5e7eb&color=374151`} 
                   alt="Avatar do usuário" 
                   className="w-10 h-10 rounded-full bg-gray-200"
                 />
@@ -90,6 +115,18 @@ export function WorkerLayout() {
           <Wallet size={24} />
           <span className="text-xs">Carteira</span>
         </NavLink>
+
+        <NavLink to="/desafios" className={({isActive}) => `${isActive ? activeMobileLinkClasses : inactiveMobileLinkClasses} p-2 flex flex-col items-center gap-1`}>
+        <Trophy size={24} />
+        <span className="text-xs">Desafios</span>
+        </NavLink>
+
+        <NavLink to="/submissoes" className={({isActive}) => `${isActive ? activeMobileLinkClasses : inactiveMobileLinkClasses} p-2 flex flex-col items-center gap-1`}>
+        <Bell size={24} />
+        <span className="text-xs">Submissões</span>
+        </NavLink>
+
+
         <Link to="/pagar-qr" className="bg-blue-500 text-white w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg -mt-8">
           <QrCode size={32} />
         </Link>
