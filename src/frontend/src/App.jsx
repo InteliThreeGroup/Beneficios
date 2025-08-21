@@ -10,6 +10,7 @@ import { HowItWorksSection } from "./components/landing-page/how-it-works-sectio
 import { CTASection } from "./components/landing-page/cta-section";
 import { Footer } from "./components/landing-page/footer";
 import { Header } from "./components/header";
+import  FloatingChatbot  from "./components/FloatingChatbot";
 
 
 // Layouts e Componentes de Roteamento
@@ -48,6 +49,7 @@ const LandingPage = () => {
       <HowItWorksSection />
       <CTASection />
       <Footer />
+      <FloatingChatbot />
     </main>
   );
 };
