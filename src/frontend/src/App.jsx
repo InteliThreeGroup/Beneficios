@@ -3,6 +3,15 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { Toaster } from 'react-hot-toast';
 import { Loader2, HandCoins } from "lucide-react";
 
+// Landing Page Components
+import { HeroSection } from "./components/landing-page/hero-section";
+import { FeaturesSection } from "./components/features-section";
+import { HowItWorksSection } from "./components/landing-page/how-it-works-section";
+import { CTASection } from "./components/landing-page/cta-section";
+import { Footer } from "./components/landing-page/footer";
+import { Header } from "./components/header";
+
+
 // Layouts e Componentes de Roteamento
 import CreateProfileForm from "./pages/auth/CreateProfileForm";
 import EstablishmentDashboard from "./pages/establishment/_components/EstablishmentDashboard";
@@ -27,6 +36,23 @@ import HRChallengesPage from "./pages/hr/HRChallengesPage";
 import { WorkerChallengeList } from "./pages/worker/WorkerChallengeList";
 import { WorkerChallengeSubmission } from "./pages/worker/WorkerChallengeSubmission";
 import { WorkerSubmissionsPage } from "./pages/worker/WorkerSubmissionsPage";
+
+
+// Landing Page Component
+const LandingPage = () => {
+  return (
+    <main className="min-h-screen bg-background">
+      <Header />
+      <HeroSection />
+      <FeaturesSection />
+      <HowItWorksSection />
+      <CTASection />
+      <Footer />
+    </main>
+  );
+};
+
+
 
 // Componente que decide qual painel mostrar com base no perfil do usuário
 const DashboardDispatcher = () => {
@@ -112,16 +138,7 @@ const AppContent = () => {
   }
 
   if (!isAuthenticated) {
-    return (
-      <main className="min-h-screen flex flex-col justify-center items-center bg-gray-50 p-4 text-center">
-        <HandCoins size={64} className="text-blue-600 mb-4" />
-        <h1 className="text-4xl font-bold text-gray-800">Bem-vindo ao BeneChain</h1>
-        <p className="text-gray-600 mt-2 max-w-md">Sua plataforma descentralizada de benefícios corporativos na Internet Computer.</p>
-        <button onClick={login} className="mt-8 bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition-transform transform hover:scale-105">
-          Login com Internet Identity
-        </button>
-      </main>
-    );
+    return <LandingPage />;
   }
 
   if (!profile) {
