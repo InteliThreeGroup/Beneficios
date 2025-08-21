@@ -21,6 +21,7 @@ import HRMainDashboardPage from "./pages/hr/_components/pages/HRMainDashboardPag
 import HRProgramsPage from "./pages/hr/_components/pages/HRProgramsPage";
 import HRWorkersPage from "./pages/hr/_components/pages/HRWorkersPage";
 import HRReporting from "./pages/hr/_components/HRReporting";
+import HRChallengesPage from "./pages/hr/HRChallengesPage";
 
 // Componente que decide qual painel mostrar com base no perfil do usuário
 const DashboardDispatcher = () => {
@@ -72,6 +73,7 @@ const DashboardDispatcher = () => {
             <Route index element={<Navigate to="/hr/painel" replace />} />
             <Route path="hr/painel" element={<HRMainDashboardPage />} />
             <Route path="hr/programas" element={<HRProgramsPage />} />
+            <Route path="hr/desafios" element={<HRChallengesPage />} />
             <Route path="hr/trabalhadores" element={<HRWorkersPage />} />
             <Route path="hr/relatorios" element={<HRReporting />} />
           </Route>

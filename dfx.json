@@ -12,6 +12,10 @@
       "main": "src/backend/identity_auth/identity_auth.mo",
       "type": "motoko"
     },
+    "challenges": {
+      "main": "src/backend/challenges/challenges.mo",
+      "type": "motoko"
+    },
     "wallets": {
       "main": "src/backend/wallets/wallets.mo",
       "type": "motoko"
@@ -36,7 +40,8 @@
         "benefits_manager",
         "establishment",
         "identity_auth",
-        "wallets"
+        "wallets",
+        "challenges"
       ],
       "source": [
         "src/frontend/dist"

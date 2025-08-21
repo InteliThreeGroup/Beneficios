@@ -10,7 +10,7 @@ import { canisterId as benefitsManagerCanisterId, createActor as createBenefitsM
 import { canisterId as establishmentCanisterId, createActor as createEstablishmentActor } from '../../../../declarations/establishment';
 import { canisterId as walletsCanisterId, createActor as createWalletsActor } from '../../../../declarations/wallets';
 import { canisterId as reportingCanisterId, createActor as createReportingActor } from '../../../../declarations/reporting';
-
+import { canisterId as challengeId, createActor as createChallengeActor } from "../../../../declarations/challenges";
 
 const AuthContext = createContext();
 
@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }) => {
       establishment: createEstablishmentActor(establishmentCanisterId, { agent }),
       wallets: createWalletsActor(walletsCanisterId, { agent }),
       reporting: createReportingActor(reportingCanisterId, { agent }),
+      challenges: createChallengeActor(challengeId, { agent }), // <-- 3. ATOR DO CHALLENGES CRIADO
     };
     setActors(_actors);
 
