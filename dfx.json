@@ -20,6 +20,11 @@
       "main": "src/backend/wallets/wallets.mo",
       "type": "motoko"
     },
+    "llmo_home": {
+      "main": "src/backend/llm_home/app.mo",
+      "type": "motoko",
+      "args": "--enhanced-orthogonal-persistence"
+    },
     "reporting": {
       "candid": "src/backend/reporting/reporting.did",
       "type": "custom",
