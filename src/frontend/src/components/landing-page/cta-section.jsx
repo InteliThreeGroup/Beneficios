@@ -3,10 +3,10 @@ import { ArrowRight, CheckCircle } from "lucide-react"
 import { useAuth } from "../../pages/auth/AuthClientContext"
 
 const benefits = [
-  "Setup gratuito e sem compromisso",
-  "Suporte técnico especializado",
-  "Integração com sistemas existentes",
-  "Treinamento completo da equipe",
+  "Free setup and no commitment",
+  "Expert technical support",
+  "Integration with existing systems",
+  "Comprehensive team training",
 ]
 
 export function CTASection() {
@@ -26,11 +26,10 @@ export function CTASection() {
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="space-y-4">
             <h2 className="text-3xl sm:text-4xl font-bold text-primary-foreground">
-              Pronto para Revolucionar seus Benefícios?
+              Ready to Revolutionize Your Benefits?
             </h2>
             <p className="text-xl text-primary-foreground/90 leading-relaxed">
-              Junte-se a centenas de empresas que já transformaram sua gestão de benefícios com o BeneChain. Comece hoje
-              mesmo!
+              Join hundreds of companies that have already transformed their benefits management with BeneChain. Start today!
             </p>
           </div>
 
@@ -50,7 +49,7 @@ export function CTASection() {
               className="text-lg px-8 py-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
               onClick={login}
             >
-              {isAuthenticated ? "Acessar Plataforma" : "Começar Teste Gratuito"}
+              {isAuthenticated ? "Access Platform" : "Start Free Trial"}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button
@@ -64,12 +63,12 @@ export function CTASection() {
                 }
               }}
             >
-              Agendar Demonstração
+              Schedule a Demo
             </Button>
           </div>
 
           <p className="text-sm text-primary-foreground/70">
-            Sem cartão de crédito • Cancelamento a qualquer momento • Suporte 24/7
+            No credit card required • Cancel anytime • 24/7 support
           </p>
         </div>
       </div>

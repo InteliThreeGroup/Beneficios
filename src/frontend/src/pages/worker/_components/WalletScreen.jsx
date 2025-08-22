@@ -1,10 +1,8 @@
-// src/components/WalletScreen.jsx
-
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../auth/AuthClientContext";
 import { Link } from "react-router-dom";
 import { Bell, Utensils, BookOpen, HeartPulse, Bus, GraduationCap, Building, Loader2, AlertTriangle } from "lucide-react";
-import { ConfirmPaymentModal } from '../../../components/ConfirmPaymentModal'; // Certifique-se que este componente existe
+import { ConfirmPaymentModal } from '../../../components/ConfirmPaymentModal';
 
 export function WalletScreen() {
   const { actors, principal, profile } = useAuth();
@@ -14,14 +12,14 @@ export function WalletScreen() {
   const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Mapeamento de tipos de benefício para ícones e nomes
+  // Mapping benefit types to icons and names
   const benefitDetails = {
-    Food: { icon: <Utensils size={24} className="text-blue-500" />, name: "Alimentação" },
-    Culture: { icon: <BookOpen size={24} className="text-purple-500" />, name: "Cultura" },
-    Health: { icon: <HeartPulse size={24} className="text-green-500" />, name: "Saúde" },
-    Transport: { icon: <Bus size={24} className="text-orange-500" />, name: "Mobilidade" },
-    Education: { icon: <GraduationCap size={24} className="text-red-500" />, name: "Educação" },
-    Default: { icon: <Building size={24} className="text-gray-500" />, name: "Outros" }
+    Food: { icon: <Utensils size={24} className="text-blue-500" />, name: "Food" },
+    Culture: { icon: <BookOpen size={24} className="text-purple-500" />, name: "Culture" },
+    Health: { icon: <HeartPulse size={24} className="text-green-500" />, name: "Health" },
+    Transport: { icon: <Bus size={24} className="text-orange-500" />, name: "Transport" },
+    Education: { icon: <GraduationCap size={24} className="text-red-500" />, name: "Education" },
+    Default: { icon: <Building size={24} className="text-gray-500" />, name: "Other" }
   };
 
   const getBenefitDetails = (type) => {
@@ -30,11 +28,11 @@ export function WalletScreen() {
 
   const formatBenefitType = (typeObj) => Object.keys(typeObj)[0] || "Default";
   const formatAmount = (amount) => (Number(amount) / 10000).toFixed(2);
-  const formatTime = (timestamp) => new Date(Number(timestamp) / 1_000_000).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  const formatTime = (timestamp) => new Date(Number(timestamp) / 1_000_000).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 
   const fetchData = useCallback(async () => {
     if (!actors || !actors.wallets || !principal) {
-      setError("Cliente de autenticação não está pronto.");
+      setError("Authentication client is not ready.");
       setLoading(false);
       return;
     }
@@ -45,16 +43,16 @@ export function WalletScreen() {
       if (walletResult.ok) {
         setWallet(walletResult.ok);
       } else {
-        setError(`Erro ao buscar carteira: ${walletResult.err}`);
+        setError(`Error fetching wallet: ${walletResult.err}`);
       }
 
-      const txHistoryResult = await actors.wallets.getTransactionHistory(principal, [BigInt(5)]); // Busca as últimas 5
+      const txHistoryResult = await actors.wallets.getTransactionHistory(principal, [BigInt(5)]);
       if(txHistoryResult){
         setTransactions(txHistoryResult);
       }
     } catch (err) {
-      console.error("Erro ao buscar dados da carteira:", err);
-      setError("Falha ao carregar os dados da carteira.");
+      console.error("Error fetching wallet data:", err);
+      setError("Failed to load wallet data.");
     } finally {
       setLoading(false);
     }
@@ -77,7 +75,7 @@ export function WalletScreen() {
       <div className="flex flex-col justify-center items-center h-full p-8 text-center">
         <AlertTriangle className="text-red-500" size={48} />
         <p className="mt-4 text-red-700">{error}</p>
-        <button onClick={fetchData} className="mt-4 bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg">Tentar Novamente</button>
+        <button onClick={fetchData} className="mt-4 bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg">Try Again</button>
       </div>
     );
   }
@@ -89,20 +87,20 @@ export function WalletScreen() {
       <div className="container mx-auto p-4 md:p-8 pb-28 md:pb-8">
         <header className="flex justify-between items-center mb-6">
           <div>
-            <p className="text-gray-500">Carteira</p>
-            <h1 className="text-3xl font-bold">Benefícios</h1>
+            <p className="text-gray-500">Wallet</p>
+            <h1 className="text-3xl font-bold">Benefits</h1>
           </div>
           <div className="flex items-center space-x-4">
             <button className="relative p-2">
               <Bell size={24} className="text-gray-600" />
               <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-blue-500"></span>
             </button>
-            <img src={`https://avatars.dicebear.com/api/initials/${profile?.name || 'User'}.svg`} alt="Foto do usuário" className="w-10 h-10 rounded-full bg-gray-200" />
+            <img src={`https://avatars.dicebear.com/api/initials/${profile?.name || 'User'}.svg`} alt="User photo" className="w-10 h-10 rounded-full bg-gray-200" />
           </div>
         </header>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-700 mb-4">Meus Saldos</h2>
+          <h2 className="text-lg font-semibold text-gray-700 mb-4">My Balances</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             {wallet?.balances && wallet.balances.length > 0 ? (
               wallet.balances.map((b) => {
@@ -119,19 +117,19 @@ export function WalletScreen() {
                 );
               })
             ) : (
-              <p className="text-gray-500 col-span-full">Nenhum saldo encontrado.</p>
+              <p className="text-gray-500 col-span-full">No balance found.</p>
             )}
           </div>
         </section>
 
         <section className="mt-8 bg-white rounded-xl shadow-sm p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-700">Extrato Recente</h2>
-            <Link to="/extrato" className="text-blue-500 font-semibold">Ver Mais</Link>
+            <h2 className="text-lg font-semibold text-gray-700">Recent Statement</h2>
+            <Link to="/extrato" className="text-blue-500 font-semibold">See More</Link>
           </div>
           {latestTransaction ? (
              <div>
-                <h3 className="text-gray-500 font-medium mb-3">Terça - Feira</h3>
+                <h3 className="text-gray-500 font-medium mb-3">Tuesday</h3>
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="font-semibold">{latestTransaction.description}</p>
@@ -146,7 +144,7 @@ export function WalletScreen() {
                 </div>
               </div>
           ) : (
-            <p className="text-gray-500">Nenhuma transação recente.</p>
+            <p className="text-gray-500">No recent transactions.</p>
           )}
         </section>
       </div>

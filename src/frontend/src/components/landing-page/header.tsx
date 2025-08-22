@@ -1,5 +1,3 @@
-"use client"
-
 import { Button } from "../ui/button"
 import { Menu, X } from "lucide-react"
 import { useState } from "react"
@@ -15,7 +13,7 @@ export function Header() {
         block: "start",
       })
     }
-    setIsMenuOpen(false) // Fecha o menu mobile após clicar
+    setIsMenuOpen(false)
   }
 
   return (
@@ -34,25 +32,25 @@ export function Header() {
                 onClick={() => scrollToSection("features")}
                 className="text-foreground hover:text-primary transition-colors cursor-pointer"
               >
-                Recursos
+                Features
               </button>
               <button
                 onClick={() => scrollToSection("how-it-works")}
                 className="text-foreground hover:text-primary transition-colors cursor-pointer"
               >
-                Como Funciona
+                How It Works
               </button>
               <button
                 onClick={() => scrollToSection("cta")}
                 className="text-foreground hover:text-primary transition-colors cursor-pointer"
               >
-                Começar
+                Get Started
               </button>
               <button
                 onClick={() => scrollToSection("contact")}
                 className="text-foreground hover:text-primary transition-colors cursor-pointer"
               >
-                Contato
+                Contact
               </button>
             </div>
           </nav>
@@ -61,7 +59,7 @@ export function Header() {
             <Button variant="outline" className="mr-4 bg-transparent">
               Login
             </Button>
-            <Button>Começar Agora</Button>
+            <Button>Start Now</Button>
           </div>
 
           <div className="md:hidden">
@@ -78,31 +76,31 @@ export function Header() {
                 onClick={() => scrollToSection("features")}
                 className="block w-full text-left px-3 py-2 text-foreground hover:text-primary"
               >
-                Recursos
+                Features
               </button>
               <button
                 onClick={() => scrollToSection("how-it-works")}
                 className="block w-full text-left px-3 py-2 text-foreground hover:text-primary"
               >
-                Como Funciona
+                How It Works
               </button>
               <button
                 onClick={() => scrollToSection("cta")}
                 className="block w-full text-left px-3 py-2 text-foreground hover:text-primary"
               >
-                Começar
+                Get Started
               </button>
               <button
                 onClick={() => scrollToSection("contact")}
                 className="block w-full text-left px-3 py-2 text-foreground hover:text-primary"
               >
-                Contato
+                Contact
               </button>
               <div className="px-3 py-2 space-y-2">
                 <Button variant="outline" className="w-full bg-transparent">
                   Login
                 </Button>
-                <Button className="w-full">Começar Agora</Button>
+                <Button className="w-full">Start Now</Button>
               </div>
             </div>
           </div>

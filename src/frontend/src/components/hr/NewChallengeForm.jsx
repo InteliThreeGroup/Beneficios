@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../../pages/auth/AuthClientContext";
 
-export default function NewChallengeForm({ onChallengeCreated }) {
+export default function NewChallengeForm({ onChallengeCreated, aiGeneratedData, onDataUsed }) {
   const { actors, profile } = useAuth();
   const [formData, setFormData] = useState({
     title: "",
@@ -11,6 +11,33 @@ export default function NewChallengeForm({ onChallengeCreated }) {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  // Effect to pre-fill with AI data
+  React.useEffect(() => {
+    if (aiGeneratedData) {
+      // Calculate deadline based on deadline_days if provided
+      let deadlineValue = "";
+      if (aiGeneratedData.deadline_days) {
+        const futureDate = new Date();
+        futureDate.setDate(futureDate.getDate() + parseInt(aiGeneratedData.deadline_days));
+        deadlineValue = futureDate.toISOString().slice(0, 16); // datetime-local format
+      }
+
+      setFormData({
+        title: aiGeneratedData.title || "",
+        description: aiGeneratedData.description || "",
+        reward: aiGeneratedData.reward ? String(aiGeneratedData.reward) : "",
+        deadline: deadlineValue
+      });
+
+      setMessage("✨ AI pre-filled data! Review and adjust as needed.");
+      
+      // Notify that the data was used
+      if (onDataUsed) {
+        onDataUsed();
+      }
+    }
+  }, [aiGeneratedData, onDataUsed]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -26,58 +53,58 @@ export default function NewChallengeForm({ onChallengeCreated }) {
     setMessage("");
 
     try {
-      // Validação básica
+      // Basic validation
       if (!formData.title.trim() || !formData.description.trim() || !formData.reward || !formData.deadline) {
-        throw new Error("Todos os campos são obrigatórios");
+        throw new Error("All fields are required");
       }
 
       if (!actors?.challenges) {
-        throw new Error("Sistema não conectado");
+        throw new Error("System not connected");
       }
 
       if (!profile?.companyId) {
-        throw new Error("Perfil da empresa não encontrado");
+        throw new Error("Company profile not found");
       }
 
-      // Preparar dados com conversão MUITO explícita
+      // Prepare data with explicit conversion
       const title = String(formData.title || "").trim();
       const description = String(formData.description || "").trim(); 
       
-      // Extrair companyId corretamente
+      // Extract companyId correctly
       let rawCompanyId = profile.companyId;
       if (Array.isArray(rawCompanyId)) {
         rawCompanyId = rawCompanyId[0];
       }
       const companyId = String(rawCompanyId || "").trim();
       
-      // Validações adicionais
+      // Additional validations
       if (!title || title.length < 2) {
-        throw new Error("Título deve ter pelo menos 2 caracteres");
+        throw new Error("Title must be at least 2 characters");
       }
       if (!description || description.length < 5) {
-        throw new Error("Descrição deve ter pelo menos 5 caracteres");
+        throw new Error("Description must be at least 5 characters");
       }
       if (!companyId || companyId.length < 1) {
-        throw new Error("ID da empresa inválido");
+        throw new Error("Invalid company ID");
       }
       
       const rewardNum = parseInt(formData.reward, 10);
       if (isNaN(rewardNum) || rewardNum <= 0) {
-        throw new Error("Recompensa deve ser um número positivo");
+        throw new Error("Reward must be a positive number");
       }
       const reward = BigInt(rewardNum);
       
-      // Converter data para nanosegundos
+      // Convert date to nanoseconds
       const deadlineDate = new Date(formData.deadline);
       if (isNaN(deadlineDate.getTime())) {
-        throw new Error("Data inválida");
+        throw new Error("Invalid date");
       }
       if (deadlineDate <= new Date()) {
-        throw new Error("Prazo deve ser no futuro");
+        throw new Error("Deadline must be in the future");
       }
       const deadlineNs = BigInt(Math.floor(deadlineDate.getTime())) * BigInt(1000000);
 
-      console.log("=== CRIANDO DESAFIO (VERIFICAÇÃO FINAL) ===");
+      console.log("=== CREATING CHALLENGE (FINAL CHECK) ===");
       console.log("title:", JSON.stringify(title), "length:", title.length, "type:", typeof title);
       console.log("description:", JSON.stringify(description), "length:", description.length, "type:", typeof description);
       console.log("companyId:", JSON.stringify(companyId), "length:", companyId.length, "type:", typeof companyId);
@@ -85,15 +112,15 @@ export default function NewChallengeForm({ onChallengeCreated }) {
       console.log("deadline:", deadlineNs.toString(), "type:", typeof deadlineNs);
       console.log("deadline readable:", deadlineDate.toISOString());
 
-      // Verificação final antes de enviar
+      // Final check before sending
       if (typeof title !== 'string' || typeof description !== 'string' || typeof companyId !== 'string') {
-        throw new Error("Erro de tipagem nos parâmetros de texto");
+        throw new Error("Type error in text parameters");
       }
       if (typeof reward !== 'bigint' || typeof deadlineNs !== 'bigint') {
-        throw new Error("Erro de tipagem nos parâmetros numéricos");
+        throw new Error("Type error in numeric parameters");
       }
 
-      // Chamar o backend usando a função simplificada que funciona
+      // Call backend using simplified function
       const result = await actors.challenges.createChallengeSimple(
         title,
         description, 
@@ -102,36 +129,36 @@ export default function NewChallengeForm({ onChallengeCreated }) {
         deadlineNs
       );
 
-      console.log("=== RESULTADO ===", result);
+      console.log("=== RESULT ===", result);
 
-      // Verificar se a resposta está no formato Result ou direta
+      // Check if response is in Result format or direct
       if ('ok' in result) {
-        // Formato Result<Challenge, Text>
-        setMessage(`Desafio criado com sucesso! ID: ${result.ok.id}`);
+        // Format Result<Challenge, Text>
+        setMessage(`Challenge created successfully! ID: ${result.ok.id}`);
         setFormData({ title: "", description: "", reward: "", deadline: "" });
         
-        // Notificar o componente pai que um desafio foi criado
+        // Notify parent component that a challenge was created
         if (onChallengeCreated) {
           onChallengeCreated();
         }
       } else if (result && result.id) {
-        // Formato direto (Challenge)
-        setMessage(`Desafio criado com sucesso! ID: ${result.id}`);
+        // Direct format (Challenge)
+        setMessage(`Challenge created successfully! ID: ${result.id}`);
         setFormData({ title: "", description: "", reward: "", deadline: "" });
         
-        // Notificar o componente pai que um desafio foi criado
+        // Notify parent component that a challenge was created
         if (onChallengeCreated) {
           onChallengeCreated();
         }
       } else if ('err' in result) {
-        setMessage(`Erro: ${result.err}`);
+        setMessage(`Error: ${result.err}`);
       } else {
-        setMessage("Resposta inesperada do servidor");
+        setMessage("Unexpected server response");
       }
 
     } catch (error) {
-      console.error("Erro completo:", error);
-      setMessage(`Erro: ${error.message}`);
+      console.error("Full error:", error);
+      setMessage(`Error: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -139,12 +166,20 @@ export default function NewChallengeForm({ onChallengeCreated }) {
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Criar Novo Desafio</h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">Create New Challenge</h2>
+        {aiGeneratedData && (
+          <div className="flex items-center gap-2 text-sm text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
+            <span>✨</span>
+            <span>AI Generated</span>
+          </div>
+        )}
+      </div>
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Título do Desafio
+            Challenge Title
           </label>
           <input
             type="text"
@@ -152,14 +187,14 @@ export default function NewChallengeForm({ onChallengeCreated }) {
             value={formData.title}
             onChange={handleInputChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Digite o título do desafio"
+            placeholder="Enter challenge title"
             required
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Descrição
+            Description
           </label>
           <textarea
             name="description"
@@ -167,14 +202,14 @@ export default function NewChallengeForm({ onChallengeCreated }) {
             onChange={handleInputChange}
             rows={4}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Descreva o desafio"
+            placeholder="Describe the challenge"
             required
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Recompensa (tokens)
+            Reward (tokens)
           </label>
           <input
             type="number"
@@ -190,7 +225,7 @@ export default function NewChallengeForm({ onChallengeCreated }) {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Prazo
+            Deadline
           </label>
           <input
             type="datetime-local"
@@ -207,13 +242,13 @@ export default function NewChallengeForm({ onChallengeCreated }) {
           disabled={loading}
           className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed"
         >
-          {loading ? "Criando..." : "Criar Desafio"}
+          {loading ? "Creating..." : "Create Challenge"}
         </button>
       </form>
 
       {message && (
         <div className={`mt-4 p-3 rounded-md ${
-          message.includes("sucesso") ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+          message.includes("successfully") ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
         }`}>
           {message}
         </div>

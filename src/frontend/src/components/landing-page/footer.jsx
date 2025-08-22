@@ -10,7 +10,7 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-2xl font-bold text-primary">BeneChain</h3>
             <p className="text-muted-foreground">
-              Revolucionando a gestão de benefícios corporativos com blockchain e gamificação.
+              Revolutionizing corporate benefits management with blockchain and gamification.
             </p>
             <div className="flex space-x-4">
               <Button variant="ghost" size="icon">
@@ -29,21 +29,21 @@ export function Footer() {
           </div>
 
           <div className="space-y-4">
-            <h4 className="font-semibold text-foreground">Produto</h4>
+            <h4 className="font-semibold text-foreground">Product</h4>
             <ul className="space-y-2 text-muted-foreground">
               <li>
                 <a href="#" className="hover:text-primary transition-colors">
-                  Recursos
+                  Features
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-primary transition-colors">
-                  Preços
+                  Pricing
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-primary transition-colors">
-                  Integrações
+                  Integrations
                 </a>
               </li>
               <li>
@@ -55,11 +55,11 @@ export function Footer() {
           </div>
 
           <div className="space-y-4">
-            <h4 className="font-semibold text-foreground">Empresa</h4>
+            <h4 className="font-semibold text-foreground">Company</h4>
             <ul className="space-y-2 text-muted-foreground">
               <li>
                 <a href="#" className="hover:text-primary transition-colors">
-                  Sobre
+                  About
                 </a>
               </li>
               <li>
@@ -69,12 +69,12 @@ export function Footer() {
               </li>
               <li>
                 <a href="#" className="hover:text-primary transition-colors">
-                  Carreiras
+                  Careers
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-primary transition-colors">
-                  Contato
+                  Contact
                 </a>
               </li>
             </ul>
@@ -83,10 +83,10 @@ export function Footer() {
           <div className="space-y-4">
             <h4 className="font-semibold text-foreground">Newsletter</h4>
             <p className="text-muted-foreground text-sm">
-              Receba as últimas novidades sobre benefícios corporativos e blockchain.
+              Get the latest news about corporate benefits and blockchain.
             </p>
             <div className="flex space-x-2">
-              <Input placeholder="Seu email" className="flex-1" />
+              <Input placeholder="Your email" className="flex-1" />
               <Button size="icon">
                 <Mail className="h-4 w-4" />
               </Button>
@@ -95,13 +95,13 @@ export function Footer() {
         </div>
 
         <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          <p className="text-muted-foreground text-sm">© 2024 BeneChain. Todos os direitos reservados.</p>
+          <p className="text-muted-foreground text-sm">© 2024 BeneChain. All rights reserved.</p>
           <div className="flex space-x-6 text-sm text-muted-foreground">
             <a href="#" className="hover:text-primary transition-colors">
-              Privacidade
+              Privacy
             </a>
             <a href="#" className="hover:text-primary transition-colors">
-              Termos
+              Terms
             </a>
             <a href="#" className="hover:text-primary transition-colors">
               Cookies

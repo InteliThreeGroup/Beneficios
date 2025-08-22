@@ -1,5 +1,5 @@
 // src/pages/worker/WorkerChallengeSubmission.jsx
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthClientContext";
 import { Loader2, AlertTriangle, Trophy, Coins, ArrowLeft, Send, CheckCircle } from "lucide-react";
@@ -21,24 +21,24 @@ export function WorkerChallengeSubmission() {
         const fetchChallengeAndSubmission = async () => {
             if (!actors?.challenges || !principal) return;
             try {
-                // Buscar detalhes do desafio
+                // Fetch challenge details
                 const challengeResult = await actors.challenges.getChallengeById(challengeId);
                 if (challengeResult.length > 0) {
                     setChallenge(challengeResult[0]);
                 } else {
-                    setMessage({ type: "error", text: "Desafio não encontrado." });
+                    setMessage({ type: "error", text: "Challenge not found." });
                     return;
                 }
 
-                // Verificar se o usuário já submeteu este desafio
+                // Check if user already submitted this challenge
                 const submissionsResult = await actors.challenges.getSubmissionsForWorker(principal);
                 const existingSub = submissionsResult.find(sub => sub.challengeId === challengeId);
                 if (existingSub) {
                     setExistingSubmission(existingSub);
                 }
             } catch (err) {
-                console.error("Erro ao carregar dados:", err);
-                setMessage({ type: "error", text: "Erro ao carregar o desafio." });
+                console.error("Error loading data:", err);
+                setMessage({ type: "error", text: "Error loading challenge." });
             } finally {
                 setLoading(false);
             }
@@ -49,50 +49,51 @@ export function WorkerChallengeSubmission() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!evidenceText.trim()) {
-            setMessage({ type: "error", text: "A descrição de como você completou o desafio é obrigatória." });
+            setMessage({ type: "error", text: "Description of how you completed the challenge is required." });
             return;
         }
         setSubmitting(true);
         setMessage({ type: "", text: "" });
         try {
-            // Combinar texto e URL em uma string única
+            // Combine text and URL into a single string
             let submissionContent = evidenceText.trim();
             if (evidenceUrl.trim()) {
-                submissionContent += `\n\nLink de comprovação: ${evidenceUrl.trim()}`;
+                submissionContent += `\n\nProof link: ${evidenceUrl.trim()}`;
             }
-            
+
+            // Debug
             console.log("=== DEBUG SUBMISSION ===");
             console.log("challengeId:", JSON.stringify(challengeId), "type:", typeof challengeId);
             console.log("submissionContent:", JSON.stringify(submissionContent), "type:", typeof submissionContent);
             console.log("submissionContent length:", submissionContent.length);
-            
-            // Verificar se challengeId e submissionContent são strings válidas
+
+            // Check if challengeId and submissionContent are valid strings
             if (typeof challengeId !== 'string' || typeof submissionContent !== 'string') {
-                throw new Error("Parâmetros inválidos: challengeId ou submissionContent não são strings");
+                throw new Error("Invalid parameters: challengeId or submissionContent are not strings");
             }
-            
+
             const result = await actors.challenges.submitToChallengeSimple(challengeId, submissionContent);
             if ('ok' in result) {
-                setMessage({ type: "success", text: "Desafio concluído com sucesso! Sua submissão será revisada em breve." });
-                setTimeout(() => navigate("/desafios"), 2000);
+                setMessage({ type: "success", text: "Challenge completed successfully! Your submission will be reviewed soon." });
+                setTimeout(() => navigate("/challenges"), 2000);
             } else {
                 throw new Error(result.err);
             }
         } catch (err) {
-            setMessage({ type: "error", text: `Falha ao enviar: ${err.message}` });
+            setMessage({ type: "error", text: `Failed to submit: ${err.message}` });
         } finally {
             setSubmitting(false);
         }
     };
-    
+
     if (loading) return <div className="flex justify-center p-8"><Loader2 className="animate-spin text-blue-600" size={40} /></div>;
 
     return (
         <div className="container mx-auto p-4 md:p-8 pb-28 md:pb-8">
-            <Link to="/desafios" className="flex items-center gap-2 text-blue-600 font-semibold mb-6 hover:underline">
-                <ArrowLeft size={18} /> Voltar para todos os desafios
+            <Link to="/challenges" className="flex items-center gap-2 text-blue-600 font-semibold mb-6 hover:underline">
+                <ArrowLeft size={18} /> Back to all challenges
             </Link>
-            
+
             {!challenge && message.text && <div className="p-4 bg-red-100 text-red-800 rounded-lg flex items-center gap-3"><AlertTriangle /> {message.text}</div>}
 
             {challenge && (
@@ -103,16 +104,16 @@ export function WorkerChallengeSubmission() {
                         <p className="text-gray-500 mt-2">{challenge.description}</p>
                         <div className="inline-flex items-center gap-2 text-green-600 font-bold bg-green-100 px-4 py-2 rounded-full mt-4">
                             <Coins size={20} />
-                            <span>Recompensa: {Number(challenge.reward)} Tokens</span>
+                            <span>Reward: {Number(challenge.reward)} Tokens</span>
                         </div>
                     </div>
-                    
+
                     {existingSubmission ? (
-                        // Mostrar status da submissão existente
+                        // Show existing submission status
                         <div className="mt-8 space-y-4">
                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                                <h3 className="text-lg font-semibold text-blue-900 mb-3">Você já submeteu este desafio</h3>
-                                
+                                <h3 className="text-lg font-semibold text-blue-900 mb-3">You have already submitted this challenge</h3>
+
                                 <div className="space-y-3">
                                     <div>
                                         <span className="text-sm font-medium text-gray-700">Status: </span>
@@ -123,20 +124,20 @@ export function WorkerChallengeSubmission() {
                                                 ? 'bg-red-100 text-red-800'
                                                 : 'bg-yellow-100 text-yellow-800'
                                         }`}>
-                                            {existingSubmission.status.constructor.name === 'Approved' ? '✅ Aprovado' :
-                                             existingSubmission.status.constructor.name === 'Rejected' ? '❌ Rejeitado' : '⏳ Pendente'}
+                                            {existingSubmission.status.constructor.name === 'Approved' ? '✅ Approved' :
+                                             existingSubmission.status.constructor.name === 'Rejected' ? '❌ Rejected' : '⏳ Pending'}
                                         </span>
                                     </div>
-                                    
+
                                     <div>
-                                        <span className="text-sm font-medium text-gray-700">Sua resposta: </span>
+                                        <span className="text-sm font-medium text-gray-700">Your answer: </span>
                                         <p className="mt-1 text-sm text-gray-600 bg-white p-3 rounded border">
                                             {existingSubmission.submissionContent}
                                         </p>
                                     </div>
-                                    
+
                                     <div className="text-sm text-gray-500">
-                                        Submetido em: {new Date(Number(existingSubmission.submittedAt / 1000000n)).toLocaleDateString('pt-BR', {
+                                        Submitted on: {new Date(Number(existingSubmission.submittedAt / 1000000n)).toLocaleDateString('en-US', {
                                             day: '2-digit',
                                             month: '2-digit', 
                                             year: 'numeric',
@@ -144,21 +145,21 @@ export function WorkerChallengeSubmission() {
                                             minute: '2-digit'
                                         })}
                                     </div>
-                                    
+
                                     {existingSubmission.status.constructor.name === 'Approved' && (
                                         <div className="flex items-center gap-2 text-green-600 font-semibold">
                                             <Coins size={16} />
-                                            <span>{Number(challenge.reward)} tokens creditados na sua carteira!</span>
+                                            <span>{Number(challenge.reward)} tokens credited to your wallet!</span>
                                         </div>
                                     )}
                                 </div>
                             </div>
                         </div>
                     ) : (
-                        // Formulário de submissão
+                        // Submission form
                         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
                         <div>
-                            <label htmlFor="evidenceText" className="block text-sm font-medium text-gray-700">Descreva como você completou o desafio</label>
+                            <label htmlFor="evidenceText" className="block text-sm font-medium text-gray-700">Describe how you completed the challenge</label>
                             <textarea
                                 id="evidenceText"
                                 value={evidenceText}
@@ -166,18 +167,18 @@ export function WorkerChallengeSubmission() {
                                 rows={4}
                                 required
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                placeholder="Ex: Fiz a meditação por 10 minutos todas as manhãs..."
+                                placeholder="E.g.: I meditated for 10 minutes every morning..."
                             />
                         </div>
                         <div>
-                            <label htmlFor="evidenceUrl" className="block text-sm font-medium text-gray-700">Link de comprovação (Opcional)</label>
+                            <label htmlFor="evidenceUrl" className="block text-sm font-medium text-gray-700">Proof link (Optional)</label>
                             <input
                                 type="url"
                                 id="evidenceUrl"
                                 value={evidenceUrl}
                                 onChange={(e) => setEvidenceUrl(e.target.value)}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                placeholder="https://exemplo.com/comprovante.jpg"
+                                placeholder="https://example.com/proof.jpg"
                             />
                         </div>
 
@@ -190,7 +191,7 @@ export function WorkerChallengeSubmission() {
 
                         <button type="submit" disabled={submitting} className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-700 disabled:bg-blue-400 flex items-center justify-center gap-2">
                             {submitting ? <Loader2 className="animate-spin" /> : <Send size={16} />}
-                            {submitting ? "Enviando..." : "Concluir Desafio"}
+                            {submitting ? "Submitting..." : "Complete Challenge"}
                         </button>
                         </form>
                     )}

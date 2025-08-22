@@ -14,15 +14,14 @@ export function HeroSection() {
           <div className="space-y-8">
             <div className="space-y-4">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-                Revolucione os{" "}
+                Revolutionize your{" "}
                 <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                  Benefícios
+                  Company Benefits
                 </span>{" "}
-                da sua Empresa
+                Management
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Transforme a gestão de benefícios corporativos com blockchain, gamificação e recompensas em tokens. Uma
-                plataforma moderna para empresas inovadoras.
+                Transform corporate benefits management with blockchain, gamification, and token rewards. A modern platform for innovative companies.
               </p>
             </div>
 
@@ -32,7 +31,7 @@ export function HeroSection() {
                 className="text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 onClick={login}
               >
-                {isAuthenticated ? "Acessar Plataforma" : "Começar Gratuitamente"}
+                {isAuthenticated ? "Access Platform" : "Start for Free"}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button
@@ -47,22 +46,22 @@ export function HeroSection() {
                 }}
               >
                 <Play className="mr-2 h-5 w-5" />
-                Ver Demo
+                View Demo
               </Button>
             </div>
 
             <div className="flex items-center space-x-8 text-sm text-muted-foreground">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                <span>Blockchain Seguro</span>
+                <span>Secure Blockchain</span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-primary/80 rounded-full animate-pulse delay-300"></div>
-                <span>Gamificação Avançada</span>
+                <span>Advanced Gamification</span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-primary/60 rounded-full animate-pulse delay-700"></div>
-                <span>Tokens de Recompensa</span>
+                <span>Reward Tokens</span>
               </div>
             </div>
           </div>

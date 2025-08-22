@@ -7,8 +7,8 @@ const HRWorkersPage = () => {
     return (
         <div className="space-y-8">
             <div>
-                <h1 className="text-4xl font-bold text-gray-800">Gerenciamento de Trabalhadores</h1>
-                <p className="text-gray-500 mt-1">Gerencie trabalhadores, pagamentos e benefícios.</p>
+                <h1 className="text-4xl font-bold text-gray-800">Worker Management</h1>
+                <p className="text-gray-500 mt-1">Manage workers, payments, and benefits.</p>
             </div>
             
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">

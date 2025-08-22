@@ -4,26 +4,26 @@ import { ArrowRight } from "lucide-react"
 const steps = [
   {
     step: "01",
-    title: "Configuração Inicial",
-    description: "Configure sua empresa na plataforma e defina os programas de benefícios desejados.",
+    title: "Initial Setup",
+    description: "Set up your company on the platform and define the desired benefits programs.",
     image: "/company-setup-dashboard.png",
   },
   {
     step: "02",
-    title: "Criação de Desafios",
-    description: "Crie desafios personalizados para engajar seus funcionários e definir recompensas.",
+    title: "Challenge Creation",
+    description: "Create personalized challenges to engage your employees and set rewards.",
     image: "/gamification-challenge-interface.png",
   },
   {
     step: "03",
-    title: "Participação dos Funcionários",
-    description: "Funcionários participam dos desafios e acumulam tokens de recompensa.",
+    title: "Employee Participation",
+    description: "Employees participate in challenges and accumulate reward tokens.",
     image: "/employee-rewards-dashboard.png",
   },
   {
     step: "04",
-    title: "Gestão e Relatórios",
-    description: "Acompanhe o progresso, gerencie pagamentos e analise métricas de engajamento.",
+    title: "Management & Reports",
+    description: "Track progress, manage payments, and analyze engagement metrics.",
     image: "/analytics-dashboard.png",
   },
 ]
@@ -36,9 +36,9 @@ export function HowItWorksSection() {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center space-y-4 mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground">Como Funciona o BeneChain</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground">How BeneChain Works</h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Um processo simples e intuitivo para revolucionar os benefícios da sua empresa.
+            A simple and intuitive process to revolutionize your company's benefits.
           </p>
         </div>
 

@@ -63,13 +63,13 @@ export default function HRFundsManagement() {
           <Wallet size={24} />
         </div>
         <div>
-          <h3 className="text-xl font-semibold text-gray-900">Fundos da Empresa</h3>
-          <p className="text-sm text-gray-500">Deposite e visualize os fundos disponíveis.</p>
+          <h3 className="text-xl font-semibold text-gray-900">Company Funds</h3>
+          <p className="text-sm text-gray-500">Deposit and view available funds.</p>
         </div>
       </div>
 
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-        <p className="text-sm font-medium text-gray-500 mb-1">Total Disponível</p>
+        <p className="text-sm font-medium text-gray-500 mb-1">Total Available</p>
         {isLoadingFunds ? (
           <Loader2 className="animate-spin text-blue-500 mx-auto" />
         ) : (
@@ -80,7 +80,7 @@ export default function HRFundsManagement() {
       <form onSubmit={handleDeposit} className="space-y-4">
         <div>
           <label htmlFor="depositAmount" className="block text-sm font-medium text-gray-700">
-            Valor do Depósito (em ICP)
+            Deposit Amount (in ICP)
           </label>
           <div className="mt-1 relative rounded-md shadow-sm">
             <div className="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
@@ -105,7 +105,7 @@ export default function HRFundsManagement() {
           className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-700 disabled:bg-blue-400 flex items-center justify-center gap-2"
         >
           {depositLoading ? <Loader2 className="animate-spin" /> : <ArrowUp size={16} />}
-          {depositLoading ? "Processando..." : "Depositar Fundos"}
+          {depositLoading ? "Processing..." : "Deposit Funds"}
         </button>
       </form>
 

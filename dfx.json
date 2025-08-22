@@ -25,6 +25,11 @@
       "type": "motoko",
       "args": "--enhanced-orthogonal-persistence"
     },
+    "challenge_ai": {
+      "main": "src/backend/challenge_ai/challenge_ai.mo",
+      "type": "motoko",
+      "args": "--enhanced-orthogonal-persistence"
+    },
     "reporting": {
       "candid": "src/backend/reporting/reporting.did",
       "type": "custom",

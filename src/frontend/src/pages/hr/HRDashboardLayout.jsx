@@ -8,12 +8,11 @@ export default function HRDashboardLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { path: "/hr/painel", label: "Painel e Fundos", icon: <LayoutDashboard size={20} /> },
-    { path: "/hr/programas", label: "Programas", icon: <Briefcase size={20} /> },
-    // NOVA LINHA ADICIONADA AQUI
-    { path: "/hr/desafios", label: "Desafios", icon: <Trophy size={20} /> },
-    { path: "/hr/trabalhadores", label: "Gerir Trabalhadores", icon: <Users size={20} /> },
-    { path: "/hr/relatorios", label: "Relatórios", icon: <FileText size={20} /> },
+    { path: "/hr/painel", label: "Dashboard & Funds", icon: <LayoutDashboard size={20} /> },
+    { path: "/hr/programas", label: "Programs", icon: <Briefcase size={20} /> },
+    { path: "/hr/desafios", label: "Challenges", icon: <Trophy size={20} /> },
+    { path: "/hr/trabalhadores", label: "Manage Workers", icon: <Users size={20} /> },
+    { path: "/hr/relatorios", label: "Reports", icon: <FileText size={20} /> },
   ];
 
   const activeLinkClasses = "bg-blue-100 text-blue-600";
@@ -24,7 +23,7 @@ export default function HRDashboardLayout() {
   return (
     <div className="min-h-screen bg-gray-100 font-sans text-gray-800">
       <div className="flex">
-        {/* --- Sidebar Desktop (Menu Lateral Esquerdo) --- */}
+        {/* --- Sidebar Desktop (Left Side Menu) --- */}
         <aside className="hidden md:flex md:flex-col md:w-64 md:min-w-64 md:max-w-64 bg-white border-r border-gray-200 md:fixed md:h-full md:z-30">
           <div className="flex items-center space-x-2 p-4 border-b border-gray-200">
             <HandCoins size={32} className="text-blue-600" />
@@ -52,7 +51,7 @@ export default function HRDashboardLayout() {
               className="w-full flex items-center space-x-3 p-3 rounded-lg font-medium text-red-500 hover:bg-red-50 transition-colors duration-200"
             >
               <LogOut size={20} />
-              <span className="truncate text-sm">Sair</span>
+              <span className="truncate text-sm">Logout</span>
             </button>
           </div>
         </aside>
@@ -60,13 +59,13 @@ export default function HRDashboardLayout() {
         {/* --- Sidebar Mobile (Menu Overlay) --- */}
         {isMobileMenuOpen && (
           <div className="md:hidden fixed inset-0 z-50 flex">
-            {/* Overlay de fundo */}
+            {/* Background overlay */}
             <div 
               className="fixed inset-0 bg-black bg-opacity-50" 
               onClick={closeMobileMenu}
             ></div>
             
-            {/* Menu sidebar móvel */}
+            {/* Mobile sidebar menu */}
             <aside className="relative bg-white w-64 h-full shadow-lg">
               <div className="flex items-center justify-between p-4 border-b border-gray-200">
                 <div className="flex items-center space-x-2">
@@ -108,17 +107,17 @@ export default function HRDashboardLayout() {
                   className="w-full flex items-center space-x-3 p-3 rounded-lg font-medium text-red-500 hover:bg-red-50 transition-colors duration-200"
                 >
                   <LogOut size={20} />
-                  <span>Sair</span>
+                  <span>Logout</span>
                 </button>
               </div>
             </aside>
           </div>
         )}
 
-        {/* --- Conteúdo Principal (Direita) --- */}
+        {/* --- Main Content (Right) --- */}
         <div className="flex-1 flex flex-col h-screen md:ml-64">
           <header className="flex justify-between items-center bg-white border-b border-gray-200 p-4">
-              {/* Mobile: Botão de menu + Logo */}
+              {/* Mobile: Menu button + Logo */}
               <div className="flex items-center space-x-3 md:hidden">
                 <button 
                   onClick={() => setIsMobileMenuOpen(true)}
@@ -132,29 +131,29 @@ export default function HRDashboardLayout() {
                 </div>
               </div>
 
-              {/* Desktop: Apenas informações do usuário */}
+              {/* Desktop: Only user info */}
               <div className="flex items-center space-x-4 ml-auto">
                 <button className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full">
                   <Bell size={22} />
                 </button>
                 <div className="text-right hidden sm:block">
-                  <p className="font-semibold text-sm">{profile?.name || "Usuário"}</p>
+                  <p className="font-semibold text-sm">{profile?.name || "User"}</p>
                   <p className="text-xs text-gray-500 flex items-center justify-end gap-1">
                     <UserCheck size={12}/> 
-                    <span className="hidden md:inline">Recursos Humanos</span>
-                    <span className="md:hidden">RH</span>
+                    <span className="hidden md:inline">Human Resources</span>
+                    <span className="md:hidden">HR</span>
                   </p>
                 </div>
                 <img 
                   src={`https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'HR')}&background=e5e7eb&color=374151`} 
-                  alt="Avatar do usuário" 
+                  alt="User avatar" 
                   className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-200"
                 />
               </div>
           </header>
           
           <main className="flex-1 overflow-y-auto p-4 md:p-8 bg-gray-50">
-            {/* As páginas de RH (Outlet) serão renderizadas aqui */}
+            {/* HR pages (Outlet) will be rendered here */}
             <Outlet />
           </main>
         </div>

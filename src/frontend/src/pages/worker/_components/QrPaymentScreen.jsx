@@ -15,38 +15,38 @@ export function QrPaymentScreen() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" }); // type: 'success' or 'error'
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [manualLink, setManualLink] = useState(""); // Para colar link no desktop
+  const [manualLink, setManualLink] = useState(""); // For pasting link on desktop
 
   const handleManualLink = () => {
     if (!manualLink.trim()) {
-      setMessage({ text: "Por favor, cole o link de pagamento.", type: "error" });
+      setMessage({ text: "Please paste the payment link.", type: "error" });
       return;
     }
 
     try {
-      // Extrair dados do link
+      // Extract data from link
       const url = new URL(manualLink);
       const data = url.searchParams.get('data');
       
       if (!data) {
-        setMessage({ text: "Link inválido - dados não encontrados.", type: "error" });
+        setMessage({ text: "Invalid link - data not found.", type: "error" });
         return;
       }
 
       const decodedData = decodeURIComponent(data);
       const parsedData = JSON.parse(decodedData);
       
-      // Validação básica do link
+      // Basic link validation
       if (!parsedData.establishmentId || typeof parsedData.amount !== "number" || !parsedData.benefitType) {
-        setMessage({ text: "Link inválido ou incompleto.", type: "error" });
+        setMessage({ text: "Invalid or incomplete link.", type: "error" });
         return;
       }
       
       setScanResult(parsedData);
       setIsModalOpen(true);
-      setManualLink(""); // Limpa o campo após processar
+      setManualLink(""); // Clear field after processing
     } catch (error) {
-      setMessage({ text: "Erro ao processar o link. Verifique se está correto.", type: "error" });
+      setMessage({ text: "Error processing the link. Please check if it is correct.", type: "error" });
     }
   };
 
@@ -56,15 +56,15 @@ export function QrPaymentScreen() {
     if (result) {
       try {
         const data = JSON.parse(result.text);
-        // Validação básica do QR code
+        // Basic QR code validation
         if (!data.establishmentId || typeof data.amount !== "number" || !data.benefitType) {
-          setMessage({ text: "QR Code inválido ou incompleto.", type: "error" });
+          setMessage({ text: "Invalid or incomplete QR Code.", type: "error" });
           return;
         }
         setScanResult(data);
         setIsModalOpen(true);
       } catch (error) {
-        setMessage({ text: "Erro ao ler o QR Code. Formato inválido.", type: "error" });
+        setMessage({ text: "Error reading QR Code. Invalid format.", type: "error" });
       }
     }
   };
@@ -73,13 +73,13 @@ export function QrPaymentScreen() {
     if (!scanResult) return;
     setLoading(true);
     setMessage({ text: "", type: "" });
-    setIsModalOpen(false); // Fecha o modal ao iniciar o pagamento
+    setIsModalOpen(false); // Close modal when starting payment
 
     try {
       const establishmentPrincipal = Principal.fromText(scanResult.establishmentId);
       const amountInNats = BigInt(Math.floor(scanResult.amount * 10000));
 
-      // Primeiro, valida se o estabelecimento existe e aceita este tipo de benefício
+      // First, validate if the establishment exists and accepts this benefit type
       try {
         const validation = await actors.establishment.validatePayment(
           establishmentPrincipal, 
@@ -89,15 +89,15 @@ export function QrPaymentScreen() {
         
         if (!validation.isValid) {
           setMessage({ 
-            text: `Pagamento não pode ser realizado: ${validation.reason?.[0] || "Estabelecimento inválido"}`, 
+            text: `Payment cannot be processed: ${validation.reason?.[0] || "Invalid establishment"}`, 
             type: "error" 
           });
           return;
         }
       } catch (validationError) {
-        console.error("Erro na validação:", validationError);
+        console.error("Validation error:", validationError);
         setMessage({ 
-          text: "Erro ao validar estabelecimento. Verifique se está registrado no sistema.", 
+          text: "Error validating establishment. Check if it is registered in the system.", 
           type: "error" 
         });
         return;
@@ -106,56 +106,56 @@ export function QrPaymentScreen() {
       const debitRequest = {
         workerId: principal,
         establishmentId: establishmentPrincipal,
-        establishmentName: scanResult.description || "Estabelecimento",
+        establishmentName: scanResult.description || "Establishment",
         benefitType: { [scanResult.benefitType]: null },
         amount: amountInNats,
-        description: scanResult.description || "Pagamento via QR Code",
+        description: scanResult.description || "Payment via QR Code",
       };
 
       const debitResult = await actors.wallets.debitBalance(debitRequest);
 
       if (debitResult.ok) {
-        setMessage({ text: `Pagamento de $ ${formatAmount(amountInNats)} realizado com sucesso!`, type: "success" });
-        setTimeout(() => navigate("/carteira"), 2000); // Volta para a carteira após sucesso
+        setMessage({ text: `Payment of $ ${formatAmount(amountInNats)} completed successfully!`, type: "success" });
+        setTimeout(() => navigate("/carteira"), 2000); // Go back to wallet after success
       } else {
-        setMessage({ text: `Falha no pagamento: ${debitResult.err}`, type: "error" });
+        setMessage({ text: `Payment failed: ${debitResult.err}`, type: "error" });
       }
     } catch (err) {
-      console.error("Erro ao processar pagamento:", err);
-      setMessage({ text: `Erro inesperado: ${err.message}`, type: "error" });
+      console.error("Error processing payment:", err);
+      setMessage({ text: `Unexpected error: ${err.message}`, type: "error" });
     } finally {
       setLoading(false);
-      setScanResult(null); // Limpa o resultado após a tentativa
+      setScanResult(null); // Clear result after attempt
     }
   };
 
-  // Se o modal está aberto, não mostre o scanner
+  // If modal is open, do not show scanner
   if (isModalOpen && scanResult) {
     return (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-end justify-center z-50">
           <div className="bg-white w-full max-w-md rounded-t-3xl p-6">
             <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6"></div>
-            <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">Confirmar Pagamento</h2>
+            <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">Confirm Payment</h2>
             <div className="space-y-4 text-lg">
               <div className="flex justify-between items-center">
-                <span className="text-gray-500">Valor</span>
+                <span className="text-gray-500">Amount</span>
                 <span className="font-bold text-gray-800">$ {formatAmount(scanResult.amount * 10000)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-500">Estabelecimento</span>
+                <span className="text-gray-500">Establishment</span>
                 <span className="font-semibold text-gray-700">{scanResult.description}</span>
               </div>
                <div className="flex justify-between items-center">
-                <span className="text-gray-500">Data</span>
-                <span className="font-semibold text-gray-700">{new Date().toLocaleDateString('pt-BR')}</span>
+                <span className="text-gray-500">Date</span>
+                <span className="font-semibold text-gray-700">{new Date().toLocaleDateString('en-US')}</span>
               </div>
             </div>
             <div className="mt-10 space-y-3">
               <button onClick={handlePayment} disabled={loading} className="w-full py-4 bg-blue-500 text-white text-lg font-semibold rounded-xl hover:bg-blue-600 transition-colors flex justify-center items-center">
-                {loading ? <Loader2 className="animate-spin" /> : "Pagar"}
+                {loading ? <Loader2 className="animate-spin" /> : "Pay"}
               </button>
                <button onClick={() => { setIsModalOpen(false); setScanResult(null); }} disabled={loading} className="w-full py-4 border-2 border-gray-300 text-gray-600 text-lg font-semibold rounded-xl hover:bg-gray-100 transition-colors">
-                Cancelar
+                Cancel
               </button>
             </div>
           </div>
@@ -172,8 +172,8 @@ export function QrPaymentScreen() {
       </div>
 
       <div className="flex-1 flex flex-col justify-center items-center text-center w-full max-w-lg">
-        <h1 className="text-2xl font-bold text-gray-800">Realizar Pagamento</h1>
-        <p className="text-gray-500 mt-2">Escaneie o QR Code ou cole o link de pagamento</p>
+        <h1 className="text-2xl font-bold text-gray-800">Make Payment</h1>
+        <p className="text-gray-500 mt-2">Scan the QR Code or paste the payment link</p>
         
         {message.text && (
             <div className={`mt-4 p-3 rounded-lg flex items-center gap-2 ${message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
@@ -182,7 +182,7 @@ export function QrPaymentScreen() {
             </div>
         )}
 
-        {/* QR Scanner - Apenas no mobile */}
+        {/* QR Scanner - Mobile only */}
         <div className="md:hidden">
           <div className="w-64 h-64 border-4 border-blue-500 rounded-3xl my-8 overflow-hidden">
             <QrReader
@@ -193,11 +193,11 @@ export function QrPaymentScreen() {
           </div>
         </div>
 
-        {/* Campo para link manual - Desktop e Mobile */}
+        {/* Manual link field - Desktop and Mobile */}
         <div className="w-full max-w-md mt-8 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {window.innerWidth >= 768 ? "Cole o link de pagamento:" : "Ou cole o link aqui:"}
+              {window.innerWidth >= 768 ? "Paste the payment link:" : "Or paste the link here:"}
             </label>
             <div className="flex space-x-2">
               <input
@@ -212,16 +212,16 @@ export function QrPaymentScreen() {
                 disabled={!manualLink.trim()}
                 className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                Pagar
+                Pay
               </button>
             </div>
           </div>
         </div>
 
-        {/* Instruções adicionais para desktop */}
+        {/* Additional instructions for desktop */}
         <div className="hidden md:block mt-6 text-center">
           <p className="text-sm text-gray-500">
-            💡 No desktop, você pode colar diretamente o link de pagamento gerado pelo estabelecimento
+            💡 On desktop, you can directly paste the payment link generated by the establishment
           </p>
         </div>
       </div>

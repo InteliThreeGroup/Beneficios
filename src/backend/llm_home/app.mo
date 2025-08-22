@@ -115,7 +115,7 @@ RESPONDA APENAS PERGUNTAS SOBRE O BENECHAIN. Se a pergunta não for relacionada 
   // Função interna para fazer a chamada à API do Gemini
   private func callGeminiAPI(prompt: Text) : async Text {
     let url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
-    let apiKey = "AIzaSyDIwvWkz_WN0iRyMG94LEzwkkhOgHShniY";
+    let apiKey = "AIzaSyBdmy5iUsE-8J_SsEtLhqfGkI3eLl90kcM";
 
     let body = 
       "{ \"contents\": [ { \"parts\": [ { \"text\": \"" # prompt # "\" } ] } ] }";

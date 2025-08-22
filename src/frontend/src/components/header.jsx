@@ -17,7 +17,7 @@ export function Header() {
         block: "start",
       })
     }
-    setIsMenuOpen(false) // Fecha o menu mobile após clicar
+    setIsMenuOpen(false) // Closes mobile menu after click
   }
 
   return (
@@ -36,25 +36,25 @@ export function Header() {
                 onClick={() => scrollToSection("features")}
                 className="text-foreground hover:text-primary transition-colors cursor-pointer"
               >
-                Recursos
+                Features
               </button>
               <button
                 onClick={() => scrollToSection("how-it-works")}
                 className="text-foreground hover:text-primary transition-colors cursor-pointer"
               >
-                Como Funciona
+                How It Works
               </button>
               <button
                 onClick={() => scrollToSection("cta")}
                 className="text-foreground hover:text-primary transition-colors cursor-pointer"
               >
-                Começar
+                Get Started
               </button>
               <button
                 onClick={() => scrollToSection("contact")}
                 className="text-foreground hover:text-primary transition-colors cursor-pointer"
               >
-                Contato
+                Contact
               </button>
             </div>
           </nav>
@@ -69,7 +69,7 @@ export function Header() {
                     className="w-8 h-8 rounded-full"
                   />
                   <span className="text-sm font-medium text-foreground">
-                    {profile?.name || "Usuário"}
+                    {profile?.name || "User"}
                   </span>
                 </div>
                 <Button 
@@ -79,7 +79,7 @@ export function Header() {
                   className="bg-transparent"
                 >
                   <LogOut size={16} className="mr-2" />
-                  Sair
+                  Logout
                 </Button>
               </div>
             ) : (
@@ -91,7 +91,7 @@ export function Header() {
                 >
                   Login
                 </Button>
-                <Button onClick={login}>Começar Agora</Button>
+                <Button onClick={login}>Get Started Now</Button>
               </>
             )}
           </div>
@@ -110,25 +110,25 @@ export function Header() {
                 onClick={() => scrollToSection("features")}
                 className="block w-full text-left px-3 py-2 text-foreground hover:text-primary"
               >
-                Recursos
+                Features
               </button>
               <button
                 onClick={() => scrollToSection("how-it-works")}
                 className="block w-full text-left px-3 py-2 text-foreground hover:text-primary"
               >
-                Como Funciona
+                How It Works
               </button>
               <button
                 onClick={() => scrollToSection("cta")}
                 className="block w-full text-left px-3 py-2 text-foreground hover:text-primary"
               >
-                Começar
+                Get Started
               </button>
               <button
                 onClick={() => scrollToSection("contact")}
                 className="block w-full text-left px-3 py-2 text-foreground hover:text-primary"
               >
-                Contato
+                Contact
               </button>
               <div className="px-3 py-2 space-y-2">
                 {isAuthenticated ? (
@@ -140,7 +140,7 @@ export function Header() {
                         className="w-8 h-8 rounded-full"
                       />
                       <span className="text-sm font-medium text-foreground">
-                        {profile?.name || "Usuário"}
+                        {profile?.name || "User"}
                       </span>
                     </div>
                     <Button 
@@ -149,7 +149,7 @@ export function Header() {
                       onClick={() => { logout(); setIsMenuOpen(false); }}
                     >
                       <LogOut size={16} className="mr-2" />
-                      Sair
+                      Logout
                     </Button>
                   </div>
                 ) : (
@@ -165,7 +165,7 @@ export function Header() {
                       className="w-full"
                       onClick={() => { login(); setIsMenuOpen(false); }}
                     >
-                      Começar Agora
+                      Get Started Now
                     </Button>
                   </>
                 )}

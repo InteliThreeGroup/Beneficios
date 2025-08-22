@@ -4,18 +4,18 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthClientContext";
 import { Loader2, AlertTriangle, Trophy, Clock, Coins } from "lucide-react";
 
-// Helper para calcular o tempo restante
+// Helper to calculate remaining time
 const formatTimeLeft = (deadline) => {
     const now = new Date();
-    const deadlineDate = new Date(Number(deadline / 1000000n)); // Convertendo nanossegundos para milissegundos
+    const deadlineDate = new Date(Number(deadline / 1000000n)); // Convert nanoseconds to milliseconds
     const diff = deadlineDate.getTime() - now.getTime();
-    if (diff <= 0) return "Expirado";
+    if (diff <= 0) return "Expired";
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    if (days > 0) return `Expira em ${days} dia${days > 1 ? 's' : ''}`;
+    if (days > 0) return `Expires in ${days} day${days > 1 ? 's' : ''}`;
     const hours = Math.floor(diff / (1000 * 60 * 60));
-    if (hours > 0) return `Expira em ${hours} hora${hours > 1 ? 's' : ''}`;
+    if (hours > 0) return `Expires in ${hours} hour${hours > 1 ? 's' : ''}`;
     const minutes = Math.floor(diff / (1000 * 60));
-    return `Expira em ${minutes} minuto${minutes > 1 ? 's' : ''}`;
+    return `Expires in ${minutes} minute${minutes > 1 ? 's' : ''}`;
 };
 
 export function WorkerChallengeList() {
@@ -37,7 +37,7 @@ export function WorkerChallengeList() {
         }
         
         if (!profile?.companyId) {
-            setError("Você não está associado a nenhuma empresa.");
+            setError("You are not associated with any company.");
             return;
         }
         
@@ -45,7 +45,7 @@ export function WorkerChallengeList() {
             setLoading(true);
             setError("");
             
-            // Normalizando companyId - pode ser string ou array
+            // Normalize companyId - can be string or array
             let companyId;
             if (Array.isArray(profile.companyId)) {
                 companyId = profile.companyId[0];
@@ -53,13 +53,13 @@ export function WorkerChallengeList() {
                 companyId = profile.companyId;
             }
             
-            console.log("Buscando desafios para empresa:", companyId);
+            console.log("Fetching challenges for company:", companyId);
             const result = await actors.challenges.getActiveChallenges(companyId);
-            console.log("Resultado recebido:", result);
+            console.log("Result received:", result);
             setChallenges(result);
         } catch (err) {
-            console.error("Erro ao buscar desafios:", err);
-            setError("Não foi possível carregar os desafios.");
+            console.error("Error fetching challenges:", err);
+            setError("Could not load challenges.");
         } finally {
             setLoading(false);
         }
@@ -72,8 +72,8 @@ export function WorkerChallengeList() {
     return (
         <div className="container mx-auto p-4 md:p-8 pb-28 md:pb-8">
             <header className="mb-6">
-                <h1 className="text-4xl font-bold">Desafios</h1>
-                <p className="text-lg text-gray-500">Participe para ganhar recompensas exclusivas.</p>
+                <h1 className="text-4xl font-bold">Challenges</h1>
+                <p className="text-lg text-gray-500">Participate to earn exclusive rewards.</p>
             </header>
             
             {loading && <div className="flex justify-center p-8"><Loader2 className="animate-spin text-blue-600" size={40} /></div>}
@@ -83,7 +83,7 @@ export function WorkerChallengeList() {
                 challenges.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {challenges.map((challenge) => (
-                            <Link to={`/desafios/${challenge.id}`} key={challenge.id} className="bg-white rounded-xl shadow-md p-6 block hover:shadow-lg hover:-translate-y-1 transition-all">
+                            <Link to={`/challenges/${challenge.id}`} key={challenge.id} className="bg-white rounded-xl shadow-md p-6 block hover:shadow-lg hover:-translate-y-1 transition-all">
                                 <div className="flex items-start space-x-4">
                                     <div className="bg-yellow-100 text-yellow-600 p-3 rounded-full">
                                         <Trophy size={24} />
@@ -109,8 +109,8 @@ export function WorkerChallengeList() {
                 ) : (
                     <div className="text-center text-gray-500 py-12">
                         <Trophy size={48} className="mx-auto text-gray-400" />
-                        <h3 className="mt-4 text-xl font-semibold">Nenhum Desafio Ativo</h3>
-                        <p className="mt-1 text-gray-500">Volte mais tarde para ver novas oportunidades!</p>
+                        <h3 className="mt-4 text-xl font-semibold">No Active Challenges</h3>
+                        <p className="mt-1 text-gray-500">Check back later for new opportunities!</p>
                     </div>
                 )
             )}

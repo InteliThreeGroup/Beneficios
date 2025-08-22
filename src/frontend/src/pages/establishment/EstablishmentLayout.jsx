@@ -11,7 +11,7 @@ export default function EstablishmentLayout() {
   return (
     <div className="min-h-screen bg-gray-100 font-sans text-gray-800">
       <div className="flex">
-        {/* --- Sidebar (Menu Lateral Esquerdo) --- */}
+        {/* --- Sidebar (Left Side Menu) --- */}
         <aside className="hidden md:flex md:flex-col md:w-64 bg-white border-r border-gray-200">
           <div className="flex items-center space-x-2 p-4 border-b border-gray-200">
             <HandCoins size={32} className="text-blue-600" />
@@ -24,9 +24,9 @@ export default function EstablishmentLayout() {
               className={({ isActive }) => `${isActive ? activeLinkClasses : inactiveLinkClasses} flex items-center space-x-3 p-3 rounded-lg font-semibold`}
             >
               <LayoutDashboard size={20} />
-              <span>Painel</span>
+              <span>Dashboard</span>
             </NavLink>
-            {/* Adicione outros links de navegação para o estabelecimento aqui */}
+            {/* Add other navigation links for the establishment here */}
           </nav>
           <div className="p-4 border-t border-gray-200">
              <button 
@@ -34,15 +34,15 @@ export default function EstablishmentLayout() {
                 className="flex items-center space-x-3 w-full p-3 rounded-lg font-semibold text-red-500 hover:bg-red-50"
               >
               <LogOut size={20} />
-              <span>Sair</span>
+              <span>Logout</span>
             </button>
           </div>
         </aside>
 
-        {/* --- Conteúdo Principal (Direita) --- */}
+        {/* --- Main Content (Right) --- */}
         <div className="flex-1 flex flex-col">
           <header className="flex justify-between md:justify-end items-center bg-white border-b border-gray-200 p-4">
-              {/* Logo para Mobile */}
+              {/* Logo for Mobile */}
               <div className="flex items-center space-x-2 md:hidden">
                 <HandCoins size={28} className="text-blue-600" />
                 <h1 className="text-xl font-bold">BeneChain</h1>
@@ -52,12 +52,12 @@ export default function EstablishmentLayout() {
                   <Bell size={22} />
                 </button>
                 <div className="text-right">
-                  <p className="font-semibold">{profile?.name || "Estabelecimento"}</p>
-                  <p className="text-sm text-gray-500 flex items-center justify-end gap-1"><Store size={14}/> Estabelecimento</p>
+                  <p className="font-semibold">{profile?.name || "Establishment"}</p>
+                  <p className="text-sm text-gray-500 flex items-center justify-end gap-1"><Store size={14}/> Establishment</p>
                 </div>
                 <img 
                   src={`https://api.dicebear.com/8.x/initials/svg?seed=${profile?.name || 'E'}`} 
-                  alt="Avatar do usuário" 
+                  alt="User avatar" 
                   className="w-10 h-10 rounded-full bg-gray-200"
                 />
               </div>

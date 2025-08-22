@@ -4,33 +4,33 @@ export function FeaturesSection() {
   const features = [
     {
       icon: <Shield className="w-8 h-8 text-primary" />,
-      title: "Segurança Blockchain",
-      description: "Seus benefícios protegidos pela tecnologia blockchain da Internet Computer, garantindo máxima segurança e transparência."
+      title: "Blockchain Security",
+      description: "Your benefits protected by Internet Computer blockchain technology, ensuring maximum security and transparency."
     },
     {
       icon: <Zap className="w-8 h-8 text-primary" />,
-      title: "Pagamentos Instantâneos",
-      description: "Realize transações em tempo real com taxa zero, proporcionando uma experiência fluida para todos os usuários."
+      title: "Instant Payments",
+      description: "Make real-time transactions with zero fees, providing a seamless experience for all users."
     },
     {
       icon: <Users className="w-8 h-8 text-primary" />,
-      title: "Gestão Centralizada",
-      description: "RH pode gerenciar todos os benefícios, colaboradores e estabelecimentos parceiros em uma única plataforma."
+      title: "Centralized Management",
+      description: "HR can manage all benefits, employees, and partner establishments on a single platform."
     },
     {
       icon: <TrendingUp className="w-8 h-8 text-primary" />,
-      title: "Relatórios Detalhados",
-      description: "Acompanhe o uso dos benefícios com dashboards intuitivos e relatórios completos em tempo real."
+      title: "Detailed Reports",
+      description: "Track benefit usage with intuitive dashboards and comprehensive real-time reports."
     },
     {
       icon: <Wallet className="w-8 h-8 text-primary" />,
-      title: "Carteira Digital",
-      description: "Colaboradores têm acesso a uma carteira digital moderna para visualizar saldo e histórico de transações."
+      title: "Digital Wallet",
+      description: "Employees have access to a modern digital wallet to view balance and transaction history."
     },
     {
       icon: <QrCode className="w-8 h-8 text-primary" />,
-      title: "Pagamento por QR Code",
-      description: "Estabelecimentos podem gerar QR codes para receber pagamentos de forma rápida e segura."
+      title: "QR Code Payment",
+      description: "Establishments can generate QR codes to receive payments quickly and securely."
     }
   ]
 
@@ -39,13 +39,13 @@ export function FeaturesSection() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-            Funcionalidades{" "}
+            Innovative{" "}
             <span className="text-primary bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-              Inovadoras
+              Features
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Descubra como o BeneChain transforma a gestão de benefícios corporativos com tecnologia de ponta
+            Discover how BeneChain transforms corporate benefits management with cutting-edge technology
           </p>
         </div>
 

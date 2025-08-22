@@ -3,24 +3,24 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../auth/AuthClientContext";
 import { Loader2, AlertTriangle, Trophy, Clock, CheckCircle, XCircle, Coins } from "lucide-react";
 
-// Helper para formatar status
+// Helper to format status
 const getStatusInfo = (status) => {
     switch (status.constructor.name) {
         case 'Pending':
-            return { icon: Clock, color: 'text-yellow-600', bg: 'bg-yellow-100', text: 'Pendente' };
+            return { icon: Clock, color: 'text-yellow-600', bg: 'bg-yellow-100', text: 'Pending' };
         case 'Approved':
-            return { icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-100', text: 'Aprovado' };
+            return { icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-100', text: 'Approved' };
         case 'Rejected':
-            return { icon: XCircle, color: 'text-red-600', bg: 'bg-red-100', text: 'Rejeitado' };
+            return { icon: XCircle, color: 'text-red-600', bg: 'bg-red-100', text: 'Rejected' };
         default:
-            return { icon: Clock, color: 'text-gray-600', bg: 'bg-gray-100', text: 'Desconhecido' };
+            return { icon: Clock, color: 'text-gray-600', bg: 'bg-gray-100', text: 'Unknown' };
     }
 };
 
-// Helper para formatar data
+// Helper to format date
 const formatDate = (timestamp) => {
-    const date = new Date(Number(timestamp / 1000000n)); // Convertendo nanossegundos para milissegundos
-    return date.toLocaleDateString('pt-BR', {
+    const date = new Date(Number(timestamp / 1000000n)); // Convert nanoseconds to milliseconds
+    return date.toLocaleDateString('en-US', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
@@ -50,12 +50,12 @@ export function WorkerSubmissionsPage() {
             setLoading(true);
             setError("");
             
-            // Buscar submissões do trabalhador
-            console.log("Buscando submissões para principal:", principal.toString());
+            // Fetch worker submissions
+            console.log("Fetching submissions for principal:", principal.toString());
             const submissionsResult = await actors.challenges.getSubmissionsForWorker(principal);
-            console.log("Submissões recebidas:", submissionsResult);
+            console.log("Received submissions:", submissionsResult);
             
-            // Buscar detalhes dos desafios
+            // Fetch challenge details
             const challengeIds = [...new Set(submissionsResult.map(s => s.challengeId))];
             const challengesMap = new Map();
             
@@ -66,7 +66,7 @@ export function WorkerSubmissionsPage() {
                         challengesMap.set(challengeId, challengeResult[0]);
                     }
                 } catch (err) {
-                    console.error(`Erro ao buscar desafio ${challengeId}:`, err);
+                    console.error(`Error fetching challenge ${challengeId}:`, err);
                 }
             }
             
@@ -74,8 +74,8 @@ export function WorkerSubmissionsPage() {
             setChallengesMap(challengesMap);
             
         } catch (err) {
-            console.error("Erro ao buscar submissões:", err);
-            setError("Não foi possível carregar suas submissões.");
+            console.error("Error fetching submissions:", err);
+            setError("Could not load your submissions.");
         } finally {
             setLoading(false);
         }
@@ -88,8 +88,8 @@ export function WorkerSubmissionsPage() {
     return (
         <div className="container mx-auto p-4 md:p-8 pb-28 md:pb-8">
             <header className="mb-6">
-                <h1 className="text-4xl font-bold">Minhas Submissões</h1>
-                <p className="text-lg text-gray-500">Acompanhe o status dos seus desafios submetidos.</p>
+                <h1 className="text-4xl font-bold">My Submissions</h1>
+                <p className="text-lg text-gray-500">Track the status of your submitted challenges.</p>
             </header>
             
             {loading && <div className="flex justify-center p-8"><Loader2 className="animate-spin text-blue-600" size={40} /></div>}
@@ -110,7 +110,7 @@ export function WorkerSubmissionsPage() {
                                             <div className="flex items-center gap-3 mb-2">
                                                 <Trophy className="text-yellow-500" size={24} />
                                                 <h3 className="text-xl font-semibold text-gray-900">
-                                                    {challenge ? challenge.title : 'Desafio Desconhecido'}
+                                                    {challenge ? challenge.title : 'Unknown Challenge'}
                                                 </h3>
                                             </div>
                                             
@@ -119,18 +119,18 @@ export function WorkerSubmissionsPage() {
                                             )}
                                             
                                             <div className="mb-4">
-                                                <h4 className="font-medium text-gray-900 mb-1">Sua Resposta:</h4>
+                                                <h4 className="font-medium text-gray-900 mb-1">Your Answer:</h4>
                                                 <p className="text-gray-600 bg-gray-50 p-3 rounded-lg">
                                                     {submission.submissionContent}
                                                 </p>
                                             </div>
                                             
                                             <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                                                <span>Submetido em: {formatDate(submission.submittedAt)}</span>
+                                                <span>Submitted on: {formatDate(submission.submittedAt)}</span>
                                                 {challenge && (
                                                     <span className="flex items-center gap-1">
                                                         <Coins size={16} />
-                                                        Recompensa: {Number(challenge.reward)} tokens
+                                                        Reward: {Number(challenge.reward)} tokens
                                                     </span>
                                                 )}
                                             </div>
@@ -150,8 +150,8 @@ export function WorkerSubmissionsPage() {
                 ) : (
                     <div className="text-center text-gray-500 py-12">
                         <Trophy size={48} className="mx-auto text-gray-400" />
-                        <h3 className="mt-4 text-xl font-semibold">Nenhuma Submissão</h3>
-                        <p className="mt-1 text-gray-500">Você ainda não submeteu nenhum desafio.</p>
+                        <h3 className="mt-4 text-xl font-semibold">No Submissions</h3>
+                        <p className="mt-1 text-gray-500">You have not submitted any challenges yet.</p>
                     </div>
                 )
             )}

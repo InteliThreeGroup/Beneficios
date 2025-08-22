@@ -22,7 +22,7 @@ export default function HRAssignWorker() {
             if (result.length > 0) setProgramId(result[0].id);
         } catch (error) {
             console.error("Error loading programs:", error);
-            setMessage({ text: "Falha ao carregar programas.", type: "error" });
+            setMessage({ text: "Failed to load programs.", type: "error" });
         } finally {
             setProgramsLoading(false);
         }
@@ -38,14 +38,14 @@ export default function HRAssignWorker() {
             const worker = Principal.fromText(workerPrincipal);
             const result = await actors.benefits_manager.assignWorkerToBenefit(worker, programId, []);
             if (result.ok) {
-                setMessage({ text: 'Trabalhador atribuído com sucesso!', type: 'success' });
+                setMessage({ text: 'Worker successfully assigned!', type: 'success' });
                 setWorkerPrincipal('');
             } else {
-                setMessage({ text: `Erro: ${result.err}`, type: 'error' });
+                setMessage({ text: `Error: ${result.err}`, type: 'error' });
             }
         } catch (error) {
             console.error("Error assigning worker:", error);
-            setMessage({ text: 'Principal inválido ou erro inesperado.', type: 'error' });
+            setMessage({ text: 'Invalid principal or unexpected error.', type: 'error' });
         } finally {
             setLoading(false);
         }
@@ -53,31 +53,31 @@ export default function HRAssignWorker() {
 
     return (
         <div className="bg-white rounded-xl shadow-md p-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Atribuir Trabalhador a Programa</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Assign Worker to Program</h3>
             <form onSubmit={handleAssign} className="space-y-4">
                 <div>
-                    <label htmlFor="workerPrincipal" className="block text-sm font-medium text-gray-700">Principal do Trabalhador</label>
+                    <label htmlFor="workerPrincipal" className="block text-sm font-medium text-gray-700">Worker Principal</label>
                     <div className="mt-1 relative">
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                         <input type="text" id="workerPrincipal" value={workerPrincipal} onChange={(e) => setWorkerPrincipal(e.target.value)} required className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg" placeholder="aaaaa-aaaaa-..." />
                     </div>
                 </div>
                 <div>
-                    <label htmlFor="programId" className="block text-sm font-medium text-gray-700">Programa de Benefício</label>
+                    <label htmlFor="programId" className="block text-sm font-medium text-gray-700">Benefit Program</label>
                     <div className="mt-1 relative">
                         <ClipboardList className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                         <select id="programId" value={programId} onChange={(e) => setProgramId(e.target.value)} required disabled={programsLoading || availablePrograms.length === 0} className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg appearance-none">
-                            {programsLoading ? <option>Carregando programas...</option> :
+                            {programsLoading ? <option>Loading programs...</option> :
                              availablePrograms.length > 0 ?
                              availablePrograms.map(p => <option key={p.id} value={p.id}>{p.name}</option>) :
-                             <option>Nenhum programa disponível</option>
+                             <option>No programs available</option>
                             }
                         </select>
                     </div>
                 </div>
                 <button type="submit" disabled={loading || availablePrograms.length === 0} className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-700 disabled:bg-blue-400 flex items-center justify-center gap-2">
                     {loading ? <Loader2 className="animate-spin" /> : <UserPlus size={16} />}
-                    {loading ? "Atribuindo..." : "Atribuir Trabalhador"}
+                    {loading ? "Assigning..." : "Assign Worker"}
                 </button>
                 {message.text && (
                     <div className={`p-3 rounded-lg flex items-center gap-3 text-sm ${
