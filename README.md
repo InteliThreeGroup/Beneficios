@@ -1,6 +1,6 @@
 # BeneChain
 
-BeneChain is a fully on-chain corporate benefits platform built on the Internet Computer Protocol (ICP). It empowers companies to create, distribute, and monitor employee benefit programs without intermediaries — using smart contracts (canisters) to ensure full transparency, automation, and auditability.
+BeneChain is a fully on-chain corporate benefits platform built **exclusively on the Internet Computer Protocol (ICP)**. It empowers companies to create, distribute, and monitor employee benefit programs without intermediaries — using smart contracts (canisters) to ensure full transparency, automation, and auditability.
 
 Traditional corporate benefits systems are plagued by inefficiencies:
 
@@ -9,7 +9,41 @@ Traditional corporate benefits systems are plagued by inefficiencies:
 * Lack of control and traceability for HR departments
 * Inflexible benefit programs with low portability for employees
 
-BeneChain offers a paradigm shift. By leveraging the unique capabilities of ICP, we’ve created a decentralized platform that connects HR managers, employees, and merchants directly through on-chain logic — with zero reliance on Web2 infrastructure or third-party processors.
+BeneChain offers a paradigm shift. By leveraging the **unique capabilities of ICP**, we’ve created a decentralized platform that connects HR managers, employees, and merchants directly through on-chain logic — with zero reliance on Web2 infrastructure or third-party processors.
+
+### What’s New
+
+BeneChain has evolved beyond the initial core to include powerful new modules, **all deployed on ICP mainnet**:
+
+* **AI-powered Corporate Challenges (`challenge_ai.mo`)**
+  Generates personalized wellness, productivity, and culture-building challenges for employees, with tokenized rewards.
+* **Challenge Management (`challenges.mo`)**
+  Supports submission, approval/rejection, and automatic reward distribution directly on-chain.
+* **Worker & Merchant Wallets (`wallets.mo`, `establishments.mo`)**
+  Enable instant, gas-free payments with real-time balances and auditable histories.
+* **Automated Reporting (`reporting.rs`)**
+  Generates structured benefit usage reports, enabling HR to track adoption, compliance, and ROI.
+* **Identity & Role Control (`identity_auth.mo`)**
+  Uses **Internet Identity** to securely manage HR, worker, and merchant roles with portability across companies.
+
+> **Special Note**: The **Bitcoin integration (`bitcoin_manager.mo`)** is under active testing. Currently it runs in a local environment connected to the Bitcoin **regtest** network, before being migrated to mainnet.
+
+### Why ICP Matters
+
+None of this would be possible without ICP’s native stack:
+
+* **Reverse Gas Model** → Companies sponsor transactions, ensuring **zero friction** for workers and merchants.
+* **Internet Identity** → Secure, portable login with WebAuthn, without custodial wallets.
+* **On-chain Timers** → Automated, deterministic benefit distributions.
+* **HTTPS Outcalls** → Direct connection from canisters to external APIs (e.g., ERP sync, CNPJ validation).
+* **Chain-key Cryptography** → Enables seamless authentication and cross-service integration.
+
+By building **entirely on ICP**, BeneChain achieves:
+
+* End-to-end decentralization
+* Gasless UX for non-crypto users
+* Fully auditable, transparent governance
+* Real-time automation without Web2 servers
 
 ![image](./assets/Sol1.png)
 
@@ -19,76 +53,116 @@ BeneChain offers a paradigm shift. By leveraging the unique capabilities of ICP,
 
 **Demo Video:** [Link](https://youtu.be/UYSJWSu4KBE)
 
+## Core Value Proposition
 
-### Core Value Proposition
+* **HR Departments**
+  Gain full control over benefit rules, real-time dashboards, automated reporting, and audit trails — reducing fraud, manual work, and bureaucracy. With the new **challenge management system**, HR can also launch **AI-powered engagement programs** to boost productivity and well-being.
 
-* **HR Departments** gain full control over benefit rules, real-time dashboards, and audit trails — reducing fraud and manual work.
-* **Workers** receive portable, on-chain wallets linked to their Internet Identity, with real-time balance tracking and zero gas fees.
-* **Merchants** are paid instantly with minimal fees, using a self-service dashboard and secure on-chain validation.
+* **Workers**
+  Receive **portable, on-chain wallets** linked to their Internet Identity, with real-time balance tracking and zero gas fees. They also participate in **corporate challenges** (health, sustainability, learning, culture) and earn tokenized rewards — creating a new layer of motivation and recognition.
+
+* **Merchants**
+  Are paid instantly with minimal fees through a self-service dashboard and secure on-chain validation. By integrating with ICP canisters, merchants get full transparency and traceability of every transaction.
+
+* **Corporate Culture & Engagement**
+  Through `challenge_ai.mo` and `challenges.mo`, companies can gamify employee experience: workers join challenges, submit proofs, and earn rewards in tokens — all managed by smart contracts. This creates a **direct link between benefits and organizational values**, something not possible in Web2 benefit systems.
 
 BeneChain ensures that benefits are distributed fairly, used according to company-defined rules, and traceable from origin to destination — all within the decentralized runtime of the ICP blockchain.
 
 
-### Track: **Fully On-Chain**
+## Track: **Fully On-Chain**
 
-BeneChain fits perfectly into the Fully On-Chain track of the WCHL 2025 Hackathon. All business logic, data storage, user authentication, and interface hosting are implemented within ICP canisters.
+BeneChain fits perfectly into the **Fully On-Chain** track of the WCHL 2025 Hackathon. All business logic, data storage, user authentication, and interface hosting are implemented within ICP canisters.
 
 This guarantees:
 
-* Total decentralization
-* No need for off-chain APIs, storage, or servers
-* Native use of advanced ICP features like:
+* **Total decentralization** – No reliance on Web2 servers or middleware.
+* **AI-powered automation** – Corporate challenges generated directly by smart contracts calling external APIs through **HTTPS outcalls**.
+* **Deterministic scheduling** – Monthly distributions and challenge deadlines enforced with **on-chain timers**, without CRON jobs.
+* **End-to-end identity & roles** – Workers, HRs, and merchants authenticated via **Internet Identity** with role-based permissions.
+* **Cross-domain flexibility** – Workers can carry their wallet and reputation across employers, since everything lives **fully on-chain**.
 
-  * Reverse Gas Model
-  * Internet Identity (WebAuthn)
-  * HTTPS Outcalls
-  * Chain Key Cryptography
-  * On-chain Timers
+**Deployment status**:
 
+* All canisters (wallets, HR management, reporting, establishments, challenges, AI) are live on **ICP mainnet**.
+* The **Bitcoin module (`bitcoin_manager.mo`)** is in **regtest phase**, running locally for validation before mainnet release.
 
-### Social and Economic Impact
-
-By reducing cost and complexity for employers, increasing transparency and control for HR teams, and improving flexibility and purchasing power for workers, BeneChain has the potential to:
-
-* Support financial inclusion of underserved workers
-* Improve cash flow and independence for small businesses
-* Reduce bureaucracy and dependency on legacy benefit providers
-* Contribute to UN Sustainable Development Goals (SDGs) such as decent work, reduced inequalities, and industry innovation
-
----
+BeneChain isn’t just another dApp with hybrid architecture. It is **100% on-chain by design**, leveraging ICP’s stack to replace the patchwork of off-chain APIs, databases, and custodial wallets that traditional systems depend on.
 
 ## Justification for the “Fully On-Chain” Track
 
 BeneChain was purposefully built to fully align with the “Fully On-Chain” track of the WCHL 2025 Hackathon. All core logic, data storage, permission handling, user identities, and UI hosting are executed entirely inside ICP canisters, without any reliance on off-chain infrastructure. This architectural decision was not only intentional — it was essential to solving the challenges of the corporate benefits industry in a decentralized, scalable way.
 
-### Why This Project Can Only Be Built on ICP
+## Why This Project Can Only Be Built on ICP (atualizado)
 
-The Internet Computer Protocol offers a unique set of capabilities that no other blockchain provides in a native, seamless environment:
+The Internet Computer Protocol (ICP) offers a unique set of capabilities that no other blockchain provides in a native, seamless environment. BeneChain is not just deployed on ICP — it is **architecturally dependent** on its features to exist as a fully on-chain corporate benefits platform.
 
 ### 1. Canisters as Full-Stack Smart Contracts
 
-* **How we use it**: Every module (HR management, wallet system, merchant validation, reporting, and authentication) is implemented as a dedicated canister (`benefits_manager.mo`, `wallet.mo`, `establishment.mo`, `identity_auth.mo`, and `reporting.rs`).
-* **Why ICP**: Unlike EVM-based chains where smart contracts are limited in logic and storage, ICP canisters behave like persistent microservices with native state, HTTP APIs, and near-unlimited logic.
+* **How we use it**:
+  Every module is implemented as a dedicated canister:
+
+  * `benefits_manager.mo` → manages benefit distribution and HR rules
+  * `wallet.mo` → portable, on-chain employee wallets
+  * `establishment.mo` → merchant validation and payments
+  * `identity_auth.mo` → role-based access with Internet Identity
+  * `reporting.rs` → advanced reporting engine
+  * `challenges.mo` → challenge lifecycle (create, join, validate, reward)
+  * `challenge_ai.mo` → AI-driven challenge generator via HTTPS outcalls
+  * `bitcoin_manager.mo` → bridges ICP with Bitcoin (currently in regtest phase)
+
+* **Why ICP**:
+  Unlike EVM contracts, ICP canisters behave like **persistent microservices** with native state, APIs, and large storage — enabling us to build an entire HR platform fully on-chain, without external databases or servers.
 
 ### 2. Reverse Gas Model
 
-* **How we use it**: All transactions (e.g., wallet top-ups, payments, report generation) are paid by the company, not by the workers or merchants.
-* **Why ICP**: Only ICP natively supports the reverse gas model, enabling zero-friction UX for non-crypto users — which is critical for adoption in HR environments where users are not crypto-savvy.
+* **How we use it**:
+
+  * HR departments cover the cycles for distributions, challenge creation, and reward payments.
+  * Workers and merchants **never pay fees**, which ensures mass adoption in non-crypto corporate environments.
+
+* **Why ICP**:
+  Only ICP natively supports this UX-critical model. In EVM-based blockchains, employees would need tokens to claim their benefits, creating adoption barriers.
 
 ### 3. Internet Identity (II)
 
-* **How we use it**: Authentication is handled via Internet Identity, allowing users to log in using secure WebAuthn (e.g., FaceID, fingerprint, security key) without custodial credentials. Each user is mapped to a `Principal`, which is used to define roles and permissions (`#HR`, `#Worker`, `#Establishment`) in `identity_auth.mo`.
-* **Why ICP**: Internet Identity ensures both security and user portability across organizations — crucial for workers who switch jobs or companies that manage multiple tenants.
+* **How we use it**:
+  Internet Identity handles authentication across **all canisters**. Workers, HR managers, and merchants are mapped to Principals with roles (`#Worker`, `#HR`, `#Establishment`).
+  Even when workers change jobs, their benefits and challenge history remain portable since everything is bound to their II Principal.
+
+* **Why ICP**:
+  Secure, WebAuthn-based, and privacy-preserving authentication — something unmatched in traditional wallets or login systems.
 
 ### 4. On-Chain Timers
 
-* **How we use it**: Monthly benefit distributions are automatically scheduled using ICP’s on-chain Timer API. This logic is implemented in `benefits_manager.mo` and ensures that funds are distributed exactly on the configured date, without external triggers or CRON jobs.
-* **Why ICP**: Most blockchains lack deterministic native scheduling. ICP’s timers allow trustless, programmable automation inside the canister itself.
+* **How we use it**:
+
+  * `benefits_manager.mo` → executes monthly benefit distribution automatically.
+  * `challenges.mo` → enforces challenge deadlines (e.g., 7-day wellness challenges, 30-day learning programs).
+
+* **Why ICP**:
+  No other blockchain has **deterministic, native scheduling** for smart contracts. ICP’s timers allow BeneChain to operate HR processes without external CRON jobs or off-chain bots.
 
 ### 5. HTTPS Outcalls
 
-* **How we use it** (planned in `reporting.rs` and `establishment.mo`): BeneChain will validate external business identifiers (e.g., CNPJs) and sync data with ERPs using HTTPS requests **directly from smart contracts**.
-* **Why ICP**: This is **exclusive to ICP**. No other blockchain can natively perform HTTPS calls from within smart contracts without needing oracles like Chainlink or external bridges.
+* **How we use it**:
+
+  * `challenge_ai.mo` → calls Gemini API to **generate AI-powered corporate challenges** (JSON-structured, sector-specific).
+  * `establishment.mo` and `reporting.rs` (planned) → will validate business identifiers (e.g., CNPJs) and sync ERP data directly from canisters.
+
+* **Why ICP**:
+  On ICP, smart contracts themselves perform HTTPS requests natively. No need for oracles like Chainlink. This makes **AI-driven engagement** and **ERP integrations** possible directly on-chain.
+
+### 6. Chain Key Cryptography
+
+* **How we use it**:
+
+  * `bitcoin_manager.mo` signs Bitcoin transactions directly from ICP.
+  * Currently, we run it in **regtest mode** for testing, but once stable, it will allow **direct Bitcoin benefit payments** without bridges or custodians.
+
+* **Why ICP**:
+  Only ICP can interact natively with Bitcoin and Ethereum via chain-key cryptography. This removes centralized bridges and opens the door for multichain benefits (e.g., paying part in BTC, part in ICP tokens).
+
 
 ### In-Code Evidence
 
@@ -108,11 +182,11 @@ The “Fully On-Chain” nature of BeneChain is not a design preference, it is a
 
 BeneChain doesn’t just run on the Internet Computer — it embodies the core vision of what a fully on-chain dApp should be.
 
-
----
-
 ## System Architecture
-BeneChain is architected as a modular, decentralized system built entirely on the Internet Computer Protocol (ICP). Each component is deployed as a smart contract (canister), following a microservices pattern and full separation of concerns. The frontend is also hosted in an **asset canister**, ensuring 100% on-chain execution — no reliance on Web2 infrastructure.
+
+BeneChain is architected as a modular, decentralized system built entirely on the Internet Computer Protocol (ICP). Each component is deployed as a smart contract (canister), following a microservices pattern and strict separation of concerns. Even the frontend is hosted in an asset canister, ensuring 100% on-chain execution, with zero reliance on Web2 infrastructure.
+
+All modules are already live on the ICP mainnet, with the exception of the Bitcoin payments canister, which is currently undergoing testing in regtest mode before mainnet rollout.
 
 ## 1. High-Level System Overview – Full Architecture
 
@@ -120,9 +194,9 @@ This diagram presents the complete application architecture of **BeneChain**, fr
 
 ![System Architecture](./assets/arquitetura.png)
 
-####  Layer-by-Layer Breakdown
+### Layer-by-Layer Breakdown
 
-#### Frontend (Client-Side)
+#### **Frontend (Client-Side)**
 
 Built using:
 
@@ -132,102 +206,127 @@ Built using:
 
 Deployed on an **ICP asset canister** via `icx-asset`, ensuring that the entire UI runs on-chain and requires no Web2 infrastructure.
 
-#### Authentication (Internet Identity)
+#### **Authentication (Internet Identity)**
 
-* **Internet Identity** (WebAuthn) allows users to log in using biometrics or hardware keys, without needing wallets or passwords.
-* Upon login, each user receives a unique `Principal`, which is used as a persistent on-chain identifier and authorization handle.
-* This `Principal` is then passed to canisters to define and enforce access control (e.g., HR, Worker, Merchant roles).
+* **Internet Identity (II)** provides passwordless, WebAuthn-based authentication (biometrics or hardware keys).
+* Each user receives a unique `Principal`, which acts as a persistent on-chain identity.
+* Roles (`#HR`, `#Worker`, `#Establishment`) are enforced by the `identity_auth.mo` canister.
 
-#### Core Canisters (Smart Contracts)
+
+#### **Core Canisters (Smart Contracts)**
 
 1. **`identity_auth.mo`**
-   Handles registration, profile management, role assignment, and access control for each user (`#HR`, `#Worker`, `#Establishment`).
+   Role-based access control (HR, Worker, Merchant). Centralized identity authority.
 
 2. **`benefits_manager.mo`**
-   Allows HR to create and manage benefit programs, including scheduled distributions using on-chain timers.
+   HR creates and manages benefit programs. Includes **on-chain timers** for automated monthly distributions.
 
 3. **`wallets.mo`**
-   Stores each worker's on-chain balances per benefit type. Handles credit/debit operations and transaction logs.
+   Portable worker wallets, storing balances by benefit type. Manages credits, debits, and logs.
 
 4. **`establishment.mo`**
-   Allows merchants to register, receive payments from worker wallets, and view transaction history.
+   Merchant onboarding, transaction validation, and dashboard for payment history.
 
-5. **`reporting.rs`** *(Planned)*
-   Built in Rust for performance and outcall support, this canister will generate detailed usage reports and connect to external ERPs using HTTPS outcalls.
+5. **`challenges.mo`** *(New)*
+   Corporate challenges system. Supports creation, submission, approval/rejection, and tokenized rewards. Uses ICP timers for deadlines.
+
+6. **`challenge_ai.mo`** *(New)*
+   AI-driven challenge generator. Uses **HTTPS outcalls** to connect with Gemini API, returning structured challenges on-chain.
+
+7. **`llm_home.mo`** *(New)*
+   Specialized LLM agent that answers questions **strictly about BeneChain**, ensuring contextualized corporate Q\&A.
+
+8. **`btc_payments.mo`** *(New — Testing Phase)*
+   Direct Bitcoin integration via **Chain Key ECDSA**. Supports UTXO retrieval, SegWit transaction building, and signing. Currently running in **regtest mode**, with mainnet deployment planned after stability validation.
+
+9. **`reporting.rs`** *(Planned)*
+   Rust-based analytics and ERP integration, leveraging ICP HTTPS outcalls for external sync (e.g., CNPJs, HR data).
 
 
 #### Internet Computer Features Used
 
-This infrastructure layer enables BeneChain’s unique advantages:
+BeneChain depends directly on exclusive ICP features:
 
-* **Reverse Gas Model**: Workers and merchants do not pay transaction fees. HR sponsors cycles.
-* **On-Chain Timers**: Used for monthly/weekly automatic benefit distributions.
-* **HTTPS Outcalls**: Future integrations with ERPs and CNPJ validation services.
-* **Asset Canister**: Enables a decentralized frontend UI with no dependency on IPFS or third-party hosts.
-
+* **Reverse Gas Model** → HR sponsors cycles, making the system **gasless for workers and merchants**.
+* **On-Chain Timers** → Used in `benefits_manager.mo` (scheduled distributions) and `challenges.mo` (challenge deadlines).
+* **HTTPS Outcalls** → Already live in `challenge_ai.mo`; planned for ERP integrations in `reporting.rs`.
+* **Chain Key Cryptography** → Powers Bitcoin transactions in `btc_payments.mo`.
+* **Asset Canister** → Fully on-chain frontend hosting.
 
 #### Architectural Strengths
 
-| Property              | Benefit                                                        |
-| --------------------- | -------------------------------------------------------------- |
-| **Fully On-Chain**    | No off-chain APIs or storage; full ICP-native stack            |
-| **Secure by Design**  | Access control enforced via `Principal` and Internet Identity  |
-| **Modular Canisters** | Clear separation of logic by user role and function            |
-| **User-Friendly UX**  | Login with WebAuthn; no wallet or gas required for interaction |
-| **Auditable**         | Transaction logs and actions persist on-chain for traceability |
+| Property              | Benefit                                                              |
+| --------------------- | -------------------------------------------------------------------- |
+| **Fully On-Chain**    | All logic, storage, and UI hosted natively on ICP                    |
+| **Secure by Design**  | Access control via Internet Identity Principals                      |
+| **AI-Integrated**     | On-chain LLM and AI challenge generation via HTTPS outcalls          |
+| **Multichain Ready**  | Native Bitcoin support through ICP Chain Key Cryptography            |
+| **Gasless UX**        | Workers and merchants never pay fees                                 |
+| **Modular Canisters** | Clear separation of responsibilities by user role and business logic |
+| **Auditable**         | All actions and transactions are persisted on-chain for traceability |
+
 
 ## 2. Interaction Flow – From Browser to Canisters
 
-This diagram showcases the full interaction pipeline from end users to the decentralized backend of BeneChain, emphasizing the simplicity and Web2-like UX, built entirely on top of the Internet Computer (ICP).
+This diagram illustrates the **complete interaction pipeline** from end users to the decentralized backend of **BeneChain**, showcasing how the platform delivers a **Web2-like experience** while running **100% natively on the Internet Computer (ICP)**. Every interaction — from login to payments — is executed on-chain, with no reliance on off-chain servers or third-party infrastructure.
 
-![User-to-Canister Flow](./assets/Frontend%20(1).png)
+![User-to-Canister Flow](./assets/Frontend.png)
+
 
 ### Flow Description
 
 #### User Entry Points
 
-* **HR Departments**, **Workers**, and **Merchants** all access the application through a standard web browser (Chrome, Edge, Firefox).
-* No extensions, wallet installations, or onboarding friction are required.
+* **HR Departments**, **Workers**, and **Merchants** access BeneChain directly via a standard web browser (Chrome, Edge, Firefox).
+* No extensions, wallet installations, or crypto onboarding are required — the UX is designed to feel **as simple as any Web2 SaaS application**.
 
 #### Web Frontend
 
-The frontend is built using:
+The entire frontend runs on-chain as an **ICP asset canister**, ensuring immutability and decentralization. It is built with:
 
-* **React** – Component-driven user interface
-* **TypeScript** – Strongly typed logic and integration with ICP declarations
-* **TailwindCSS** – Lightweight and responsive styling system
-* **Internet Identity** – Used for passwordless authentication via WebAuthn (fingerprint, facial recognition, security keys)
+* **React** – Component-driven, modular user interface
+* **TypeScript** – Strong typing for reliable integration with ICP declarations
+* **TailwindCSS** – Responsive, modern styling system
+* **Internet Identity (II)** – Passwordless authentication using WebAuthn (fingerprint, FaceID, security keys)
 
-After login, each user receives a unique **Principal**, used as an on-chain identity for all transactions and permission checks.
+Upon login, each user receives a unique **Principal**, which acts as their **persistent on-chain identity**. This Principal governs authorization and is used in every transaction and permission check across canisters.
 
 #### Backend (ICP Canisters)
 
-Once authenticated, all user actions are routed to decentralized smart contracts:
+Once authenticated, all user actions are routed to modular smart contracts, each designed with a **single-responsibility principle** to maximize scalability and maintainability:
 
-| Canister              | Purpose                                              |
-| --------------------- | ---------------------------------------------------- |
-| `identity_auth.mo`    | Role registration and permission mapping             |
-| `benefits_manager.mo` | Benefit program creation, assignment, and automation |
-| `wallets.mo`          | Balance management and transaction logs              |
-| `establishment.mo`    | Merchant registration and payment flow               |
-| `reporting.mo`        | Analytics, reporting and ERP integrations (planned)  |
+| Canister              | Purpose                                                                                       |
+| --------------------- | --------------------------------------------------------------------------------------------- |
+| `identity_auth.mo`    | Role management (`HR`, `Worker`, `Merchant`), profile creation, and access control            |
+| `benefits_manager.mo` | HR-driven benefit program creation, scheduling (on-chain timers), and automated distributions |
+| `wallets.mo`          | Worker balances, deposits/withdrawals, and auditable transaction history                      |
+| `establishment.mo`    | Merchant onboarding, payment acceptance, and settlement flows                                 |
+| `challenges.mo`       | Creation, submission, and review of company-sponsored challenges with rewards                 |
+| `challenge_ai.mo`     | AI-generated challenges powered by **HTTPS outcalls** to external LLMs (Gemini API)           |
+| `llm_home.mo`         | On-chain LLM assistant for **BeneChain-specific knowledge and user support**                  |
+| `btc_payments.mo`     | Bitcoin transactions using **Chain Key ECDSA**, enabling native cross-chain settlement        |
+| `reporting.rs`        | (Planned) Advanced analytics and ERP integrations via **HTTPS outcalls**                      |
 
-All logic, state, and frontend are hosted **natively on ICP**, ensuring high availability, auditability, and zero off-chain dependencies.
+All logic, data, and UI live **exclusively on ICP**, ensuring **high availability, censorship resistance, auditability, and transparency**.
+
 
 ### Key Highlights
 
-* **No wallets or gas fees** for users — experience is frictionless
-* **Full decentralization** from login to logic
-* **ICP-native** architecture using Principal-based permissioning
-* Ensures **Web2-level usability** with **Web3-level trust and transparency**
+* **Frictionless UX** → Users log in with biometrics, no wallets or seed phrases required.
+* **Reverse Gas Model** → Workers and merchants never pay fees; HR departments cover cycles.
+* **Web2 Simplicity, Web3 Trust** → End-to-end decentralization without compromising usability.
+* **Cross-Chain Ready** → Native Bitcoin support via Chain Key cryptography.
+* **AI-Enhanced** → On-chain agents and AI challenge generation integrated natively into workflows.
+* **Future-Proof** → Modular microservices architecture makes adding new features seamless.
+* **Auditable & Secure** → Every transaction, action, and record is stored immutably on-chain.
 
+## 3. Sequence Diagram – Dynamic Execution Flow
 
-## 3. Sequence Diagram – Dynamic Execution Flow  
-This diagram illustrates the dynamic flow of method calls between user actors (HR, Worker, Merchant) and the canisters that orchestrate identity, benefits, wallets, and payment operations in BeneChain.
+This diagram illustrates the dynamic flow of method calls between user actors (**HR, Worker, Merchant**) and the core canisters that orchestrate identity, benefits, wallets, and payment operations in **BeneChain**.
 
 ![Sequence Diagram](./assets/Diagrama%20de%20sequência%20básico.png)
 
-#### Step-by-Step Breakdown:
+### Step-by-Step Breakdown
 
 1. **HRManager → `identity_auth.createProfile()`**
    Registers the HR manager with a company ID, role `#HR`, and unique `Principal`.
@@ -242,39 +341,135 @@ This diagram illustrates the dynamic flow of method calls between user actors (H
    Creates a benefit program by providing the company ID, frequency (e.g., monthly), and the benefit type (`#Food`, `#Culture`, etc.).
 
 5. **`benefits_manager` → `identity_auth.hasRole(#HR)` + `belongsToCompany()`**
-   Verifies that the caller is an authorized HR manager from the specified company.
+   Validates that the caller is an authorized HR manager.
 
 6. **HRManager → `benefits_manager.assignWorkerToBenefit()`**
    Associates the worker (by `Principal`) to the created benefit program.
 
 7. **`benefits_manager` → `wallets.createWallet(worker)`**
-   Initializes a wallet canister entry for the worker if it does not exist.
+   Initializes a wallet entry for the worker if none exists.
 
 8. **(Automated) `benefits_manager.executePayment()`**
-   Periodic execution triggered by **on-chain timers**, based on the benefit frequency.
+   Triggered by **on-chain timers** at scheduled intervals.
 
 9. **`benefits_manager` → `wallets.creditBalance()`**
-   Credits the correct benefit amount to each eligible worker’s wallet.
+   Credits the appropriate benefit amount into the worker’s wallet.
 
 10. **Merchant → `establishment.processPayment()`**
-    Initiates a payment request when the worker scans and authorizes a transaction.
+    Initiates a transaction when the worker uses their wallet at a registered establishment.
 
 11. **`establishment` → `identity_auth.hasRole(establishment)`**
-    Verifies that the merchant has the appropriate permissions.
+    Ensures that the merchant is registered and authorized.
 
 12. **`establishment` → `wallets.debitBalance()`**
-    Debits the amount from the worker’s wallet for the benefit type being used.
+    Debits the worker’s wallet by the benefit amount.
 
 13. **`wallets` → `establishment.confirmPayment()`**
-    Confirms the success or failure of the payment to the merchant.
+    Confirms the transaction status back to the merchant.
+
+### Observations
+
+* **Asynchronous calls** between canisters ensure scalability.
+* **Reverse Gas Model** removes friction for workers and merchants (HR sponsors cycles).
+* **Full auditability** through `getTransactionHistory()` endpoints in `wallets` and `establishment`.
+* **Hybrid execution model** → user-triggered flows (enrollments, payments) + automated flows (scheduled benefit distributions).
+
+To illustrate BeneChain’s evolution, the following sequence diagrams complement the core execution flow by covering **new canisters**:
+
+## 3.1 Sequence Diagram – Challenges Canister (`challenges.mo`)
+
+This diagram illustrates the lifecycle of a challenge, from creation by HR to submission and review by workers.
+
+![Challenges Sequence](./assets/seq/challenges.png)
+
+**Step-by-Step Breakdown:**
+
+1. **HR → `challenges.createChallenge()`**
+   HR registers a new challenge with `title`, `description`, `deadline`, and `reward`.
+2. **Worker → `challenges.submitToChallenge()`**
+   Worker submits content for a given challenge.
+3. **HR → `challenges.approveOrRejectSubmission()`**
+   HR evaluates the worker’s submission.
+4. **System → `challenges.getActiveChallenges()`**
+   Workers or HR can retrieve the list of open challenges.
+5. **System → `challenges.getSubmissionsForChallenge()`**
+   Retrieves all submissions for review.
+
+**Observations:**
+
+* Challenges incentivize participation with on-chain rewards.
+* Submissions are fully auditable and linked to `Principal` IDs.
+
+## 3.2 Sequence Diagram – AI-Powered Challenge Evaluation (`challenges_ai.mo`)
+
+This diagram highlights how AI is leveraged to assist in evaluating submissions.
+
+![Challenges AI Sequence](./assets/seq/challenge_ai.png)
+
+**Step-by-Step Breakdown:**
+
+1. **HR → `challenges_ai.evaluateSubmission()`**
+   HR requests AI support to analyze worker submissions.
+2. **`challenges_ai` → `llm_home.askGemini()`**
+   The canister routes the request to the LLM service.
+3. **`llm_home` → External LLM API**
+   Executes semantic and qualitative evaluation of the content.
+4. **Response → `challenges_ai`**
+   The AI returns structured insights (scores, recommendations, or comments).
+5. **HR → `challenges_ai.getEvaluationReport()`**
+   HR retrieves the AI-generated evaluation report.
+
+**Observations:**
+
+* Enhances HR productivity by automating first-pass reviews.
+* Ensures consistency and reduces bias in evaluation.
+
+## 3.3 Sequence Diagram – Bitcoin Payments (`btc_payments.mo`)
+
+This diagram explains the process of handling Bitcoin-based benefits distribution and merchant settlement.
+
+![BTC Payments Sequence](./assets/seq/btc.png)
+
+**Step-by-Step Breakdown:**
+
+1. **HR → `btc_payments.get_balance()`**
+   Queries available BTC balance in the company’s canister-managed wallet.
+2. **HR → `btc_payments.send_btc(worker_address)`**
+   Initiates a Bitcoin transfer to a worker’s BTC address.
+3. **`btc_payments` → ICP Bitcoin API**
+   Uses the IC Bitcoin integration to broadcast the transaction.
+4. **Worker Wallet → Confirm Receipt**
+   Worker receives BTC natively, no intermediaries.
+
+**Observations:**
+
+* Fully decentralized BTC handling via ICP Bitcoin integration.
+* No custodial risk — funds move directly from canister to worker.
 
 
-### Observations:
+## 3.4 Sequence Diagram – LLM Home Integration (`llm_home.mo`)
 
-* All inter-canister communication is asynchronous and permission-checked.
-* Worker and merchant interactions are gasless, enabled by the Reverse Gas Model.
-* All actions are auditable via `getTransactionHistory()` in the `wallets` and `establishment` canisters.
-* The flow is triggered both by user actions and scheduled automation via ICP Timers.
+This diagram showcases how the system integrates with external LLMs (e.g., Gemini) for contextual Q\&A and automation.
+
+![LLM Home Sequence](./assets/seq/llm_home.png)
+
+**Step-by-Step Breakdown:**
+
+1. **User → `llm_home.askBeneChainAgent()`**
+   Worker, HR, or Merchant asks a question or requests insights.
+2. **`llm_home` → `getBeneChainInfo()`**
+   Retrieves relevant on-chain data from other BeneChain canisters.
+3. **`llm_home` → `callGeminiAPI()`**
+   Sends enriched context to the Gemini API.
+4. **Gemini → `llm_home.extractTextFromGeminiResponse()`**
+   Processes and filters the LLM response.
+5. **Response → User**
+   User receives contextualized and trustworthy output.
+
+**Observations:**
+
+* Bridges on-chain BeneChain data with off-chain intelligence.
+* Provides a natural language interface for querying the system.
 
 ## 4. User Flow Diagram – Experience Across Roles
 
@@ -304,22 +499,52 @@ This diagram outlines the high-level user experience for each main role in BeneC
 * **Register**: Provides business ID (e.g. CNAE) and defines accepted benefit types.
 * **Accept Payment**: Authorizes and confirms transactions directly from worker wallets.
 
-### Highlights
+### 4.2 End-to-End Interaction Flow
 
-* Fully **gasless experience**: all costs sponsored by HR, enabling frictionless adoption.
-* **No crypto knowledge required** for any role.
-* **Single flow** for each persona, mapped to clear UI screens and canister calls.
-* Designed for mobile-first usability with React + Tailwind.
+This diagram highlights the **workflow between HR and Workers**, including benefit distribution, challenge creation, and worker engagement.
 
-Ótimo! Esse diagrama representa uma **visão UML de canisters**, detalhando os dados internos e as funções públicas de cada contrato inteligente do projeto **BeneChain**.
+![User Flow Diagram – HR & Worker Interaction](./assets/fluxo2.png)
 
+#### HR Perspective
+
+* **Login via Internet Identity** → Accesses secure company dashboard.
+* **Create Benefit Program** → Defines incentives and allocates funds.
+* **Assign Workers** → Associates employees to programs.
+* **Create Challenge** → Adds gamification elements to boost engagement.
+* **Approve/Reject Submissions** → Reviews worker contributions to challenges.
+* **View Reports** → Tracks benefit usage and challenge outcomes.
+
+#### Worker Perspective
+
+* **Login via Internet Identity** → Unified login experience.
+* **View Wallet** → Sees real-time balances of benefits.
+* **Make Purchase via QR** → Pays merchants seamlessly.
+* **Submit to Challenge** → Engages with company challenges, potentially earning extra rewards.
+
+
+### Highlights Across Flows
+
+* **Unified login** – Internet Identity powers all roles with frictionless WebAuthn.
+* **Gamified engagement** – Challenges increase adoption and employee participation.
+* **Frictionless payments** – QR-based merchant payments, gasless, with HR sponsoring cycles.
+* **Data transparency** – All actions recorded on-chain for auditability.
+* **Mobile-first** – User interface designed for accessibility on-the-go.
 
 ## 5. Canister Responsibilities and Interfaces (UML View)
 
-This diagram provides a static overview of all the main canisters (smart contracts) in the BeneChain system. Each canister encapsulates its own state and exposes a limited, well-defined public interface. This modular architecture enforces clear separation of concerns and enhances scalability and security.
+This section provides an updated static overview of the BeneChain architecture, focusing on the canisters (smart contracts) and service modules that compose the system. Each canister encapsulates its own state and exposes a well-defined public interface, ensuring separation of concerns, modularity, and scalability.
+
+In addition to the original core (identity, benefits, wallets, establishments, reporting), the platform has evolved to integrate:
+
+* Challenges Engine (challenges.mo): gamified incentives and worker engagement.
+
+* AI Assistance (ChallengeAI and llm_home): automatic challenge generation, conversational guidance, and contextual support powered by LLMs.
+
+* BTC Payments (btc_payments): Bitcoin-native transactions alongside benefit tokens, extending multi-asset capabilities.
+
+This modular expansion demonstrates how BeneChain combines Web3 primitives (ICP canisters + Bitcoin integration) with AI-driven user experiences (LLM-powered automation and guidance). The design is prepared for future growth, while maintaining a gasless, user-friendly experience for HRs, workers, and merchants.
 
 ![Canister UML Diagram](./assets/contractUml.png)
-
 
 ### `identity_auth.mo`
 
@@ -421,28 +646,160 @@ transactions: Principal -> [Transaction]
 * `generateReport(companyId)`: Produces a report with benefit usage per company.
 * `callERPoutcall()`: Initiates a secure HTTP request to external ERP systems (via HTTPS Outcalls).
 
+### The Second UML Diagram - With new Canisters
+
+![Canister UML Diagram](./assets/uml2.png)
+
+
+### `challenges.mo`
+
+**Purpose**: Manage benefit-linked challenges and worker submissions.
+
+**Data model:**
+
+```motoko
+Challenge {
+  id: Text,
+  title: Text,
+  description: Text,
+  companyId: Text,
+  reward: Nat,
+  deadline: Time,
+  isActive: Bool,
+  createdAt: Time,
+  createdBy: Principal
+}
+
+Submission {
+  id: Text,
+  challengeId: Text,
+  workerId: Principal,
+  workerName: Text,
+  submissionContent: Text,
+  submittedAt: Time,
+  status: SubmissionStatus // #Pending | #Approved | #Rejected
+}
+```
+
+**Public Functions:**
+
+* `createChallenge()`: HR creates a new challenge.
+* `submitToChallenge()`: Worker submits proof of participation.
+* `approveOrRejectSubmission()`: HR validates or rejects a submission.
+* `getActiveChallenges()`: Lists currently active challenges.
+* `getSubmissionsForChallenge()`: Returns all submissions for a challenge.
+* `getSubmissionsForWorker()`: Lists all submissions by a specific worker.
+* `getChallengeById()`: Retrieves challenge details by ID.
+
 ---
+
+### `ChallengeAI` (Integration Module)
+
+**Purpose**: Leverage LLMs (Gemini API) to auto-generate, validate, and customize challenges.
+
+**Data model:**
+
+```motoko
+challenge_ia {
+  url: Text = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+  apiKey: Text
+}
+```
+
+**Public Functions:**
+
+* `generateChallenge()`: Creates a challenge draft.
+* `generateMultipleChallenges()`: Suggests multiple variations.
+* `customizeChallenge()`: Adapts a challenge to HR preferences.
+* `suggestReward()`: Proposes appropriate incentives.
+* `chatAboutChallenges()`: Provides conversational support.
+* `validateChallenge()`: Validates clarity and fairness of a challenge.
+* `getAssistantInfo()`: Returns context on AI suggestions.
+* `callGeminiAPI()`: Direct API call to Gemini.
+* `extractTextFromGeminiResponse()`: Cleans raw LLM response into structured text.
+
+---
+
+### `btc_payments`
+
+**Purpose**: Enable BTC-based payments directly on-chain, expanding beyond benefit tokens.
+
+**Data model:**
+
+```motoko
+BtcPayments {
+  ic: Principal,
+  keyId: Text,
+  net: Text // #mainnet | #testnet
+}
+```
+
+**Public Functions:**
+
+* `get_own_pubkey_hash160()`: Returns public key hash for BTC payments.
+* `get_balance()`: Fetches BTC balance.
+* `send_btc()`: Sends Bitcoin to an address.
+* `derivation()`: Handles key derivation.
+* `hex()`: Converts data to hex.
+* `reverseBytes()`: Utility for BTC operations.
+
+---
+
+### `llm_home`
+
+**Purpose**: Provide conversational AI capabilities to workers, HR, and merchants through contextual prompts.
+
+**Data model:**
+
+```motoko
+llm_home {
+  BENECHAIN_CONTEXT: Text,
+  url: Text,
+  apiKey: Text
+}
+```
+
+**Public Functions:**
+
+* `askBeneChainAgent()`: Asks the AI agent about platform usage.
+* `askGemini()`: General-purpose Q\&A via Gemini.
+* `getBeneChainInfo()`: Returns contextual information about BeneChain.
+* `callGeminiAPI()`: Calls Gemini directly.
+* `extractTextFromGeminiResponse()`: Extracts structured answers from LLM output.
+
+### **Highlights of the Updated UML**
+
+* Expanded **challenge ecosystem** with AI support (`ChallengeAI`) for automatic generation and validation.
+* Added **BTC Payments module**, enabling multi-asset financial flows.
+* Integrated **LLM assistant** (`llm_home`) for conversational support inside the platform.
+* Architecture remains modular and extensible, aligned with ICP’s **canister isolation** model.
+
 
 ## 6. Canister Responsibilities Table
 
-The table below summarizes the responsibilities, access scope, and language implementation of each core smart contract (canister) in the BeneChain system.
+The table below summarizes the responsibilities, access scope, and language implementation of each core and extended smart contract (canister) in the BeneChain system. This view reflects the modular expansion of the platform into **AI-powered workflows** and **Bitcoin-native transactions**, while maintaining separation of concerns.
 
-| Canister              | Description                                                           | Language | Accessed by                            | Key Methods                                                                   |
-| --------------------- | --------------------------------------------------------------------- | -------- | -------------------------------------- | ----------------------------------------------------------------------------- |
-| `identity_auth.mo`    | Manages user identity, role-based access control, and company linkage | Motoko   | All canisters, users                   | `createProfile()`, `hasRole()`, `belongsToCompany()`                          |
-| `benefits_manager.mo` | Creates, schedules, and distributes benefit programs                  | Motoko   | HR, Timer, Wallets                     | `createBenefitProgram()`, `assignWorkerToBenefit()`, `executeManualPayment()` |
-| `wallets.mo`          | Stores balances and transaction logs per worker and benefit type      | Motoko   | BenefitsManager, Establishment, Worker | `creditBalance()`, `debitBalance()`, `getWallet()`                            |
-| `establishment.mo`    | Registers merchants, processes payments from workers                  | Motoko   | Merchants, Wallets                     | `registerEstablishment()`, `processPayment()`                                 |
-| `reporting.rs`        | (Planned) Aggregates usage metrics, performs outcalls to ERPs         | Rust     | Internal/Analytics                     | `generateReport()`, `callERPoutcall()`                                        |
-| `BENEFICIOS_frontend` | Serves the entire web UI as an asset canister                         | Asset    | End users (browser)                    | Static file hosting via `icx-asset`                                           |
+| Canister / Module     | Description                                                                | Language | Accessed by                            | Key Methods                                                                        |
+| --------------------- | -------------------------------------------------------------------------- | -------- | -------------------------------------- | ---------------------------------------------------------------------------------- |
+| `identity_auth.mo`    | Manages user identity, role-based access control, and company linkage      | Motoko   | All canisters, users                   | `createProfile()`, `hasRole()`, `belongsToCompany()`                               |
+| `benefits_manager.mo` | Creates, schedules, and distributes benefit programs                       | Motoko   | HR, Timer, Wallets                     | `createBenefitProgram()`, `assignWorkerToBenefit()`, `executeManualPayment()`      |
+| `wallets.mo`          | Stores balances and transaction logs per worker and benefit type           | Motoko   | BenefitsManager, Establishment, Worker | `creditBalance()`, `debitBalance()`, `getWallet()`                                 |
+| `establishment.mo`    | Registers merchants, processes payments from workers                       | Motoko   | Merchants, Wallets                     | `registerEstablishment()`, `processPayment()`                                      |
+| `challenges.mo`       | Manages gamified challenges, submissions, and approvals                    | Motoko   | HR, Workers                            | `createChallenge()`, `submitToChallenge()`, `approveOrRejectSubmission()`          |
+| `ChallengeAI`         | AI service wrapper for challenge creation and customization (Gemini API)   | External | Challenges canister, HR UI             | `generateChallenge()`, `suggestReward()`, `validateChallenge()`, `callGeminiAPI()` |
+| `btc_payments.mo`     | Provides Bitcoin-native balance, send, and address derivation functions    | Motoko   | Workers, Establishments                | `get_balance()`, `send_btc()`, `get_own_pubkey_hash160()`, `derivation()`          |
+| `llm_home`            | Conversational AI assistant with BeneChain context (LLM integration layer) | External | Workers, HR, Admin                     | `askBeneChainAgent()`, `getBeneChainInfo()`, `extractTextFromGeminiResponse()`     |
+| `reporting.rs`        | (Planned) Aggregates usage metrics, performs outcalls to ERPs              | Rust     | Internal/Analytics                     | `generateReport()`, `callERPoutcall()`                                             |
+| `BENEFICIOS_frontend` | Serves the entire web UI as an asset canister                              | Asset    | End users (browser)                    | Static file hosting via `icx-asset`                                                |
 
 
 ### Observations
 
-* Each canister follows **Single Responsibility Principle**.
-* Canisters communicate asynchronously using **typed actor interfaces**.
-* All user-facing actions map directly to one or more canister methods.
-
+* Each canister follows the **Single Responsibility Principle**, enabling modularity.
+* Core system logic resides fully on **ICP canisters**, while AI and LLM services integrate via HTTPS outcalls.
+* Bitcoin integration (`btc_payments`) leverages **ICP’s Bitcoin API**, extending the wallet model with native BTC operations.
+* Challenges and AI modules illustrate the **fusion of Web3 + AI**, providing gamified engagement and intelligent automation.
+* All user-facing actions map directly to one or more canister methods, ensuring transparency and auditability.
 
 ## 7. Identity & Permissioning
 
@@ -454,6 +811,9 @@ BeneChain leverages the Internet Computer's native authentication system, **Inte
 2. **II returns a `Principal`** — a globally unique, pseudonymous identifier.
 3. The user’s Principal is stored and managed in the `identity_auth.mo` canister.
 4. Role-based access (HR, Worker, Establishment) is enforced via internal checks on each call.
+5. Extended canisters (Challenges, BTC Payments, LLM) **reuse the same identity primitives**, ensuring a unified permissioning model.
+
+---
 
 #### Data Model (`identity_auth.mo`)
 
@@ -470,18 +830,19 @@ type Profile = {
 
 Each user has a profile stored on-chain that includes:
 
-* Their unique Principal (returned from Internet Identity)
-* A display name
-* Their role (used for access control)
-* An optional company affiliation
+* Their unique **Principal** (returned from Internet Identity)
+* A **display name**
+* Their **role** (used for access control)
+* An optional **company affiliation**
+
 
 #### Access Control Logic
 
-All sensitive functions in other canisters (e.g. `assignWorkerToBenefit`, `processPayment`, `creditBalance`) **first validate**:
+All sensitive functions in other canisters (e.g. `assignWorkerToBenefit`, `processPayment`, `submitToChallenge`, `send_btc`) **first validate**:
 
-1. That the caller has a valid profile
-2. That the caller has the appropriate role for that action
-3. That they belong to the same company if required (e.g. HR and Worker linkage)
+1. That the caller has a valid profile.
+2. That the caller has the appropriate role for that action.
+3. That they belong to the same company if required (e.g. HR ↔ Worker linkage).
 
 Example validation flow in `benefits_manager.mo`:
 
@@ -494,15 +855,27 @@ if (await IdentityAuth.hasRole(callerPrincipal, #HR) and
 }
 ```
 
+For **Challenges**, similar logic ensures that:
+
+* Only HR can create challenges.
+* Only Workers can submit solutions.
+* Only authorized reviewers can approve/reject.
+
+For **btc\_payments**, only wallet owners can invoke `send_btc()`.
+
+For **llm\_home**, user queries are enriched with BeneChain context only if the user has a valid authenticated profile.
+
+
 ### Highlights
 
-| Feature                              | Description                                             |
-| ------------------------------------ | ------------------------------------------------------- |
-| **Passwordless login**               | Powered by Internet Identity and WebAuthn               |
-| **Per-user profile mapping**         | Stored in `identity_auth.mo`                            |
-| **On-chain role validation**         | Used in all permissioned canisters                      |
-| **Company-scoped access control**    | Ensures multi-tenant safety and data isolation          |
-| **No custodial auth infrastructure** | Everything runs within ICP — no third-party auth needed |
+| Feature                              | Description                                                                  |
+| ------------------------------------ | ---------------------------------------------------------------------------- |
+| **Passwordless login**               | Powered by Internet Identity and WebAuthn                                    |
+| **Per-user profile mapping**         | Stored in `identity_auth.mo`                                                 |
+| **On-chain role validation**         | Used in all permissioned canisters (benefits, challenges, wallets, payments) |
+| **Company-scoped access control**    | Ensures multi-tenant safety and data isolation                               |
+| **Unified identity layer**           | Extended to AI (LLM), gamification (Challenges), and Bitcoin transactions    |
+| **No custodial auth infrastructure** | Everything runs within ICP — no third-party auth needed                      |
 
 ---
 
@@ -559,41 +932,47 @@ To support multiple companies on a single deployment:
 
 #### Other Canisters
 
-| Canister              | Data Model                                               |
-| --------------------- | -------------------------------------------------------- |
-| `identity_auth.mo`    | Maps `Principal → Profile { name, role, companyId }`     |
-| `benefits_manager.mo` | Stores programs by ID, company, frequency, and value     |
-| `establishment.mo`    | Maps `Principal → Establishment { name, types, status }` |
-| `reporting.rs`        | (Planned) Will store cached reports and ERP sync results |
+| Canister              | Data Model                                                                   |
+| --------------------- | ---------------------------------------------------------------------------- |
+| `identity_auth.mo`    | Maps `Principal → Profile { name, role, companyId }`                         |
+| `benefits_manager.mo` | Stores benefit programs by ID, company, frequency, and value                 |
+| `establishment.mo`    | Maps `Principal → Establishment { name, types, status }`                     |
+| `wallets.mo`          | Balances and transactions for each Worker                                    |
+| `reporting.rs`        | (Planned) Cached reports and ERP sync results                                |
+| `challenges.mo`       | `Challenge { id, title, desc, deadline, reward }` + `Submission { ... }`     |
+| `ChallengeAI.mo`      | Transient configs (Gemini API URL, API key); minimal state, mostly stateless |
+| `btc_payments.mo`     | Stores `keyId`, network configuration, UTXO-related info per wallet          |
+| `llm_home.mo`         | Context constants (`BENECHAIN_CONTEXT`), API URL and key                     |
 
 
 ### Highlights
 
-| Aspect               | Strategy                                                         |
-| -------------------- | ---------------------------------------------------------------- |
-| On-chain persistence | All data is stored in canisters using stable structures          |
-| Upgrade safety       | Compatible with `dfx deploy --upgrade`                           |
-| Role-based mapping   | Each `Principal` stores its own wallet, history, and profile     |
-| Multi-tenant support | Each entity is scoped by `companyId`                             |
-| Fully auditable      | All financial actions are immutably recorded in transaction logs |
+| Aspect               | Strategy                                                                   |
+| -------------------- | -------------------------------------------------------------------------- |
+| On-chain persistence | All data is stored in canisters using `stable` structures                  |
+| Upgrade safety       | Compatible with `dfx deploy --upgrade`                                     |
+| Role-based mapping   | Each `Principal` stores its own wallet, challenge submissions, and profile |
+| Multi-tenant support | Each entity (HR, Worker, Establishment, Company) scoped by `companyId`     |
+| Fully auditable      | All financial actions and submissions immutably recorded in logs           |
+| Hybrid canisters     | Some (AI, LLM) are **stateless wrappers** around external APIs             |
 
----
 
 ## 9. Timer Automation Logic
 
-BeneChain uses the **Internet Computer’s native timer API** to automate the execution of recurring benefit distributions without any external triggers or schedulers. This ensures a truly decentralized, self-operating system.
+BeneChain uses the **Internet Computer’s native timer API** to automate the execution of recurring benefit distributions without relying on external servers or schedulers. This ensures the system remains **autonomous, decentralized, and fully verifiable on-chain**.
 
 #### Why On-Chain Timers Matter
 
-* No need for cron jobs, bots or backend servers
+* Eliminates dependency on cron jobs, bots, or off-chain daemons
 * Reduces operational complexity and central points of failure
-* All automation is **verifiable and auditable** on-chain
+* Guarantees that automation is **transparent, deterministic, and auditable**
+* Strengthens decentralization by ensuring logic execution is entirely canister-driven
 
 #### Implementation
 
-Timers are managed in the `benefits_manager.mo` canister using the `Timer.setTimer()` API.
+Timers are implemented inside the `benefits_manager.mo` canister using the `Timer.setTimer()` API.
 
-Each `BenefitProgram` contains a defined frequency and day:
+Each `BenefitProgram` stores its own recurrence pattern:
 
 ```motoko
 type Frequency = { #Monthly; #Weekly; #OneTime };
@@ -604,17 +983,20 @@ type BenefitProgram = {
   companyId: Text;
   amount: Nat;
   frequency: Frequency;
-  day: Nat; // Day of week or month
+  day: Nat; // Day of week or month depending on frequency
 };
 ```
 
-When a benefit program is created, the system schedules its first execution based on its frequency:
+When a new benefit program is created, the system immediately schedules its first automated distribution:
 
 ```motoko
-Timer.setTimer(Time.now() + computeDelay(program.frequency, program.day), distribute(program.id));
+Timer.setTimer(
+  Time.now() + computeDelay(program.frequency, program.day),
+  distribute(program.id)
+);
 ```
 
-After each execution, the next run is re-scheduled:
+Each execution triggers worker payments and then automatically schedules the next run:
 
 ```motoko
 func distribute(programId: Text): async () {
@@ -622,37 +1004,42 @@ func distribute(programId: Text): async () {
   await creditBalance(programId);
 
   // reschedule next cycle
-  Timer.setTimer(Time.now() + computeNextDelay(...), distribute(programId));
+  Timer.setTimer(
+    Time.now() + computeNextDelay(programId),
+    distribute(programId)
+  );
 };
 ```
 
 #### Key Functions
 
-| Function                  | Description                                          |
-| ------------------------- | ---------------------------------------------------- |
-| `computeDelay()`          | Calculates delay in nanoseconds until next execution |
-| `creditBalance()`         | Calls `wallets.mo` to distribute amounts             |
-| `setTimer()`              | Schedules the execution of `distribute()`            |
-| `assignWorkerToBenefit()` | Keeps an internal mapping of workers per program     |
+| Function                  | Description                                                  |
+| ------------------------- | ------------------------------------------------------------ |
+| `computeDelay()`          | Calculates delay in nanoseconds until the first execution    |
+| `computeNextDelay()`      | Determines interval until the next cycle (weekly/monthly)    |
+| `creditBalance()`         | Invokes `wallets.mo` to distribute benefit tokens to workers |
+| `setTimer()`              | Registers an execution of `distribute()` with the Timer API  |
+| `assignWorkerToBenefit()` | Maintains mapping of workers assigned to a benefit program   |
 
 ### Highlights
 
-| Feature                  | Benefit                                                 |
-| ------------------------ | ------------------------------------------------------- |
-| Fully on-chain scheduler | No backend or off-chain scheduler needed                |
-| Resilient & predictable  | All executions logged and tied to exact timestamps      |
-| Auditable automation     | Can verify past/future executions in the canister state |
-| Scalable                 | Works independently for each benefit program            |
+| Feature                  | Benefit                                                           |
+| ------------------------ | ----------------------------------------------------------------- |
+| Fully on-chain scheduler | No off-chain infrastructure required for automation               |
+| Resilient & predictable  | Executions tied to deterministic timestamps on-chain              |
+| Auditable automation     | Past and future runs can be verified from canister state directly |
+| Multi-program support    | Each benefit program has its own independent automated cycle      |
+| Self-healing             | If upgraded, timers are re-computed safely via stable persistence |
 
 ---
 
-### 10. Inter-Canister Communication
+## 10. Inter-Canister Communication
 
-BeneChain uses the Internet Computer’s native support for **typed asynchronous inter-canister calls** to coordinate logic between modular services. Each smart contract (canister) exposes a public interface, allowing other canisters to invoke its functions in a secure and verifiable way.
+BeneChain leverages the Internet Computer’s support for **typed asynchronous inter-canister calls** to orchestrate logic between modular smart contracts. Each canister exposes a **public Candid interface (`.did`)**, enabling **secure, strongly-typed** invocations across services while maintaining full auditability.
 
-#### Example: Distributing Benefits
+### Example: Benefit Distribution
 
-The `benefits_manager.mo` canister periodically calls the `wallets.mo` canister to credit the appropriate amount to each worker:
+The `benefits_manager.mo` canister triggers periodic calls to the `wallets.mo` canister to credit workers’ balances:
 
 ```motoko
 let wallet = actor "wallets-canister-id" : actor {
@@ -666,50 +1053,58 @@ let result = await wallet.creditBalance({
 });
 ```
 
-#### Security: Role Validation First
+*The `wallets` canister executes the credit, persists the transaction, and returns a `Result` indicating success or failure.*
 
-Before any inter-canister call is executed, the system enforces strict role checks using the `identity_auth.mo` canister:
+
+### Security: Role Validation Before Calls
+
+Every inter-canister call first checks the **caller’s role and company affiliation** via the `identity_auth.mo` canister:
 
 ```motoko
-if (await identityAuth.hasRole(caller, #HR)) {
-  // proceed with operation
-}
+if (await identityAuth.hasRole(caller, #HR) and
+    await identityAuth.belongsToCompany(caller, program.companyId)) {
+  // Authorized → proceed
+} else {
+  throw Error.reject("Unauthorized");
+};
 ```
 
-This ensures that only authorized entities (e.g., HR managers, merchants) can trigger cross-canister operations.
+This guarantees that only authorized HRs, merchants, or workers can trigger sensitive cross-canister operations.
 
-#### Error Handling
 
-All asynchronous calls are pattern-matched to capture errors gracefully:
+### Error Handling
+
+Asynchronous calls use pattern matching to gracefully capture failures:
 
 ```motoko
 switch (await wallet.creditBalance(...)) {
-  case (#ok _) { /* success */ };
+  case (#ok _)  { Debug.print("Credit successful"); };
   case (#err e) { Debug.print("Transfer failed: " # e); };
 };
 ```
 
-#### Canister Interaction Summary
+This ensures **robust fault tolerance**, preventing one failed call from halting the system.
 
-| Caller Canister       | Target Canister | Purpose                     |
-| --------------------- | --------------- | --------------------------- |
-| `benefits_manager`    | `wallets`       | Credit worker balances      |
-| `establishment`       | `wallets`       | Debit balances upon payment |
-| `benefits_manager`    | `identity_auth` | Validate HR role & company  |
-| `establishment`       | `identity_auth` | Validate merchant role      |
-| `reporting` (planned) | All others      | Pull data for reporting     |
+### Canister Interaction Summary
+
+| Caller Canister       | Target Canister | Purpose                          |
+| --------------------- | --------------- | -------------------------------- |
+| `benefits_manager`    | `wallets`       | Credit balances during payroll   |
+| `establishment`       | `wallets`       | Debit balances for merchant use  |
+| `benefits_manager`    | `identity_auth` | Validate HR role & company scope |
+| `establishment`       | `identity_auth` | Validate merchant role           |
+| `reporting` (planned) | All others      | Aggregate system-wide analytics  |
+
 
 ### Highlights
 
-| Capability                    | Benefit                                                  |
-| ----------------------------- | -------------------------------------------------------- |
-| Typed actor interfaces        | Compile-time validation of contract signatures           |
-| Asynchronous execution        | Non-blocking, reliable system behavior                   |
-| Principal-based access checks | Full identity-aware communication                        |
-| Modular responsibility        | Clean separation of logic and easier testing             |
-| Secure and auditable flows    | All cross-canister interactions can be logged and traced |
-
-Perfeito! Com base nas telas que você enviou, aqui está um rascunho estruturado e bem documentado da seção **11. Frontend Integration**, que você pode incluir diretamente na sua documentação técnica:
+| Capability                  | Benefit                                                         |
+| --------------------------- | --------------------------------------------------------------- |
+| **Typed actor interfaces**  | Compile-time validation of all inter-canister signatures        |
+| **Asynchronous execution**  | Non-blocking, resilient system operations                       |
+| **Principal-based checks**  | Every call enforces identity- and company-aware permissions     |
+| **Separation of concerns**  | Each canister handles one domain, simplifying testing & scaling |
+| **Auditable communication** | All interactions can be logged and traced on-chain              |
 
 ---
 
@@ -878,50 +1273,57 @@ dfx assets sync
 
 ---
 
-## 12. Architecture Summary Table
+## 12. Architecture Summary
 
-This table summarizes the architectural principles and key technical characteristics of BeneChain. It highlights how each design decision contributes to security, modularity, performance, and full on-chain execution.
+This section consolidates the **architectural principles** and **technical foundations** of BeneChain. Each decision is designed to maximize **security, modularity, and scalability**, while ensuring the platform runs **fully on-chain** and remains user-friendly for HRs, workers, and merchants.
 
-| **Aspect**                | **Description**                                                                                 |
-| ------------------------- | ----------------------------------------------------------------------------------------------- |
-| **Modular Design**        | Each core functionality runs in an isolated canister (auth, wallet, HR, etc).                   |
-| **Role-based Access**     | `identity_auth.mo` enforces permissions (HR, Worker, Merchant) using principals.                |
-| **On-chain Scheduler**    | `Timer.setTimer()` automates recurring distributions without external triggers.                 |
-| **Gasless UX**            | Workers and merchants use the system without paying gas, thanks to the Reverse Gas Model.       |
-| **Internet Identity**     | WebAuthn-based authentication with no passwords, wallet extensions, or seed phrases.            |
-| **Typed Interfaces**      | All inter-canister calls use typed actors, reducing bugs and improving maintainability.         |
-| **Scalable Reporting**    | A separate `reporting.rs` canister fetches, aggregates, and exports metrics via HTTPS outcalls. |
-| **Canisterized Frontend** | React + TS UI deployed as a static asset canister using `icx-asset`.                            |
-| **Auditability**          | All transactions and balances are queryable on-chain and tied to identity principals.           |
-| **Multi-tenant Ready**    | Profiles and programs are scoped by companyId, supporting many organizations simultaneously.    |
 
----
+### Core Principles
 
-## Technologies Used
+| **Aspect**                | **Description**                                                                                           |
+| ------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **Modular Canisters**     | Each domain (Identity, Wallets, Benefits, Establishments, Reporting) runs in an isolated canister.        |
+| **Role-based Access**     | `identity_auth.mo` enforces HR, Worker, and Merchant permissions via principals and company scoping.      |
+| **AI-Powered Validation** | Challenges and benefits can be programmatically validated using ICP canisters integrated with AI checks.  |
+| **On-chain Scheduler**    | `Timer.setTimer()` automates recurring distributions (weekly, monthly) without off-chain schedulers.      |
+| **Gasless UX**            | Workers and merchants interact seamlessly thanks to ICP’s Reverse Gas Model (no tokens required).         |
+| **Internet Identity**     | WebAuthn-based, passwordless authentication; Principals uniquely map to profiles and roles.               |
+| **Typed Interfaces**      | All inter-canister calls use typed actors, ensuring compile-time safety and maintainability.              |
+| **Scalable Reporting**    | `reporting.rs` aggregates metrics and syncs with ERPs using HTTPS outcalls for compliance.                |
+| **Multi-tenant Ready**    | Programs, wallets, and profiles are scoped by `companyId`, supporting many organizations on one instance. |
+| **Auditability**          | All credits, debits, and challenge results are immutably recorded and queryable on-chain.                 |
+| **Canisterized Frontend** | React + TypeScript UI deployed as an asset canister (`icx-asset`), fully hosted on-chain.                 |
+
+
+### Technologies Used
 
 | **Layer**            | **Stack / Tools**                                                                                                                                  |
 | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Backend**          | [Motoko](https://internetcomputer.org/docs/current/motoko/), [Rust](https://www.rust-lang.org/) (for reporting), ICP Canisters (service isolation) |
+| **Backend**          | [Motoko](https://internetcomputer.org/docs/current/motoko/) (benefits, wallets, identity), [Rust](https://www.rust-lang.org/) (reporting & AI ops) |
 | **Frontend**         | [React](https://reactjs.org/), [TypeScript](https://www.typescriptlang.org/), [TailwindCSS](https://tailwindcss.com/)                              |
-| **Authentication**   | [Internet Identity](https://identity.ic0.app/) (WebAuthn-based decentralized identity)                                                             |
+| **Authentication**   | [Internet Identity](https://identity.ic0.app/) with WebAuthn-based principals                                                                      |
 | **Protocol Layer**   | [Internet Computer Protocol (ICP)](https://internetcomputer.org/)                                                                                  |
-| **Tooling & DevOps** | `dfx` CLI, `icx-asset`, Vite, Next.js (optional), [PocketIC](https://github.com/dfinity/pocketic) for local testing                                |
+| **Integrations**     | HTTPS outcalls for ERP sync, registry validation, and optional AI services (challenge scoring)                                                     |
+| **Tooling & DevOps** | `dfx` CLI, `icx-asset`, Vite, Next.js (optional), [PocketIC](https://github.com/dfinity/pocketic) for local simulation                             |
 
-> All infrastructure is deployed fully on-chain — including static frontend assets and identity/auth services.
+### ICP Native Features Utilized
 
----
+| **Feature**                | **Description**                                                                            |
+| -------------------------- | ------------------------------------------------------------------------------------------ |
+| **Canisters**              | Upgradeable smart contracts isolating identity, wallets, benefits, merchants, and reports. |
+| **Reverse Gas Model**      | Users interact without tokens; execution costs are prepaid by the platform.                |
+| **Internet Identity (II)** | Decentralized WebAuthn login issuing unique Principals for each user.                      |
+| **HTTPS Outcalls**         | Enables integrations with ERPs, registries, and AI services for challenge validation.      |
+| **On-chain Timers**        | Automates periodic benefit distributions natively on-chain.                                |
+| **Chain Key Cryptography** | Future-proof integration with Bitcoin, Ethereum, and stablecoins.                          |
+| **Asset Canisters**        | Frontend served fully on-chain, eliminating external hosting needs.                        |
 
-## ICP Native Features Utilized
 
-| **Feature**                | **Description**                                                                                        |
-| -------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Canisters**              | Modular, upgradeable smart contracts used for each core service (auth, wallet, HR, merchant, reports). |
-| **Reverse Gas Model**      | Users interact with the app without owning tokens or paying transaction fees.                          |
-| **Internet Identity (II)** | Seamless WebAuthn login; generates unique `Principal` for identity isolation.                          |
-| **HTTPS Outcalls**         | Enables backend to interact with external systems (ERP validation, public registries, etc).            |
-| **On-chain Timers**        | Schedules automatic benefit distributions (e.g. monthly deposits).                                     |
-| **Chain Key Cryptography** | Supports seamless future integration with Bitcoin, Ethereum and stablecoins.                           |
-| **Asset Canisters**        | Frontend hosted and served 100% on-chain without external hosting dependencies.                        |
+### New Diagram (High-Level Architecture)
+
+![Architecture Overview](./assets/diagra.png)
+
+> Figure: BeneChain architecture showing modular canisters, identity/auth layer, wallets, benefits manager, establishments, reporting canister, frontend integration, and external ERP/AI services via HTTPS outcalls.*
 
 ---
 
