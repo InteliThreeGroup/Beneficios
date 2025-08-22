@@ -70,7 +70,7 @@ export function HeroSection() {
             <div className="relative z-10">
               <div className="p-1 bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl backdrop-blur-sm">
                 <img
-                  src="/blockchain-gamified-dashboard.png"
+                  src="/6.svg"
                   alt="BeneChain Dashboard"
                   className="w-full h-auto rounded-2xl shadow-2xl"
                 />

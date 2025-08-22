@@ -6,25 +6,25 @@ const steps = [
     step: "01",
     title: "Initial Setup",
     description: "Set up your company on the platform and define the desired benefits programs.",
-    image: "/company-setup-dashboard.png",
+    image: "/1.png",
   },
   {
     step: "02",
     title: "Challenge Creation",
     description: "Create personalized challenges to engage your employees and set rewards.",
-    image: "/gamification-challenge-interface.png",
+    image: "/2.png",
   },
   {
     step: "03",
     title: "Employee Participation",
     description: "Employees participate in challenges and accumulate reward tokens.",
-    image: "/employee-rewards-dashboard.png",
+    image: "/3.png",
   },
   {
     step: "04",
     title: "Management & Reports",
     description: "Track progress, manage payments, and analyze engagement metrics.",
-    image: "/analytics-dashboard.png",
+    image: "/5.png",
   },
 ]
 
@@ -64,9 +64,9 @@ export function HowItWorksSection() {
               </div>
 
               <div className={`${index % 2 === 1 ? "lg:col-start-1 lg:row-start-1" : ""}`}>
-                <Card className="overflow-hidden shadow-2xl bg-card/80 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all duration-300 hover:scale-105">
+                <Card className="overflow-hidden shadow-2xl bg-card/80 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all duration-300 hover:scale-105 max-w-md mx-auto">
                   <CardContent className="p-0">
-                    <img src={step.image || "/placeholder.svg"} alt={step.title} className="w-full h-64 object-cover" />
+                    <img src={step.image || "/placeholder.svg"} alt={step.title} className="w-full h-96 object-contain bg-gray-50" />
                   </CardContent>
                 </Card>
               </div>
