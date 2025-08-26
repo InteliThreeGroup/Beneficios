@@ -57,7 +57,10 @@
         "src/frontend/dist"
       ],
       "type": "assets",
-      "workspace": "src/frontend"
+      "workspace": "src/frontend",
+      "headers": {
+        "Permissions-Policy": "clipboard-write=*"
+      }
     },
     "internet_identity": {
       "type": "custom",

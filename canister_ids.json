@@ -1,0 +1,20 @@
+{
+  "BENEFICIOS_frontend": {
+    "ic": "xl7az-3yaaa-aaaam-aeojq-cai"
+  },
+  "benefits_manager": {
+    "ic": "x6yru-2qaaa-aaaam-aeoka-cai"
+  },
+  "challenges": {
+    "ic": "xq244-baaaa-aaaam-aeola-cai"
+  },
+  "establishment": {
+    "ic": "xx32i-myaaa-aaaam-aeolq-cai"
+  },
+  "identity_auth": {
+    "ic": "xzzxa-xiaaa-aaaam-aeokq-cai"
+  },
+  "wallets": {
+    "ic": "w2v6g-dqaaa-aaaam-aeoma-cai"
+  }
+}

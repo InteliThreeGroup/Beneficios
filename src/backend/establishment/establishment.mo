@@ -13,8 +13,8 @@ import Nat "mo:base/Nat";
 
 actor Establishment {
     // Canister IDs
-    private let walletCanisterPrincipal : Principal = Principal.fromText("ucwa4-rx777-77774-qaada-cai");
-    private let reportingCanisterPrincipal : Principal = Principal.fromText("ulvla-h7777-77774-qaacq-cai");
+    private let walletCanisterPrincipal : Principal = Principal.fromText("vpyes-67777-77774-qaaeq-cai");
+    private let reportingCanisterPrincipal : Principal = Principal.fromText("vizcg-th777-77774-qaaea-cai");
 
     public type WalletPaymentRequest = {
         workerId: Principal; establishmentId: Principal; establishmentName: Text;
@@ -90,7 +90,7 @@ actor Establishment {
     };
 
     // --- Public Functions ---
-    private let authorizedWalletsCanister : Principal = Principal.fromText("ucwa4-rx777-77774-qaada-cai");
+    private let authorizedWalletsCanister : Principal = Principal.fromText("vpyes-67777-77774-qaaeq-cai");
     public shared(msg) func registerReceivedPayment(request: ReceivedPaymentRequest) : async Result.Result<Text, Text> {
         if (msg.caller != authorizedWalletsCanister) {
             Debug.trap("Unauthorized call: Only wallets canister can register payments.");

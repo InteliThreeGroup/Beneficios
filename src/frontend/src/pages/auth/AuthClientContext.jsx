@@ -124,18 +124,25 @@ export const AuthProvider = ({ children }) => {
     setProfile(null);
   };
 
-  const refreshProfile = async () => {
+  const refreshProfile = async (maxAttempts = 5, delayMs = 1000) => {
     if (actors && actors.identity_auth) {
-      try {
-        const profileResult = await actors.identity_auth.getProfile();
-        if (profileResult.ok) {
-          setProfile(profileResult.ok);
-        } else {
-          setProfile(null); // Perfil não encontrado ou erro, define como null
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+          const profileResult = await actors.identity_auth.getProfile();
+          if (profileResult.ok) {
+            setProfile(profileResult.ok);
+            return;
+          } else {
+            setProfile(null); // Perfil não encontrado ou erro, define como null
+          }
+        } catch (error) {
+          console.error("Erro ao atualizar perfil:", error);
+          setProfile(null); // Em caso de erro, define como null
         }
-      } catch (error) {
-        console.error("Erro ao atualizar perfil:", error);
-        setProfile(null); // Em caso de erro, define como null
+        // Aguarda antes de tentar novamente
+        if (attempt < maxAttempts) {
+          await new Promise(res => setTimeout(res, delayMs));
+        }
       }
     }
   };

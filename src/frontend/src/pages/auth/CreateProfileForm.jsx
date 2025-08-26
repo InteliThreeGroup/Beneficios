@@ -57,7 +57,6 @@ export default function CreateProfileForm() {
                 { Education: null }
               ],
             };
-            
             const establishmentResult = await actors.establishment.registerEstablishment(establishmentData);
             if (establishmentResult.ok) {
               console.log("Establishment registered successfully!");
@@ -68,11 +67,8 @@ export default function CreateProfileForm() {
             console.error("Error registering establishment:", establishmentError);
           }
         }
-        
-        setMessage({ text: "Profile created successfully! Redirecting...", type: "success" });
-        setTimeout(() => {
-          refreshProfile();
-        }, 1500);
+        setMessage({ text: "Profile created successfully!", type: "success" });
+        await refreshProfile();
       } else {
         setMessage({ text: `Error creating profile: ${result.err}`, type: "error" });
       }

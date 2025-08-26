@@ -115,7 +115,7 @@ ANSWER ONLY QUESTIONS ABOUT BENECHAIN. If the question is not related to the pro
   // Internal function to make the call to Gemini API
   private func callGeminiAPI(prompt: Text) : async Text {
   let url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
-  let apiKey = "AIzaSyBylTRLbVW__OS7wgZhK_aylEGy-LtbM8Y";
+  let apiKey = "AIzaSyAIcKssifV6aoBS0Mde_OQkgifKgQ6NV_4";
 
   let body = 
     "{ \"contents\": [ { \"parts\": [ { \"text\": \"" # prompt # "\" } ] } ] }";

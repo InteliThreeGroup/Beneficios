@@ -79,8 +79,8 @@ actor Wallet {
     private var wallets = HashMap.HashMap<Principal, WorkerWallet>(0, Principal.equal, Principal.hash);
     private var transactions = HashMap.HashMap<Text, Transaction>(0, Text.equal, Text.hash);
 
-    private let reportingCanisterPrincipal : Principal = Principal.fromText("ulvla-h7777-77774-qaacq-cai");
-    private let establishmentCanisterPrincipal : Principal = Principal.fromText("uzt4z-lp777-77774-qaabq-cai");
+    private let reportingCanisterPrincipal : Principal = Principal.fromText("vizcg-th777-77774-qaaea-cai");
+    private let establishmentCanisterPrincipal : Principal = Principal.fromText("ulvla-h7777-77774-qaacq-cai");
 
     private type Establishment = actor {
         registerReceivedPayment: (paymentData: ReceivedPaymentRequest) -> async Result.Result<Text, Text>;

@@ -14,7 +14,7 @@ actor Challenges {
 
     // --- DEFINIÇÕES DE CHAMADAS ENTRE CANISTERS ---
     // Nota: Os IDs dos canisters são substituídos em tempo de compilação pelos aliases em dfx.json.
-    private let identityCanisterPrincipal : Principal = Principal.fromText("ulvla-h7777-77774-qaacq-cai");
+    private let identityCanisterPrincipal : Principal = Principal.fromText("ucwa4-rx777-77774-qaada-cai");
     private let walletCanisterPrincipal : Principal = Principal.fromText("vpyes-67777-77774-qaaeq-cai");
 
     // Define a interface para o canister de identidade.

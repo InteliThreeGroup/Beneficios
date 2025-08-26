@@ -185,7 +185,7 @@ If the question is not about challenge generation, politely reply that you are s
   // Internal function to call the Gemini API
   private func callGeminiAPI(prompt: Text) : async Text {
   let url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
-  let apiKey = "AIzaSyBylTRLbVW__OS7wgZhK_aylEGy-LtbM8Y";
+  let apiKey = "AIzaSyAIcKssifV6aoBS0Mde_OQkgifKgQ6NV_4";
 
   // Escape prompt for JSON
   let escapedPrompt = Text.replace(prompt, #text "\"", "\\\"");

@@ -13,7 +13,7 @@ import Debug "mo:base/Debug";
 actor BenefitsManager {
     // Cross-canister call definitions
     private let identityCanisterPrincipal : Principal = Principal.fromText("umunu-kh777-77774-qaaca-cai");
-    private let walletCanisterPrincipal : Principal = Principal.fromText("ucwa4-rx777-77774-qaada-cai");
+    private let walletCanisterPrincipal : Principal = Principal.fromText("vpyes-67777-77774-qaaeq-cai");
 
     private type IdentityAuth = actor {
         belongsToCompany : (user: Principal, companyId: Text) -> async Bool;
