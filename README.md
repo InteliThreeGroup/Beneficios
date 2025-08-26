@@ -51,7 +51,7 @@ By building **entirely on ICP**, BeneChain achieves:
 
 **Pitch Deck:** [Link](https://github.com/InteliThreeGroup/Beneficios/blob/main/assets/Pitch%20Deck%20BeneChain.pdf)
 
-**Demo Video:** [Link](https://youtu.be/UYSJWSu4KBE)
+**Demo Video:** [Link do Vídeo](https://youtu.be/Ij0lXM_ZTsg)
 
 ## Core Value Proposition
 
