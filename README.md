@@ -2231,6 +2231,105 @@ Transition program management to a decentralized autonomous organization (DAO), 
 
 ---
 
+## Evolution of BeneChain – From Previous Delivery to Hackathon Round
+
+### Previous Delivery (Baseline)
+
+In the last round, BeneChain already had the **core canisters and frontend** that defined the foundation of the system:
+
+* **identity\_auth.mo** → role management (HR, Worker, Establishment)
+* **benefits\_manager.mo** → creation and scheduling of benefit programs with timers
+* **wallets.mo** → worker wallets with balances and transaction logs
+* **establishment.mo** → merchant registration and QR-code based payment flows
+* **reporting.rs (initial stub)** → skeleton for future analytics in Rust
+* **Frontend** → first working version with authentication, wallet screen, HR dashboard, and merchant dashboard
+* **Docs** → Initial README, business plan, and pitch deck
+
+> These were committed in **July 24–26, 2025**, with highlights such as:
+
+* `feat: add first frontend` ([c110dc1](https://github.com/InteliThreeGroup/Beneficios/commit/c110dc1f1e2e4ab81524b9e6dc3ba160073e5b12))
+* `feat: add canister relatori` ([3e66fdc](https://github.com/InteliThreeGroup/Beneficios/commit/3e66fdc3b434fc312714a70dd22dbf2306584102))
+* `fix: logic of benefits` ([b5dffdc](https://github.com/InteliThreeGroup/Beneficios/commit/b5dffdc5e899fb3aaef7d9408e5ce192aa16bfce))
+
+At this stage, BeneChain was already **fully on-chain** but focused mainly on the classic corporate benefits workflow.
+
+---
+
+### What Was Delivered This Week (Hackathon Round)
+
+During this hackathon sprint, we extended BeneChain far beyond the baseline. The system now includes **AI-powered modules, gamified challenges, multichain payments, and LLM integration**.
+
+### New Functionalities & Canisters
+
+* **`challenges.mo`**
+
+  * Implements the **challenge lifecycle** (create, submit, approve/reject).
+  * Workers can now participate in gamified corporate programs.
+  * [Commit: `fix: att bug create challenge`](https://github.com/InteliThreeGroup/Beneficios/commit/61b7ccc)
+
+* **`challenge_ai.mo`**
+
+  * On-chain AI agent that uses **HTTPS outcalls** to the Gemini API.
+  * Generates structured challenges and reward suggestions automatically.
+  * [Commit: `fix: adjust dfx adds llm`](https://github.com/InteliThreeGroup/Beneficios/commit/62df910)
+
+* **`llm_home.mo`**
+
+  * Conversational AI agent specialized in **answering BeneChain-related questions**.
+  * Integrated into the homepage as an intelligent chatbot.
+  * [Commit: `fix: adjust chatbot`](https://github.com/InteliThreeGroup/Beneficios/commit/14d98c6)
+
+* **`btc_payments.mo`**
+
+  * Full **Bitcoin payment module** using ICP’s Chain Key ECDSA.
+  * Currently running in **regtest mode**, supports `get_balance()` and `send_btc()`.
+  * [Commit: `fear: add new version`](https://github.com/InteliThreeGroup/Beneficios/commit/f969c87)
+
+* **Frontend Enhancements**
+
+  * New dashboards for HR, Workers, and Merchants.
+  * Added flows for **challenge creation**, **worker submissions**, and **AI-assisted challenge generation**.
+  * Integration of LLM assistant in the landing page.
+  * [Commit: `feat: refactor frontend design and add tailwind class`](https://github.com/InteliThreeGroup/Beneficios/commit/c7a78d1)
+
+* **Docs & Architecture**
+
+  * Expanded technical docs (`docs: add technique docs`, [571e696](https://github.com/InteliThreeGroup/Beneficios/commit/571e696))
+  * Challenge-specific documentation (`docs: add challenge docs`, [73bf701](https://github.com/InteliThreeGroup/Beneficios/commit/73bf701))
+  * Updated **Business Plan** and **Pitch Deck** with new modules ([4fdadbb](https://github.com/InteliThreeGroup/Beneficios/commit/4fdadbb))
+
+### Golden Rule Compliance: What Was Added During Hackathon
+
+To clearly distinguish new work from pre-existing code:
+
+| Feature / Module | Status Before Hackathon | Added During Hackathon (with commit links)                                                                                       |
+| ---------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Benefits Manager | Already implemented   | Minor bug fixes ([61b7ccc](https://github.com/InteliThreeGroup/Beneficios/commit/61b7ccc))                                    |
+| Worker Wallets   | Already implemented   | Expanded with challenge-token rewards                                                                                          |
+| Establishments   | Already implemented   | Bug fixes for payments ([120f86b](https://github.com/InteliThreeGroup/Beneficios/commit/120f86b))                             |
+| Reporting        | Stub in Motoko       | Extended with Rust stubs                                                                                                       |
+| Challenges       | Not present           | Implemented ([73bf701](https://github.com/InteliThreeGroup/Beneficios/commit/73bf701))                                         |
+| Challenge AI     | Not present           | Implemented ([62df910](https://github.com/InteliThreeGroup/Beneficios/commit/62df910))                                         |
+| LLM Home Agent   | Not present           | Implemented ([14d98c6](https://github.com/InteliThreeGroup/Beneficios/commit/14d98c6))                                         |
+| BTC Payments     | Not present           | Implemented ([f969c87](https://github.com/InteliThreeGroup/Beneficios/commit/f969c87c542dc40e719860ee8b6d931eeda5aae9))                                         |
+| Frontend         | Basic screens only   | Refactored design, Tailwind, AI/chatbot integration ([c7a78d1](https://github.com/InteliThreeGroup/Beneficios/commit/c7a78d1)) |
+
+
+### Conclusion
+
+What was once a **corporate benefits MVP** has now become a **multi-module, AI-enhanced, multichain platform**.
+
+This week’s delivery added:
+
+* **Gamified Challenges** with AI support
+* **Conversational LLM assistant** for HR and workers
+* **Native Bitcoin integration** (via ICP Chain Key)
+* **Refactored frontend UX** with Tailwind and integrated flows
+
+All of these features are **fully traceable in the commits above**, making it clear which parts were developed during the hackathon and which were already in place.
+
+---
+
 ## Resources
 
 * [ICP Developer Docs](https://internetcomputer.org/docs/current/)
