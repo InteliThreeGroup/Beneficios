@@ -427,11 +427,11 @@ Transactions:
 
 Premium Subscriptions (30% of companies):
 
-- 45 companies × US400=US18K/month (~US$216K/year)
+- 45 companies × US400 = US18K/month (~US$216K/year)
 
 Token Conversion:
 
-- Estimated US5.4Mconvertedintheyear×0.316.2K/year
+- Estimated US5.4M converted in the year × 0.3% = 16.2K/year
 
 **Total (Year 1)**: ~US$592K/year (conservative estimate, not including exponential growth)
 
