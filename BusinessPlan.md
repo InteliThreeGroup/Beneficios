@@ -12,7 +12,7 @@ The corporate benefits market moves billions globally and is directly linked to 
 
 This scenario directly affects three pillars of the ecosystem: employers, employees, and commercial establishments.
 
-In this context, **BeneChain** emerges as a decentralized corporate benefits platform, built entirely on the Internet Computer Protocol (ICP), which eliminates intermediaries, reduces costs, and promotes end-to-end transparency.
+In this context, **BeneChain** emerges as a decentralized corporate benefits platform, built entirely on the Internet Computer Protocol (ICP), which eliminates intermediaries, reduces costs, and promotes end-to-end transparency. In addition to benefits management, the solution incorporates a gamified engagement module, where HR can launch challenges focused on well-being, culture, and productivity. Employees receive tokens as a reward, which can be used at partner establishments.
 
 ![](https://github.com/InteliThreeGroup/Beneficios/blob/main/assets/Sol1.png)
 
@@ -63,6 +63,7 @@ The market faces significant challenges that create pain points for everyone inv
 
 * **Lack of Control Over Usage:** HR departments often find themselves in the dark when it comes to the effective use of benefits. Without clear information on how employees are using these resources, they often only have access to the amount spent and the establishment's name.
 * **Difficulty in Personalization:** Benefit operator offerings are often rigid, with predefined packages that limit companies' ability to customize options. This means that companies may have difficulty assembling a package that truly reflects the organization's culture or the diverse needs of a heterogeneous workforce.
+* **Difficulty in Engaging Employees:** Difficulty in turning well-being and culture programs into measurable and engaging results.
 
 ### For Employees:
 
@@ -90,12 +91,14 @@ The market faces significant challenges that create pain points for everyone inv
 **Pain Points:**
 * Lack of visibility into benefit utilization
 * Difficulty customizing packages for different team profiles
+* Has difficulty engaging employees
 **Frustrations:**
 * Decentralized reports hinder strategic decisions
 * Constant complaints from employees about inflexibility or misuse of benefits
 **Motivators:**
 * Access to a single, customizable benefits management platform
 * Reduced turnover and increased internal engagement
+* Seeks tools to engage employees with challenges aligned with the organizational culture
 
 ### Persona 2 (Employee):
 
@@ -149,12 +152,14 @@ The market faces significant challenges that create pain points for everyone inv
 * Automate distributions: the platform sends benefits on the right days, without the need for spreadsheets or reminders.
 * Monitor employees' benefit usage in real-time.
 * Prevent fraud: all transactions are recorded on the blockchain, with full traceability.
+* Launch gamified challenges to promote culture, well-being, and engagement, with metrics on participation and impact.
 
 ### For Employees:
 
 * Receive your benefits in a digital wallet linked to your identity, without needing to download apps or use multiple cards.
 * Use your balances freely, at accredited establishments, and see everything in real-time.
 * Take your wallet wherever you go: if you change jobs, your benefits remain centralized in the same wallet.
+* Participate in corporate challenges, earn tokens as rewards and use them in establishments.
 
 ### For Establishments:
 
@@ -172,6 +177,7 @@ To rewrite the global corporate benefits infrastructure with decentralized techn
 * Empower HR with total control and intelligent automation.
 * Offer employees real freedom, portability, and expanded purchasing power.
 * Generate economic value and predictability for establishments, without exploitation or concentration.
+* To turn benefits into living experiences that not only provide purchasing power but also promote engagement, well-being, and culture.
 * Connect the benefits system to a new digital economy.
 * Actively contribute to the UN SDGs and ESG strategies.
 
@@ -184,11 +190,12 @@ To rewrite the global corporate benefits infrastructure with decentralized techn
 * Companies can customize benefit rules, payment frequency, and employee profiles without relying on external support.
 * Provable auditability and traceability on the blockchain, essential for regulated areas or public contracts.
 * BeneChain directly connects companies, employees, and commercial establishments, without a "owner" platform for the relationship.
+* Create periodic challenges that connect organizational culture and well-being to real financial rewards.
 * Has a structure prepared for multi-company, multi-channel, and multi-country operations.
 
 ---
 
-## Business Model
+## Market Analysis
 
 ### TAM SAM SOM
 
@@ -205,6 +212,37 @@ In Brazil, this market was valued at approximately US$15 billion in 2023. The SA
 **SOM (Serviceable Obtainable Market):**
 The SOM is the realistic portion of the SAM that a company can conquer within a certain period, considering its sales strategy, resources, competition, and brand recognition. For a new benefit operator or one offering innovative solutions, the SOM may start small, perhaps 1-5% (US$150 million) of the SAM in the first year, but with a good product and execution, it can grow significantly.
 
+### Porter's Five Forces
+
+**Rivalry Among Existing Competitors (High)**
+The corporate benefits market is dominated by large, traditional players with strong brands, consolidated networks, and long-term contracts. However, these companies face weaknesses such as high fees, low flexibility, and a lack of innovation. Meanwhile, startups and fintechs are already exploring digital and employee engagement niches, which makes the rivalry intense but also creates an opportunity for BeneChain to differentiate itself with blockchain, transparency, reduced costs, and gamification.
+
+**Threat of New Entrants (Medium)**
+Although it's relatively simple to launch HR Techs or digital benefits apps, scalability depends on attracting establishments and gaining trust from HR departments, in addition to barriers like regulation. In this scenario, BeneChain gains a temporary advantage by leveraging its ICP resources, but will need to quickly consolidate its network of companies and partners to sustain its position.
+
+**Threat of Substitute Products (Medium-High)**
+Substitutes like PIX for employee assistance, salary increases, direct partnerships with gyms, or points and experiences programs already compete directly or indirectly, while flexible benefits models via apps are growing in popularity. For BeneChain, the threat is significant but can be mitigated by combining benefits and engagement solutions, delivering more value and utility than isolated alternatives.
+
+**Bargaining Power of Customers (High)**
+HR companies negotiate terms and fees with significant power. Large establishments demand fast settlement and fair margins, and employees indirectly pressure for flexible solutions. In this context, BeneChain needs to demonstrate clear value (lower fees, engagement programs, tokens that deliver real value, etc.) to reduce resistance and gain adoption.
+
+**Bargaining Power of Suppliers (Low-Medium)**
+In the decentralized model, banks, card networks, and acquirers no longer have significant leverage. The critical suppliers become technological infrastructure, which reduces their bargaining power compared to the traditional model, but still makes BeneChain dependent on the ICP ecosystem and strategic partnerships to sustain its operation.
+
+### SWOT 
+
+**Strengths**
+BeneChain stands out as a 100% decentralized platform, which eliminates intermediaries and reduces fees, offering instant settlement with minimal cost (0.5% to 1%), a key differentiator from traditional operators. In addition, it integrates benefits and gamified engagement with tokens that have real value, promotes transparency and portability via a single digital wallet, and aligns with ESG agendas, reinforcing financial inclusion, well-being, and sustainability.
+
+**Weaknesses**
+BeneChain's weaknesses include having a new brand with no market history, and facing the challenge of educating HR departments and employees on how its tool works. It also has a limited initial network of establishments, which may restrict adoption, and a lean team at the beginning, which can lead to difficulties in sales, support, and scaling.
+
+**Opportunities**
+The global benefits market is expanding (9% annually in Brazil until 2026), driven by the trend of digital and flexible HR solutions. There is room for growth with the adoption of corporate gamification and employee experience as a retention differentiator. Strategic partnerships with brands and establishments for sponsored challenges also expand the possibilities for revenue and engagement.
+
+**Threats**
+The sector is highly competitive, with large, established operators. Substitutes like salary increases, PIX for benefits, and flexible apps challenge the model. Labor and tax regulations can impose restrictions. Furthermore, new digital players (fintechs and HR Techs) may emerge, inspired by the model, increasing competitive pressure.
+
 ---
 
 ## Business Model Canvas
@@ -219,6 +257,7 @@ The SOM is the realistic portion of the SAM that a company can conquer within a 
 * Control and automation for HR, with real-time tracking
 * Automatic payment settlement for establishments
 * Open, interoperable, and scalable infrastructure for multiple countries
+* Corporate gamification and employee engagement, with real rewards
 
 ### 2) Customer Segments
 
@@ -242,6 +281,7 @@ The SOM is the realistic portion of the SAM that a company can conquer within a 
 
 * Transaction fees (0.5% to 1%) paid by commercial establishments
 * Subscription plans for companies with advanced features (for benefit customization)
+* Possibility of monetizing via premium plans for HRs who want engagement modules in addition to traditional benefits
 
 ### 6) Key Resources
 
@@ -273,11 +313,133 @@ The SOM is the realistic portion of the SAM that a company can conquer within a 
 
 ---
 
+## Product Metrics
+
+**Main Metric (North Star Metric)**
+
+- Volume of transactions processed on the platform
+
+Represents the value delivered to all stakeholders:
+
+- Human Resources → benefits that are actually used
+
+- Employees → benefits and rewards that are spent/used
+
+- Establishments → sales received
+
+The greater the transacted volume, the greater the adoption, engagement, and revenue generation
+
+**Adoption (new users entering the ecosystem)**
+
+- New Human Resources registered/month
+
+- New employees activated/month
+
+- New partner establishments/month
+
+**Engagement (continuous use and relevance)**
+
+- DAU/MAU (Daily Active Users / Monthly Active Users): proportion of active employees
+
+- Gamified challenge participation rate (% of active employees who complete at least 1 challenge/month)
+
+**Retention (users returning to use)**
+
+- Company churn (% who cancel benefits)
+
+- Establishment churn (% who stop accepting BeneChain)
+
+**Satisfaction (perception of value)**
+
+- NPS (Net Promoter Score): recommendation of the platform by HRs, employees, and establishments
+
+- CES (Customer Effort Score): ease of use of the platform (onboarding, challenges, payments)
+
+- Qualitative feedback: periodic collections from pilot companies and employee groups
+
+**Benchmarks and Goals (Year 1)**
+
+- North Star Metric: US$ 72M moved via BeneChain
+
+- Adoption: 150 companies + 15.000 employees + 600 active establishments
+
+- Engagement: ≥ 50% of active employees participating in at least 1 challenge/month
+
+- Retention: Churn < 5% per quarter for companies and establishments
+
+- Conversion: ≥ 30% of companies migrating to premium plans
+
+- Satisfaction: NPS ≥ 60
+
+## Revenue Plan
+
+### Main Revenue Sources
+
+**Core Transaction Fee**
+
+A fee of 0.5% to 1% is charged per transaction at establishments.
+
+This is much more competitive than the 3%–14% charged by traditional operators, making it the main driver of recurring revenue.
+
+**Subscription Plans (for HR departments)**
+
+- Basic: Simple benefits management.
+
+- Premium: Advanced reports, custom benefits rules, and engagement features.
+
+**Token Conversion**
+
+- A micro-fee is charged for converting engagement tokens into ckBTC (Future Implementation).
+
+### Pricing
+
+**Transactions**: A flat rate of 0.5%–1%, which is lower than traditional competitors.
+
+**HR Subscriptions (monthly)**:
+
+- Basic: Free (for up to 50 employees).
+
+- Premium: US$200/month (for up to 500 employees).
+
+**Token Conversion**: A fee of 0.2% to 0.5% per operation.
+
+### Financial Scenario Simulation (Year 1)
+
+**Assumptions**:
+
+- Adoption: 70 companies + 5,000 employees + 600 active establishments
+
+- 150 client companies (SMEs, average 100 employees each)
+
+- 600 partner establishments
+
+- Average ticket of US$400/month in benefits per employee
+
+- 0.5% fee on transactions
+
+**Estimated Revenue**:
+
+Transactions:
+
+- 150 companies × 100 employees × US400=US6M/month moved
+
+- 0.5% fee = US30K/month( US360K/year)
+
+Premium Subscriptions (30% of companies):
+
+- 45 companies × US400=US18K/month (~US$216K/year)
+
+Token Conversion:
+
+- Estimated US5.4Mconvertedintheyear×0.316.2K/year
+
+**Total (Year 1)**: ~US$592K/year (conservative estimate, not including exponential growth)
+
 ## Go-To-Market Strategy
 
 ### Objective
 
-To launch BeneChain in the Brazilian corporate benefits market with an initial focus on innovative SMEs, validating the product with early adopters and building a solid base of commercial establishments and partner companies.
+To launch BeneChain in the Brazilian corporate benefits market with an initial focus on innovative SMEs, validating the product with early adopters and building a solid base of commercial establishments and partner companies. At the same time, introduce the gamified challenges module to position the company not only as a benefits platform, but also as a tool for engagement and strengthening culture.
 
 ### Initial Target Audience
 
@@ -302,6 +464,7 @@ To launch BeneChain in the Brazilian corporate benefits market with an initial f
 * QR code payment (establishment)
 * Management dashboard (HR and Commercial Establishments)
 * Instant settlement
+* Gamified Challenges Module: HR creates challenges, employees participate and earn tokens
 
 ### Execution Phases
 
@@ -318,6 +481,7 @@ To launch BeneChain in the Brazilian corporate benefits market with an initial f
     * HR (via LinkedIn, Google Ads, HR management events)
     * Establishments (via local partnerships, visits, and Instagram)
 * Activation of employees' digital wallets
+* Highlighting gamified challenges as a differentiator to increase engagement and pilot adoption
 
 **Phase 3 – Traction and Scale (5-12 months)**
 * Expansion of the network of companies and establishments
@@ -325,6 +489,7 @@ To launch BeneChain in the Brazilian corporate benefits market with an initial f
 * Expansion to cities outside the capital (Beyond São Paulo)
 * Initiation of partnerships with unions, cooperatives, and job marketplaces
 * Referral strategy: referral program for companies and businesses
+* Scaling the challenge ecosystem, including health, social, and corporate productivity campaigns
 
 ### Acquisition Channels
 
@@ -332,6 +497,7 @@ To launch BeneChain in the Brazilian corporate benefits market with an initial f
 * LinkedIn Ads focused on HR directors/managers and CEOs
 * Partnerships with HR consultancies, accounting firms, and accelerators
 * People management and technology events (HR Summit, HR Tech, Web Summit Rio)
+* Showcasing case studies of employee engagement through gamified challenges
 
 **Commercial Establishments:**
 * Local commercial visits with QR code for adhesion
