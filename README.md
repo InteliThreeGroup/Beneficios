@@ -49,7 +49,7 @@ By building **entirely on ICP**, BeneChain achieves:
 
 **Business Plan:** [Link](./BusinessPlan.md)
 
-**Pitch Deck:** [Link](https://github.com/InteliThreeGroup/Beneficios/blob/main/assets/Pitch%20Deck%20BeneChain.pdf)
+**Pitch Deck:** [Link](https://github.com/InteliThreeGroup/Beneficios/blob/main/assets/Pitch%20Deck%20BeneChain%20(Step%202).pdf)
 
 **Demo Video:** [Link do Vídeo](https://youtu.be/Ij0lXM_ZTsg)
 
