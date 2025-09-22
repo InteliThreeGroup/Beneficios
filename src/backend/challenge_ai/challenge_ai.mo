@@ -8,7 +8,7 @@ import Time "mo:base/Time";
 actor {
   
   // Specific context for corporate challenge generation
-  private let CHALLENGE_GENERATOR_CONTEXT = "
+  private stable var CHALLENGE_GENERATOR_CONTEXT = "
 YOU ARE THE AI ASSISTANT SPECIALIZED IN CREATING CORPORATE CHALLENGES for the BeneChain platform.
 
 YOUR ROLE:
