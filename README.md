@@ -11,6 +11,42 @@ Traditional corporate benefits systems are plagued by inefficiencies:
 
 BeneChain offers a paradigm shift. By leveraging the **unique capabilities of ICP**, we’ve created a decentralized platform that connects HR managers, employees, and merchants directly through on-chain logic — with zero reliance on Web2 infrastructure or third-party processors.
 
+---
+
+## Summary
+1. [What's New?](#whats-new) <br>
+2. [Why ICP Matters?](#why-icp-matters) <br>
+3. [Core Value Proposition](#core-value-proposition) <br>
+4. [Track: Fully On-Chain](#track-fully-on-chain) <br>
+5. [Justification for the "Fully On-Chain" Track](#justification-for-the-fully-on-chain-track) <br>
+6. [Why This Project Can Only Be Built on ICP](#why-this-project-can-only-be-built-on-icp-atualizado) <br>
+7. [Deployed Canisters (IC Mainnet)](#deployed-canisters-ic-mainnet) <br>
+8. [System Architecture](#system-architecture) <br>
+   8.1. [High-Level System Overview](#1-high-level-system-overview--full-architecture) <br>
+   8.2. [Interaction Flow](#2-interaction-flow--from-browser-to-canisters) <br>
+   8.3. [Sequence Diagrams](#3-sequence-diagram--dynamic-execution-flow) <br>
+   8.4. [User Flow Diagram](#4-user-flow-diagram--experience-across-roles) <br>
+9. [BeneChain Use Cases](#5-benechain-use-cases) <br>
+10. [Challenge Lifecycle](#6-challenge-lifecycle) <br>
+11. [End-to-End Challenge Lifecycle](#7-end-to-end-challenge-lifecycle) <br>
+12. [Canister Responsibilities and Interfaces](#8-canister-responsibilities-and-interfaces-uml-view) <br>
+13. [Inter Canister Communication](#13-inter-canister-communication) <br>
+14. [Frontend Integration](#14-frontend-integration) <br>
+15. [Deployment Pipeline](#15-deployment-pipeline) <br>
+16. [Architecture Summary](#16-architecture-summary) <br>
+17. [How to Run Locally](#17how-to-run-locally) <br>
+18. [Frontend Documentation](#18-frontend-documentation) <br>
+19. [Future Roadmap](#19-future-roadmap) <br>
+20. [Evolution of BeneChain from Previous Delivery to Hackathon Round](#20-evolution-of-benechain--from-previous-delivery-to-hackathon-round)
+21. [BeneChain Canister Test Suite](#21-benechain-canister-test-suite) <br>
+22. [Resources](#22-resources) <br>
+23. [Team](#23-team) <br>
+24. [License](#24-license) <br>
+
+<br>
+
+---
+
 ### What’s New
 
 BeneChain has evolved beyond the initial core to include powerful new modules, **all deployed on ICP mainnet**:
@@ -45,7 +81,11 @@ By building **entirely on ICP**, BeneChain achieves:
 * Fully auditable, transparent governance
 * Real-time automation without Web2 servers
 
+<br>
+
 ![image](./assets/Sol1.png)
+
+<br>
 
 **Business Plan:** [Link](./BusinessPlan.md)
 
@@ -181,10 +221,6 @@ The “Fully On-Chain” nature of BeneChain is not a design preference, it is a
 * Transparent governance and traceability
 
 BeneChain doesn’t just run on the Internet Computer — it embodies the core vision of what a fully on-chain dApp should be.
-
-## Deployed Canisters (IC Mainnet)
-
-The following Internet Computer mainnet canisters power BeneChain end-to-end. We publish the canonical canister IDs so judges and contributors can verify the deployment, inspect Candid UIs, and reproduce calls. All business logic, storage, and the web UI run fully on-chain.
 
 ## Deployed Canisters (IC Mainnet)
 
@@ -602,7 +638,7 @@ These use cases collectively represent the **end-to-end lifecycle of benefit dis
 
 The challenge lifecycle is divided into two main phases: **challenge creation** and **submission review**. Together, they ensure that challenges are consistently generated, validated, executed on-chain, and audited for accountability.
 
-### **5.1 Challenge Creation and Validation**
+### **6.1 Challenge Creation and Validation**
 
 The first phase describes how a challenge is generated and made available on-chain:
 
@@ -625,7 +661,7 @@ The first phase describes how a challenge is generated and made available on-cha
 
 This phase connects the **AI-assisted challenge generation** to the **on-chain execution**, bridging the intelligent automation layer (`llm_home.mo`) with the immutable storage in `challenges.mo`.
 
-### **5.2 Submission Review and Reward Distribution**
+### **6.2 Submission Review and Reward Distribution**
 
 Once workers submit their entries, the lifecycle continues with review and reward assignment:
 
@@ -1511,7 +1547,7 @@ This section consolidates the **architectural principles** and **technical found
 
 ---
 
-## How to Run Locally
+## 17.How to Run Locally
 
 Follow the steps below to clone, configure, and run the BeneChain project locally using the DFINITY development stack.
 
@@ -1613,7 +1649,7 @@ dfx deploy
 * Use `dfx ping <canister-id>` to test endpoint responsiveness.
 * For HTTPS outcalls, enable `--enable-features=HttpOutcalls` in your `dfx.json`.
 
-## Frontend Documentation
+## 18. Frontend Documentation
 
 ### **Screen: Generate Payment (ICP)**
 
@@ -2233,7 +2269,7 @@ This interface is designed for scenarios where HR needs to manually credit a wor
 
 ---
 
-## Future Roadmap
+## 19. Future Roadmap
 
 BeneChain was designed with extensibility in mind. Beyond its current fully on-chain MVP, several impactful improvements are planned to enhance interoperability and usability:
 
@@ -2265,7 +2301,7 @@ Transition program management to a decentralized autonomous organization (DAO), 
 
 ---
 
-## Evolution of BeneChain – From Previous Delivery to Hackathon Round
+## 20. Evolution of BeneChain – From Previous Delivery to Hackathon Round
 
 ### Previous Delivery (Baseline)
 
@@ -2360,11 +2396,250 @@ This week’s delivery added:
 * **Native Bitcoin integration** (via ICP Chain Key)
 * **Refactored frontend UX** with Tailwind and integrated flows
 
-All of these features are **fully traceable in the commits above**, making it clear which parts were developed during the hackathon and which were already in place.
+---
+
+## 21. BeneChain Canister Test Suite
+
+**Date:** September 22, 2025
+**Status:** All tests passing
+
+This section documents the **scope, setup, and results** of the BeneChain smart-contract (canister) tests. It is designed to give reviewers a clear line of sight from **frontend flows** to **canister behaviors** and the **assertions** that guarantee them.
+
+### Goals & Scope
+
+* **Correctness:** Business rules (benefit creation, assignment, debits/credits, payments, challenges).
+* **Security:** Role-based access control (HR/Worker/Establishment), company scoping, and **restricted cross-canister calls** (e.g., only the Wallet can register settlements).
+* **Integration:** Inter-canister orchestration with **mocked** dependencies and one **real integration** path (Wallets ↔ Establishment).
+* **Determinism:** PocketIC used to control **caller identity** and **time**; traps and error branches asserted explicitly.
+
+
+### Test Architecture
+
+* **Framework:** Python `unittest`
+* **Execution Environment:** [PocketIC](https://github.com/dfinity/pocketic) (local high-fidelity IC simulator)
+* **Build Artifacts Under Test (produced by `dfx build`):**
+  `.dfx/local/canisters/{benefits_manager, establishment, challenges, wallets}/**.wasm|.did`
+  plus mocks:
+
+  * `identity_auth_mock`, `wallet_mock_for_manager` (for BenefitsManager)
+  * `identity_auth_mock_for_challenges`, `wallet_mock_for_challenges` (for Challenges)
+  * `wallets_mock` (for Establishment)
+
+### Key Techniques
+
+* **Dependency mocking:** IdentityAuth / Wallet replaced with canisters exposing just the minimal interfaces to steer outcomes (authorized/unauthorized, success/failure).
+* **Deterministic principals:** Some canisters under test expect **specific principal IDs** for their dependencies. Tests **create canisters with those fixed IDs** to satisfy guards (e.g., Wallet principal `vpyes-67777-77774-qaaeq-cai`).
+* **Caller control:** `pic.set_caller(principal)` simulates HR / Worker / Establishment / anonymous.
+* **Time control:** `pic.advance_time(ns)` and `pic.get_time()` drive expiry windows deterministically.
+* **Trap assertions:** Low-level `update_call(...)` is used to assert `WasmResult.Reject` on protected methods.
 
 ---
 
-## Resources
+### Environment & Setup
+
+### Prerequisites
+
+* **DFX/IC SDK:** `0.26.1`
+* **Python:** `3.10+` with `pip` and `venv`
+
+### Installation
+
+```bash
+# From the project root (build all canisters and mocks)
+dfx cache install
+dfx build
+
+# Test environment
+cd src/tests_py
+python3 -m venv venv
+source venv/bin/activate
+pip3 install -r requirements.txt
+```
+
+> The tests automatically locate `pocket-ic` via:
+>
+> ```python
+> os.environ["POCKET_IC_BIN"] = $(dfx cache show)/pocket-ic
+> ```
+>
+> If missing, run `dfx cache install`.
+
+---
+
+### How to Run
+
+**Run everything (recommended):**
+
+```bash
+# inside src/tests_py with venv active
+python3 -m unittest -v
+```
+
+**Run individual files (examples):**
+
+```bash
+python3 test_benefits_manager.py -v
+python3 test_establishment.py -v
+python3 test_challenges.py -v
+python3 test_wallet_integration.py -v
+```
+
+> Any file names may differ in your repo; using discovery (`python3 -m unittest -v`) avoids mismatch.
+
+---
+
+### Test Modules & Case Summaries
+
+#### BenefitsManager — *(mocks: IdentityAuth, Wallet)*
+
+**Responsibilities:** Manage benefit programs, assign workers, orchestrate payments from company funds via Wallet.
+**Guards covered:** HR-only operations, sufficient company funds, correct debits.
+
+**Key Tests**
+
+* `test_create_program_unauthorized`
+  **Given** IdentityAuth returns *false* for the caller’s HR role,
+  **When** `createBenefitProgram(...)` is invoked via `update_call`,
+  **Then** the call **traps** → `WasmResult.Reject`.
+  *Guarantee:* only HR can create programs.
+* `test_full_payment_cycle`
+  **Given** authorized HR, **when** HR deposits funds → creates program → assigns 2 workers → executes manual payment,
+  **Then** company funds are debited correctly (e.g., 1000 → 400 after paying 2×300).
+  *Guarantee:* end-to-end “happy path” correctness.
+* `test_payment_insufficient_funds`
+  **Given** deposit below required total, **when** `executeManualPayment(programId)`,
+  **Then** call **traps** (`WasmResult.Reject`).
+  *Guarantee:* robust funds check.
+
+
+#### Establishment — *(mock: Wallet)*
+
+**Responsibilities:** Establishment profile, payment validation & processing, and **secure settlement registration** by Wallet.
+
+**Key Tests**
+
+* `test_register_and_get_establishment`
+  Register by Principal (owner) → retrieve profile.
+  *Guarantee:* profile lifecycle works by principal ID.
+* `test_validate_payment`
+  **Valid** when establishment is active and accepts the benefit type; **invalid** otherwise (type not accepted or inactive).
+  *Guarantee:* front-end “Generate Payment / Scanner” flows get accurate validation signals.
+* `test_process_payment_successful`
+  With a valid request, `processPayment` succeeds and history records **Completed**.
+  *Guarantee:* merchant transaction log integrity.
+* `test_register_received_payment_unauthorized`
+  `registerReceivedPayment(...)` via a non-Wallet caller **traps** (`WasmResult.Reject`).
+  *Guarantee:* **only** the Wallet can acknowledge settlement (anti-fraud).
+
+
+#### Challenges — *(mocks: IdentityAuth, Wallet)*
+
+**Responsibilities:** Corporate challenges (create by HR, submit by worker, approve by HR) with company scoping and deadlines.
+
+**Key Tests**
+
+* `test_full_challenge_lifecycle`
+  HR (Company-A) creates → Worker (Company-A) submits → HR approves → submission ends **Approved** and Wallet mock is invoked.
+  *Guarantee:* end-to-end reward workflow.
+* `test_worker_from_another_company_cannot_submit`
+  Worker (Company-B) **cannot** submit to Company-A challenge; returns `Err` with company-scope message.
+  *Guarantee:* strict tenant isolation.
+* `test_cannot_submit_to_expired_challenge`
+  Create short-deadline challenge → `advance_time` beyond deadline → submit returns `Err` with “expired”.
+  *Guarantee:* time-based rule enforcement.
+
+---
+
+####  Wallets (Integration) — *(real: Wallets & Establishment canisters)*
+
+**Responsibilities:** Worker wallet lifecycle, categorized balances, debit flow against a real Establishment canister.
+
+**Key Tests**
+
+* `test_create_and_get_wallet`
+  `createWallet(worker)` then `getWallet(worker)` returns zeroed balances.
+  *Guarantee:* wallet identity & persistence.
+* `test_full_debit_flow_with_real_establishment`
+  Credit Food balance (1000) → debit 300 with a **real Establishment ID** → remaining totals **700**.
+  *Guarantee:* cross-canister debit path works without mocks.
+  *Note:* If your Wallets canister requires linking the authorized Establishment principal (e.g., `setEstablishmentPrincipal`), this test invokes it. If the method is absent, the test prints a warning and may fail depending on your guards.
+
+
+### Frontend ↔ Canisters ↔ Tests (Traceability)
+
+| Frontend Flow                                                    | Canister(s)                      | Tests                                                                                                     | Guarantees                                                                                           |
+| ---------------------------------------------------------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Generate Payment (ICP)** & **QR Scanner / Manual QR**          | Establishment (+ Wallet)         | `test_validate_payment`, `test_process_payment_successful`, `test_register_received_payment_unauthorized` | Validations (active + accepted type), successful processing, **Wallet-only** settlement registration |
+| **Establishment Information** & **Merchant Transaction History** | Establishment                    | `test_register_and_get_establishment`, `test_process_payment_successful`                                  | Profile by principal; **Completed** entries appear in history                                        |
+| **HR Dashboard – Funds** & **Deposit Simulation**                | BenefitsManager                  | `test_full_payment_cycle`, `test_payment_insufficient_funds`                                              | Deposits update funds; debits correct; rejects insufficient funds                                    |
+| **Program Management** & **Create Benefit**                      | BenefitsManager                  | `test_create_program_unauthorized`, `test_full_payment_cycle`                                             | **HR-only** program creation; happy-path program lifecycle                                           |
+| **Worker Management** (assign/adjust)                            | BenefitsManager (+ IdentityAuth) | `test_full_payment_cycle`                                                                                 | Association worker↔program with role/company checks                                                  |
+| **Worker Wallet & Statement**                                    | Wallets (+ Establishment)        | `test_full_debit_flow_with_real_establishment`, `test_create_and_get_wallet`                              | Balances reflect credits/debits across categories                                                    |
+| **Manual Payment (HR)**                                          | BenefitsManager                  | `test_full_payment_cycle`, `test_payment_insufficient_funds`                                              | Ad-hoc credits respect funds and audit rules                                                         |
+
+> The **Challenges** module currently has no dedicated UI screen; its tests validate a future-facing rewards flow (create → submit → approve) with company scoping and deadlines.
+
+---
+
+### Expected Output (Happy Path)
+
+When all tests pass, the suite prints confirmations similar to:
+
+```
+✅ Security (unauthorized HR) ... OK
+✅ Full payment cycle ... OK
+✅ Insufficient funds ... OK
+----------------------------------------------------------------------
+Ran 3 tests in X.XXXs
+OK
+
+✅ Integration debit with real establishment ... OK
+...
+```
+
+
+
+### Troubleshooting
+
+* **PocketIC not found**
+  *Message:* `ERRO: Binário do PocketIC não encontrado...`
+  *Fix:* `dfx cache install` (project root) → re-run tests.
+
+* **WASM/DID not found**
+  *Message:* `FileNotFoundError: ... .dfx/local/canisters/... not found`
+  *Fix:* From project root, run `dfx build` before tests.
+
+* **Principal guard failures**
+  Some canisters enforce **specific principal IDs** for dependencies (e.g., Wallet). Ensure tests **create mocks with the exact expected IDs** (the test code already does this for you).
+
+* **Method not present (integration)**
+  If `wallets.setEstablishmentPrincipal(...)` is absent in your build, either add an equivalent linking method or adjust guards in test-only builds.
+
+### Security Controls Exercised
+
+* **RBAC:** HR-only program creation & payments (`BenefitsManager`).
+* **Least privilege across canisters:** Only **Wallet** can register received payments in `Establishment`.
+* **Tenant isolation:** Workers from Company-B cannot interact with Company-A challenges.
+* **Financial safety:** Payments **reject** when `availableFunds` are insufficient.
+* **Time-box guarantees:** Challenge submissions **reject** after deadline.
+
+### Limitations & Next Steps
+
+**Current limitations**
+
+* Mocks cover most cross-canister interactions; only one path (Wallets ↔ Establishment) is run **without mocks**.
+* No automated gas/cycles or latency profiling yet.
+
+**Planned enhancements**
+
+* **Property-based tests** for boundary values (very large/small ICP).
+* **Invariants** (e.g., company funds ≥ sum of allocations) as explicit checks.
+* **Performance metrics** (cycles, wall-clock) per critical call.
+* **E2E headless** tests (frontend + actors) for smoke/regression coverage.
+
+---
+
+## 22. Resources
 
 * [ICP Developer Docs](https://internetcomputer.org/docs/current/)
 * [Motoko Base Library](https://internetcomputer.org/docs/current/motoko/main/)
@@ -2373,7 +2648,7 @@ All of these features are **fully traceable in the commits above**, making it cl
 
 ---
 
-## Team
+## 23. Team
 
 | Member | Linkedin                       |
 | ------ | --------------------------- |
@@ -2383,6 +2658,6 @@ All of these features are **fully traceable in the commits above**, making it cl
 
 ---
 
-## ⚖️ License
+## 24. License
 
 MIT © 2025 — BeneChain Project Team
