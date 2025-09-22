@@ -182,6 +182,40 @@ The “Fully On-Chain” nature of BeneChain is not a design preference, it is a
 
 BeneChain doesn’t just run on the Internet Computer — it embodies the core vision of what a fully on-chain dApp should be.
 
+## Deployed Canisters (IC Mainnet)
+
+The following Internet Computer mainnet canisters power BeneChain end-to-end. We publish the canonical canister IDs so judges and contributors can verify the deployment, inspect Candid UIs, and reproduce calls. All business logic, storage, and the web UI run fully on-chain.
+
+## Deployed Canisters (IC Mainnet)
+
+The following Internet Computer mainnet canisters power BeneChain end-to-end. IDs and links are provided so judges and contributors can verify deployments and inspect Candid UIs.
+
+### Frontend
+
+| Component                     | Canister ID                   | URL                                                                                          |
+| ----------------------------- | ----------------------------- | -------------------------------------------------------------------------------------------- |
+| BeneChain UI (asset canister) | `xl7az-3yaaa-aaaam-aeojq-cai` | [https://xl7az-3yaaa-aaaam-aeojq-cai.icp0.io/](https://xl7az-3yaaa-aaaam-aeojq-cai.icp0.io/) |
+
+### Backend (Candid UI)
+
+| Canister (module)                        | Canister ID                   | Candid (raw)                                                                                                                                                       |
+| ---------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Benefits Manager (`benefits_manager.mo`) | `x6yru-2qaaa-aaaam-aeoka-cai` | [https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=x6yru-2qaaa-aaaam-aeoka-cai](https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=x6yru-2qaaa-aaaam-aeoka-cai) |
+| Challenge AI (`challenge_ai.mo`)         | `q76fz-cqaaa-aaaam-aeo2a-cai` | [https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=q76fz-cqaaa-aaaam-aeo2a-cai](https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=q76fz-cqaaa-aaaam-aeo2a-cai) |
+| Challenges (`challenges.mo`)             | `xq244-baaaa-aaaam-aeola-cai` | [https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=xq244-baaaa-aaaam-aeola-cai](https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=xq244-baaaa-aaaam-aeola-cai) |
+| Establishment (`establishment.mo`)       | `xx32i-myaaa-aaaam-aeolq-cai` | [https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=xx32i-myaaa-aaaam-aeolq-cai](https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=xx32i-myaaa-aaaam-aeolq-cai) |
+| Identity & Roles (`identity_auth.mo`)    | `xzzxa-xiaaa-aaaam-aeokq-cai` | [https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=xzzxa-xiaaa-aaaam-aeokq-cai](https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=xzzxa-xiaaa-aaaam-aeokq-cai) |
+| LLM Home (`llmo_home.mo`)                | `qy7dn-piaaa-aaaam-aeo2q-cai` | [https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=qy7dn-piaaa-aaaam-aeo2q-cai](https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=qy7dn-piaaa-aaaam-aeo2q-cai) |
+| Reporting (`reporting.rs`)               | `qr4ir-zaaaa-aaaam-aeo3a-cai` | [https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=qr4ir-zaaaa-aaaam-aeo3a-cai](https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=qr4ir-zaaaa-aaaam-aeo3a-cai) |
+| Wallets (`wallets.mo`)                   | `w2v6g-dqaaa-aaaam-aeoma-cai` | [https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=w2v6g-dqaaa-aaaam-aeoma-cai](https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=w2v6g-dqaaa-aaaam-aeoma-cai) |
+
+> Notes: These IDs are immutable identifiers of the currently deployed canisters. When an upgrade requires a new deployment, we will update this list and the changelog accordingly. You can validate each canister on-chain via the IC dashboard or with:
+>
+> ```bash
+> dfx canister --network ic info <CANISTER_ID>
+> ```
+
+
 ## System Architecture
 
 BeneChain is architected as a modular, decentralized system built entirely on the Internet Computer Protocol (ICP). Each component is deployed as a smart contract (canister), following a microservices pattern and strict separation of concerns. Even the frontend is hosted in an asset canister, ensuring 100% on-chain execution, with zero reliance on Web2 infrastructure.
