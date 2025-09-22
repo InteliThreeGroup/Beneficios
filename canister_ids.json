@@ -5,6 +5,9 @@
   "benefits_manager": {
     "ic": "x6yru-2qaaa-aaaam-aeoka-cai"
   },
+  "challenge_ai": {
+    "ic": "q76fz-cqaaa-aaaam-aeo2a-cai"
+  },
   "challenges": {
     "ic": "xq244-baaaa-aaaam-aeola-cai"
   },
@@ -14,7 +17,13 @@
   "identity_auth": {
     "ic": "xzzxa-xiaaa-aaaam-aeokq-cai"
   },
+  "llmo_home": {
+    "ic": "qy7dn-piaaa-aaaam-aeo2q-cai"
+  },
+  "reporting": {
+    "ic": "qr4ir-zaaaa-aaaam-aeo3a-cai"
+  },
   "wallets": {
-    "ic": "w2v6g-dqaaa-aaaam-aeoma-cai"
+    "ic": ""
   }
 }

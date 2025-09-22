@@ -23,3 +23,6 @@ dist/
 
 # environment variables
 .env
+src/tests_py/pocket-ic
+venv/
+src/tests_py/venv/
